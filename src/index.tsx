@@ -1,17 +1,24 @@
+import React from 'react';
 import { Suspense, StrictMode } from 'react';
+import { BrowserRouter as Router} from 'react-router-dom'
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import { GlobalProvider } from 'global/GlobalProvider';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 root.render(
   // <StrictMode>
-    <Suspense fallback={<BigSpinner />}>
-      <App />
-    </Suspense>
+  <Suspense fallback={<BigSpinner />}>
+    <GlobalProvider>
+      <Router>
+        <App />
+      </Router>
+    </GlobalProvider>
+  </Suspense>
   // </StrictMode>
 );
 

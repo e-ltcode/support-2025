@@ -1,3 +1,4 @@
+import React from 'react';
 import { useEffect } from "react";
 import { ListGroup } from "react-bootstrap";
 import CategoryRow from "categories/components/CategoryRow";

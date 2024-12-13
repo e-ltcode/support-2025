@@ -1,3 +1,5 @@
+import React from 'react';
+
 import { useCategoryContext } from 'categories/CategoryProvider'
 
 import { FormMode } from "categories/types";

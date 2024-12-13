@@ -2,10 +2,10 @@
 export type OptionValue = string | number;
 
 export type IOption<T extends OptionValue> = {
-    value: T;
-    label: string;
-    color?: string;
-    checked?: boolean;
+	value: T;
+	label: string;
+	color?: string;
+	checked?: boolean;
 };
 
 export interface IDateAndBy {
@@ -48,7 +48,7 @@ export interface IAuthUser {
 	password: string,
 	email: string,
 	role: ROLES,
-	registrationConfirmed: boolean, 
+	registrationConfirmed: boolean,
 	registered?: Date,
 	visited?: Date
 }
@@ -76,16 +76,17 @@ export interface IGlobalState {
 
 export interface IGlobalContext {
 	globalState: IGlobalState;
-  	health: () => void;
+	signInUser: (loginUser: ILoginUser) => Promise<any>;
+	health: () => void;
 }
 
 
 export interface ILoginUser {
 	wsName: string,
 	who?: string,
-    userName: string;
-    email?: string;
-    password: string;
+	userName: string;
+	email?: string;
+	password: string;
 	date?: Date;
 }
 
@@ -108,41 +109,41 @@ export enum GlobalActionTypes {
 	AUTHENTICATE = "AUTHENTICATE",
 	UN_AUTHENTICATE = "UN_AUTHENTICATE",
 	SET_ERROR = 'SET_ERROR',
-    DARK_MODE = "DARK_MODE",
-    LIGHT_MODE = "LIGHT_MODE",
+	DARK_MODE = "DARK_MODE",
+	LIGHT_MODE = "LIGHT_MODE",
 	SET_KIND_OPTIONS = 'SET_KIND_OPTIONS',
 	SET_REGISTRATION_CONFIRMED = 'SET_REGISTRATION_CONFIRMED'
 }
 
 export type ActionMap<M extends Record<string, any>> = {
-    [Key in keyof M]: M[Key] extends undefined
-    ? {
-        type: Key;
-    }
-    : {
-        type: Key;
-        payload: M[Key];
-    }
+	[Key in keyof M]: M[Key] extends undefined
+	? {
+		type: Key;
+	}
+	: {
+		type: Key;
+		payload: M[Key];
+	}
 };
 
 export type GlobalPayload = {
-    [GlobalActionTypes.SET_LOADING]: {
-    };
+	[GlobalActionTypes.SET_LOADING]: {
+	};
 
-    [GlobalActionTypes.AUTHENTICATE]: {
-        user: IUser,
+	[GlobalActionTypes.AUTHENTICATE]: {
+		user: IUser,
 		wsName: string
-    };
+	};
 
 	[GlobalActionTypes.UN_AUTHENTICATE]: undefined;
 
-    [GlobalActionTypes.SET_ERROR]: {
-        error: Error;
-    };
+	[GlobalActionTypes.SET_ERROR]: {
+		error: Error;
+	};
 
-    [GlobalActionTypes.LIGHT_MODE]: undefined;
+	[GlobalActionTypes.LIGHT_MODE]: undefined;
 
-    [GlobalActionTypes.DARK_MODE]: undefined;
+	[GlobalActionTypes.DARK_MODE]: undefined;
 
 	[GlobalActionTypes.SET_KIND_OPTIONS]: {
 		kindOptions: IOption<string>[];
@@ -153,16 +154,16 @@ export type GlobalPayload = {
 
 
 
-export type ICreatedModifiedProps = { 
-    created?: IDateAndBy, 
-    createdBy?: string,
-    modified?: IDateAndBy,
-    modifiedBy?: string
-    classes?: string 
-  }
+export type ICreatedModifiedProps = {
+	created?: IDateAndBy,
+	createdBy?: string,
+	modified?: IDateAndBy,
+	modifiedBy?: string
+	classes?: string
+}
 
 
-  export const FORM_MODES = {
+export const FORM_MODES = {
 	UNDEFINED: undefined,
 	NULL: null,
 	ADD: 'ADD',

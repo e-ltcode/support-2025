@@ -1,4 +1,5 @@
-import { useRef, useState, useEffect } from 'react';
+
+import React, { useRef, useState, useEffect } from 'react';
 
 // import isMobile from 'ismobilejs'
 // import { isMobile } from 'react-device-detect'
@@ -9,7 +10,7 @@ interface IHoverProps {
 	isHovered: boolean;
 }
 
-export function useHover(): [React.RefObject<HTMLDivElement>, IHoverProps] {
+export function useHover(): [React.RefObject<null | HTMLDivElement>, IHoverProps] {
 	const [hoverProps, setValue] = useState({ isHovered: isMob ? true : false });
 
 	const divRef = useRef<HTMLDivElement>(null);

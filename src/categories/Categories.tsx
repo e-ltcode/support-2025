@@ -1,3 +1,4 @@
+import React from 'react';
 import { useEffect, useState } from 'react'
 import { Container, Row, Col, Button, Modal } from "react-bootstrap";
 
@@ -77,6 +78,7 @@ const Providered = ({ categoryId_questionId }: IProps) => {
             <Row className="my-1">
                 <Col xs={12} md={7}>
                     <div>
+                        KATERORI LISTA
                         <CategoryList parentCategory={null} level={1} title="root" />
                     </div>
                 </Col>

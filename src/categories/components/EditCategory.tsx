@@ -1,3 +1,4 @@
+import React from 'react';
 import { useCategoryContext } from 'categories/CategoryProvider'
 import { useGlobalState } from 'global/GlobalProvider'
 

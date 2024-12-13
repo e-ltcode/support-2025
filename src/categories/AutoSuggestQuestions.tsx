@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { JSX } from 'react';
 import Autosuggest from 'react-autosuggest';
 import AutosuggestHighlightMatch from "autosuggest-highlight/match";
 import AutosuggestHighlightParse from "autosuggest-highlight/parse";

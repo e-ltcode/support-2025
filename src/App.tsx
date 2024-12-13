@@ -7,14 +7,31 @@ import { Route, Routes } from 'react-router-dom';
 import { Navigation } from 'Navigation'
 import Categories from 'categories/Categories';
 import About from 'About';
+import { useGlobalContext } from 'global/GlobalProvider';
+import { ILoginUser } from 'global/types.js';
 
 function App() {
 
   useEffect(() => {
     // Zovi();
-  })
+  }, [])
+
+  const { signInUser } = useGlobalContext();
 
   const { isAuthenticated, everLoggedIn } = { isAuthenticated: true, everLoggedIn: true }
+
+  useEffect(() => {
+    (async () => {
+      const loginUser: ILoginUser = {
+        userName: 'Slavko',
+        wsName: 'Workspace',
+        password: ''
+      
+      }
+      const signedIn = await signInUser(loginUser);
+      console.log('await signInUser({ loginUser })')
+    })()
+  }, [signInUser, isAuthenticated, everLoggedIn])
 
   return (
     <Container fluid className="App">
