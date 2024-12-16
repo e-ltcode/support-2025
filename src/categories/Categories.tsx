@@ -1,6 +1,6 @@
 import React from 'react';
 import { useEffect, useState } from 'react'
-import { Container, Row, Col, Button, Modal } from "react-bootstrap";
+import { Container, Row, Col, Button, Modal, Stack, DropdownButton, Dropdown } from "react-bootstrap";
 
 import { useParams } from 'react-router-dom';
 
@@ -11,6 +11,8 @@ import { CategoryProvider, useCategoryContext, useCategoryDispatch } from "./Cat
 import CategoryList from "categories/components/CategoryList";
 import ViewCategory from "categories/components/ViewCategory";
 import EditCategory from "categories/components/EditCategory";
+import { useGlobalState } from 'global/GlobalProvider';
+
 
 interface IProps {
     categoryId_questionId: string | undefined
@@ -20,9 +22,8 @@ const Providered = ({ categoryId_questionId }: IProps) => {
     const { state, reloadCategoryNode } = useCategoryContext();
     const { lastCategoryExpanded, categoryId_questionId_done } = state;
 
-    //const { isDarkMode, authUser } = useGlobalState();
-    const isDarkMode = true;
-
+    const { isDarkMode, authUser } = useGlobalState();    
+    
     const [showAddQuestion, setShowAddQuestion] = useState(false);
     const handleClose = () => setShowAddQuestion(false);
 
@@ -33,6 +34,7 @@ const Providered = ({ categoryId_questionId }: IProps) => {
 
     useEffect(() => {
         (async () => {
+            
             if (categoryId_questionId) {
                 if (categoryId_questionId === 'add_question') {
                     const sNewQuestion = localStorage.getItem('New_Question');
@@ -78,7 +80,6 @@ const Providered = ({ categoryId_questionId }: IProps) => {
             <Row className="my-1">
                 <Col xs={12} md={7}>
                     <div>
-                        KATERORI LISTA
                         <CategoryList parentCategory={null} level={1} title="root" />
                     </div>
                 </Col>
@@ -112,6 +113,41 @@ const Providered = ({ categoryId_questionId }: IProps) => {
                     {createQuestionError}
                 </Modal.Footer>
             </Modal>
+
+            {/* <Stack direction="horizontal" gap={3}>
+                <DropdownButton
+                    id="dropdown-button-dark-example2"
+                    variant="secondary"
+                    title="Light dropdown"
+                    className="mt-2"
+                    data-bs-theme={isDarkMode?'dark':'light'}
+                >
+                    <Dropdown.Item href="#/action-1" active>
+                        Action
+                    </Dropdown.Item>
+                    <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
+                    <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
+                    <Dropdown.Divider />
+                    <Dropdown.Item href="#/action-4">Separated link</Dropdown.Item>
+                </DropdownButton>
+
+                <DropdownButton
+                    id="dropdown-button-dark-example2"
+                    variant="secondary"
+                    title="Dark dropdown"
+                    className="mt-2"
+                    data-bs-theme={isDarkMode?'dark':'light'}
+                >
+                    <Dropdown.Item href="#/action-1" active>
+                        Action {isDarkMode?'dark':'light'}
+                    </Dropdown.Item>
+                    <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
+                    <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
+                    <Dropdown.Divider />
+                    <Dropdown.Item href="#/action-4">Separated link</Dropdown.Item>
+                </DropdownButton>
+            </Stack> */}
+
         </Container>
     );
 };

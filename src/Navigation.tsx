@@ -13,6 +13,7 @@ import Offcanvas from 'react-bootstrap/Offcanvas';
 import { useGlobalContext, useGlobalDispatch } from 'global/GlobalProvider'
 import { ROLES, GlobalActionTypes } from "global/types";
 import { useEffect } from "react";
+import { Button, Form } from 'react-bootstrap';
 
 interface INavigation {
 }
@@ -24,7 +25,7 @@ export function Navigation(props: INavigation) {
   const { authUser, isAuthenticated, isDarkMode, variant, bg } = globalState;
   const { userName, role } = authUser;
 
-  // const dispatch = useGlobalDispatch();
+  const dispatch = useGlobalDispatch();
 
   let navigate = useNavigate();
 
@@ -40,7 +41,7 @@ export function Navigation(props: INavigation) {
   }, [navigate, isAuthenticated])
 
   return (
-    <Navbar expand={"md"} variant={variant} bg={bg} collapseOnSelect className="sticky-top">
+    <Navbar expand={"md"} variant={variant} bg={bg} collapseOnSelect className="sticky-top" data-bs-theme={isDarkMode ? 'dark' : 'light'}>
       <Container fluid>
         <Navbar.Brand href="#" className="ps-3">Support Knowledge</Navbar.Brand>
         <Navbar.Toggle aria-controls={`offcanvasNavbar-expand`} />
@@ -68,14 +69,14 @@ export function Navigation(props: INavigation) {
                 switch (eventKey) {
                   case "LIGHT_MODE":
                   case "DARK_MODE":
-                    if (document.body.classList.contains('dark')) {
-                      document.body.classList.remove('dark')
-                      document.body.classList.add('light')
-                    }
-                    else {
-                      document.body.classList.add('dark')
-                    }
-                    // dispatch({ type: eventKey })
+                    // if (document.body.classList.contains('dark')) {
+                    //   document.body.classList.remove('dark')
+                    //   document.body.classList.add('light')
+                    // }
+                    // else {
+                    //   document.body.classList.add('dark')
+                    // }
+                    dispatch({ type: eventKey })
                     break;
                 }
               }}
@@ -100,11 +101,21 @@ export function Navigation(props: INavigation) {
                 </NavLink>
               }
 
-              {isAuthenticated && [ROLES.OWNER, ROLES.ADMIN].includes(role) &&
+              {/* {isAuthenticated && [ROLES.OWNER, ROLES.ADMIN].includes(role) &&
                 <NavLink to="/users" className="nav-link">
                   <FontAwesomeIcon icon={faUserFriends} color='lightblue' />{' '}Users
                 </NavLink>
-              }
+              } */}
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+              <Form className="d-flex">
+                <Form.Control
+                  type="search"
+                  placeholder="Search"
+                  className="me-2"
+                  aria-label="Search"
+                />
+                <Button variant="outline-success">Search</Button>
+              </Form>
 
               {/* {isAuthenticated && [ROLES.OWNER, ROLES.ADMIN].includes(role) &&
                 <NavLink to="/workspaces" className="nav-link">
@@ -150,16 +161,6 @@ export function Navigation(props: INavigation) {
                   <NavDropdown.Item eventKey="LIGHT_MODE">
                     Light mode
                   </NavDropdown.Item>
-                  {/* <Form className="d-flex">
-                  <Form.Control
-                    type="search"
-                    placeholder="Search"
-                    className="me-2"
-                    aria-label="Search"
-                  />
-                  <Button variant="outline-success">Search</Button>
-                </Form> */}
-
                   <NavDropdown.Divider />
                   {/* <NavDropdown
                     title={<span style={{ padding: "0px 5px", fontSize: '0.9rem' }}><FontAwesomeIcon icon={faDatabase} />{' '}Local Storage</span>}

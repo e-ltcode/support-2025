@@ -177,5 +177,14 @@ export enum FormMode {
 	editing
 }
 
+export interface IQuestionData {
+	title: string
+}
+
+export interface IQuestionGroupData {
+	title: string,
+	questions: IQuestionData[],
+}
+
 
 export type GlobalActions = ActionMap<GlobalPayload>[keyof ActionMap<GlobalPayload>];

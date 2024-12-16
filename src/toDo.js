@@ -33,7 +33,6 @@ const Zovi = () => {
 
    // Register two event handlers to act on the database being opened successfully, or not
    DBOpenRequest.onerror = (event) => {
-      alert(111)
       note.appendChild(createListItem('Error loading database.'));
    };
 
@@ -78,8 +77,6 @@ const Zovi = () => {
       // Define what data items the objectStore will contain
       objectStore2.createIndex('QuestionGroupId', 'QuestionGroupId', { unique: false });
       objectStore2.createIndex('Text', 'Text', { unique: true });
-
-
    };
 
    function displayData() {

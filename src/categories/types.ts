@@ -44,9 +44,10 @@ export interface IFromUserAssignedAnswer {
 
 export interface IQuestion extends IRecord {
 	title: string,
-	level: number,
-	parentCategory: string,
-	categoryTitle: string,
+	//level: number,
+	//parentCategory: string | undefined,
+	//categoryTitle: string | undefined,
+	groupId: IDBValidKey,
 	questionAnswers: IQuestionAnswer[],
 	numOfAnswers?: number,
 	source: number,

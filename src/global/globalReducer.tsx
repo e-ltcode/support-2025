@@ -80,7 +80,7 @@ export const globalReducer: Reducer<IGlobalState, GlobalActions> = (state, actio
     if (aTypesToStore.includes(action.type)) {
         localStorage.setItem('GLOBAL_STATE', JSON.stringify({
             ...newState,
-            isAuthenticated: false,
+            //isAuthenticated: false, ODAKLE JE OVO BILO (TODO)
             error: undefined
         }));
     }
