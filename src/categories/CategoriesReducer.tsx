@@ -19,6 +19,7 @@ export const initialCategory: ICategory = {
   // temp _id for inAdding, to server as list key
   // it will be removed on submitForm
   // real _id will be given by the MongoDB 
+  _id: 0,
   title: '',
   level: 0,
   questions: [],
@@ -104,6 +105,29 @@ const reducer = (state: ICategoriesState, action: CategoriesActions) => {
       };
     }
 
+    case ActionTypes.SET_CATEGORIES: {
+      const { categories } = action.payload;
+      const newCategories = state.categories.concat(categories);
+      return {
+        ...state,
+        categories: newCategories,
+        loading: false
+      };
+    }
+
+    case ActionTypes.ADD_CATEGORY: {
+      const category: ICategory = {
+        ...initialCategory,
+        title: '',
+        level: 1,
+        inAdding: true
+      }
+      return {
+        ...state,
+        categories: [category, ...state.categories],
+        mode: Mode.AddingCategory
+      };
+    }
 
     case ActionTypes.SET_ADDED_CATEGORY: {
       const { category } = action.payload;
@@ -129,6 +153,29 @@ const reducer = (state: ICategoriesState, action: CategoriesActions) => {
         ...state,
         categories: state.categories.map(c => c._id === category._id
           ? { ...category, questions, inViewing: c.inViewing, inEditing: c.inEditing, inAdding: c.inAdding, isExpanded: c.isExpanded }
+          : c),
+        // keep mode
+        loading: false
+      }
+    }
+
+    case ActionTypes.SET_CATEGORY_QUESTIONS: {
+      const { groupId, questions } = action.payload; // category doesn't contain inViewing, inEditing, inAdding 
+      const category = state.categories.find(c => c._id === groupId);
+      const questionInAdding = category!.questions.find(q => q.inAdding);
+      if (questionInAdding) {
+        questions.unshift(questionInAdding);
+        console.assert(state.mode === Mode.AddingQuestion, "expected Mode.AddingQuestion")
+      }
+      return {
+        ...state,
+        categories: state.categories.map(c => c._id === groupId
+          ? { ...c, questions, numOfQuestions: questions.length,
+            inViewing: c.inViewing, 
+            inEditing: c.inEditing, 
+            inAdding: c.inAdding, 
+            isExpanded: c.isExpanded 
+          }
           : c),
         // keep mode
         loading: false

@@ -11,8 +11,7 @@ import { CategoryProvider, useCategoryContext, useCategoryDispatch } from "./Cat
 import CategoryList from "categories/components/CategoryList";
 import ViewCategory from "categories/components/ViewCategory";
 import EditCategory from "categories/components/EditCategory";
-import { useGlobalState } from 'global/GlobalProvider';
-
+import { useGlobalContext, useGlobalState } from 'global/GlobalProvider';
 
 interface IProps {
     categoryId_questionId: string | undefined
@@ -22,8 +21,8 @@ const Providered = ({ categoryId_questionId }: IProps) => {
     const { state, reloadCategoryNode } = useCategoryContext();
     const { lastCategoryExpanded, categoryId_questionId_done } = state;
 
-    const { isDarkMode, authUser } = useGlobalState();    
-    
+    const { db, isDarkMode, authUser, isAuthenticated } = useGlobalState();
+
     const [showAddQuestion, setShowAddQuestion] = useState(false);
     const handleClose = () => setShowAddQuestion(false);
 
@@ -34,7 +33,6 @@ const Providered = ({ categoryId_questionId }: IProps) => {
 
     useEffect(() => {
         (async () => {
-            
             if (categoryId_questionId) {
                 if (categoryId_questionId === 'add_question') {
                     const sNewQuestion = localStorage.getItem('New_Question');
@@ -58,16 +56,20 @@ const Providered = ({ categoryId_questionId }: IProps) => {
         })()
     }, [lastCategoryExpanded, reloadCategoryNode, categoryId_questionId, categoryId_questionId_done])
 
-    if (categoryId_questionId !== 'add_question') {
-        if (lastCategoryExpanded || (categoryId_questionId && categoryId_questionId !== categoryId_questionId_done))
-            return <div>loading...</div>
+    if (!isAuthenticated || !db) {
+        return <div>loading...........</div>
     }
+
+    // if (categoryId_questionId !== 'add_question') {
+    //     if (lastCategoryExpanded || (categoryId_questionId && categoryId_questionId !== categoryId_questionId_done))
+    //         return <div>loading...</div>
+    // }
 
     return (
         <Container>
             <Button variant="secondary" size="sm" type="button"
                 onClick={() => dispatch({
-                    type: ActionTypes.ADD_SUB_CATEGORY,
+                    type: ActionTypes.ADD_CATEGORY,
                     payload: {
                         parentCategory: null,
                         level: 0
@@ -80,7 +82,13 @@ const Providered = ({ categoryId_questionId }: IProps) => {
             <Row className="my-1">
                 <Col xs={12} md={7}>
                     <div>
-                        <CategoryList parentCategory={null} level={1} title="root" />
+                        {db && <CategoryList />}
+                        {!db &&
+                            <div className="glimmer-panel">
+                                <div className="glimmer-line" />
+                                <div className="glimmer-line" />
+                                <div className="glimmer-line" />
+                            </div>}
                     </div>
                 </Col>
                 <Col xs={0} md={5}>
@@ -169,7 +177,7 @@ const Categories = () => {
     const isAuthenticated = true; // = globalState;
 
     if (!isAuthenticated)
-        return <div>loading...</div>;
+        return <div>loading...???</div>;
 
     return (
         <CategoryProvider>

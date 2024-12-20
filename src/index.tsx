@@ -13,13 +13,13 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   // <StrictMode>
-  <Suspense fallback={<BigSpinner />}>
+  // <Suspense fallback={<BigSpinner />}>
     <GlobalProvider>
       <Router>
         <App />
       </Router>
     </GlobalProvider>
-  </Suspense>
+  // </Suspense>
   // </StrictMode>
 );
 

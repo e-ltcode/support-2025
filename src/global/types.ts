@@ -17,7 +17,7 @@ export interface IDateAndBy {
 }
 
 export interface IRecord {
-	_id?: string,
+	_id?: IDBValidKey,
 	created?: IDateAndBy,
 	createdBy?: string,
 	modified?: IDateAndBy,
@@ -28,7 +28,6 @@ export interface IRecord {
 }
 
 export interface IUser extends IRecord {
-	_id: string,
 	userName: string,
 	password?: string,
 	email: string,
@@ -76,6 +75,7 @@ export interface IGlobalState {
 
 export interface IGlobalContext {
 	globalState: IGlobalState;
+	openDB: () => Promise<any>;
 	signInUser: (loginUser: ILoginUser) => Promise<any>;
 	health: () => void;
 }
@@ -91,6 +91,7 @@ export interface ILoginUser {
 }
 
 export interface IGlobalState {
+	db: IDBDatabase | null;
 	isAuthenticated: boolean | null;
 	everLoggedIn: boolean;
 	authUser: IAuthUser;
@@ -108,6 +109,7 @@ export enum GlobalActionTypes {
 	SET_LOADING = 'SET_LOADING',
 	AUTHENTICATE = "AUTHENTICATE",
 	UN_AUTHENTICATE = "UN_AUTHENTICATE",
+	SET_DB = "SET_DB",
 	SET_ERROR = 'SET_ERROR',
 	DARK_MODE = "DARK_MODE",
 	LIGHT_MODE = "LIGHT_MODE",
@@ -136,6 +138,10 @@ export type GlobalPayload = {
 	};
 
 	[GlobalActionTypes.UN_AUTHENTICATE]: undefined;
+
+	[GlobalActionTypes.SET_DB]: {
+		db: IDBDatabase
+	};
 
 	[GlobalActionTypes.SET_ERROR]: {
 		error: Error;

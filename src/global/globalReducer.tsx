@@ -14,6 +14,7 @@ const initialAuthUser: IAuthUser = {
 }
 
 const initGlobalState: IGlobalState = {
+    db: null,
     authUser: initialAuthUser,
     isAuthenticated: false,
     everLoggedIn: false,
@@ -71,6 +72,8 @@ export const initialGlobalState: IGlobalState = globalStateFromLocalStorage
 
 export const globalReducer: Reducer<IGlobalState, GlobalActions> = (state, action) => {
     const newState = reducer(state, action);
+    
+    /*
     const aTypesToStore = [
         GlobalActionTypes.AUTHENTICATE,
         GlobalActionTypes.DARK_MODE,
@@ -80,15 +83,17 @@ export const globalReducer: Reducer<IGlobalState, GlobalActions> = (state, actio
     if (aTypesToStore.includes(action.type)) {
         localStorage.setItem('GLOBAL_STATE', JSON.stringify({
             ...newState,
+            db: null,
             //isAuthenticated: false, ODAKLE JE OVO BILO (TODO)
             error: undefined
         }));
     }
+    */
     return newState;
 }
 
 const reducer: Reducer<IGlobalState, GlobalActions> = (state, action) => {
-    const str = action.type
+    const str = action.type;
     switch (action.type) {
 
         case GlobalActionTypes.SET_LOADING:
@@ -106,6 +111,18 @@ const reducer: Reducer<IGlobalState, GlobalActions> = (state, action) => {
             };
         }
 
+        case GlobalActionTypes.SET_DB: {
+            const { db } = action.payload;
+            return {
+                ...state,
+                db,
+                loading: false,
+                isAuthenticated: true,  // obrisi ovo TODO
+                everLoggedIn: true,
+                canEdit: true
+            };
+        }
+
         case GlobalActionTypes.AUTHENTICATE: {
             const { user, wsName } = action.payload;
             return {
@@ -113,7 +130,7 @@ const reducer: Reducer<IGlobalState, GlobalActions> = (state, action) => {
                 authUser: {
                     wsId: '',
                     wsName,
-                    userId: user._id!,
+                    userId: user._id!.toString(),
                     userName: user.userName!,
                     password: user.password!,
                     role: user.role,

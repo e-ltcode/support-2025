@@ -10,10 +10,10 @@ import { useCategoryContext, useCategoryDispatch } from 'categories/CategoryProv
 import { useHover } from 'common/components/useHover';
 import { ICategory } from 'categories/types'
 
-import CategoryList from "categories/components/CategoryList";
 import AddCategory from "categories/components/AddCategory";
 import EditCategory from "categories/components/EditCategory";
 import ViewCategory from "categories/components/ViewCategory";
+import QuestionList from 'categories/components/questions/QuestionList';
 
 const CategoryRow = ({ category }: { category: ICategory }) => {
     const { _id, title, level, inViewing, inEditing, inAdding, numOfQuestions, isExpanded } = category;
@@ -30,19 +30,19 @@ const CategoryRow = ({ category }: { category: ICategory }) => {
         deleteCategory(_id!);
     };
 
-    const expand = (_id: string) => {
+    const expand = (_id: IDBValidKey) => {
         //const collapse = isExpanded;
         dispatch({ type: ActionTypes.SET_EXPANDED, payload: { _id, expanding: !isExpanded } });
         // if (collapse)
         //     dispatch({ type: ActionTypes.CLEAN_SUB_TREE, payload: { _id } })
     }
 
-    const edit = (_id: string) => {
+    const edit = (_id: IDBValidKey) => {
         // Load data from server and reinitialize category
         editCategory(_id);
     }
 
-    const onSelectCategory = (_id: string) => {
+    const onSelectCategory = (_id: IDBValidKey) => {
         // Load data from server and reinitialize category
         if (canEdit)
             editCategory(_id);
@@ -51,7 +51,6 @@ const CategoryRow = ({ category }: { category: ICategory }) => {
     }
 
     const [hoverRef, hoverProps] = useHover();
-
     const Row1 =
         <div ref={hoverRef} className="d-flex justify-content-start align-items-center w-100 text-primary">
             <Button
@@ -68,7 +67,7 @@ const CategoryRow = ({ category }: { category: ICategory }) => {
                 variant='link'
                 size="sm"
                 className={`py-0 mx-0 text-decoration-none ${(inViewing || inEditing) ? 'fw-bold' : ''}`}
-                title={_id!.toString()}
+                title={_id! as string}
                 onClick={() => onSelectCategory(_id!)}
                 disabled={alreadyAdding}
             >
@@ -96,7 +95,7 @@ const CategoryRow = ({ category }: { category: ICategory }) => {
                 </Button>
             }
 
-            {canEdit && !alreadyAdding && hoverProps.isHovered &&
+            {/* {canEdit && !alreadyAdding && hoverProps.isHovered &&
                 <Button 
                     variant='link'
                     size="sm"
@@ -116,7 +115,7 @@ const CategoryRow = ({ category }: { category: ICategory }) => {
                 >
                     <FontAwesomeIcon icon={faPlus} size='lg' />
                 </Button>
-            }
+            } */}
 
             {canEdit && !alreadyAdding && hoverProps.isHovered &&
                 <Button
@@ -176,7 +175,11 @@ const CategoryRow = ({ category }: { category: ICategory }) => {
                     as="li"
                 >
                     {isExpanded &&
-                     'Question List'
+                        <>
+                            {showQuestions &&
+                                <QuestionList groupId={_id!} title={title} />
+                            }
+                        </>
                     }
 
                 </ListGroup.Item>
