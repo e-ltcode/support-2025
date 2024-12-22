@@ -1,5 +1,4 @@
 import React from 'react';
-
 import { useCategoryContext, useCategoryDispatch } from 'categories/CategoryProvider'
 import { useGlobalState } from 'global/GlobalProvider'
 
@@ -25,9 +24,9 @@ const EditQuestion = ({ inLine }: { inLine: boolean }) => {
             }
         }
         const q = await updateQuestion(object)
-        if (question!.groupId !== q.groupId) {
-            dispatch({ type: ActionTypes.CLEAN_TREE, payload: { _id: q.groupId } })
-            await reloadCategoryNode(q.groupId, q._id);
+        if (question!.parentCategory !== q.parentCategory) {
+            dispatch({ type: ActionTypes.CLEAN_TREE, payload: { _id: q.parentCategory } })
+            await reloadCategoryNode(q.parentCategory, q._id);
         }
     };
   

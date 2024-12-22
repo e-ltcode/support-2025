@@ -1,17 +1,21 @@
-import React from 'react';
-import { useEffect, useState } from 'react'
-import { Container, Row, Col, Button, Modal, Stack, DropdownButton, Dropdown } from "react-bootstrap";
+import React, { useEffect, useState } from 'react'
+import { Container, Row, Col, Button, Modal } from "react-bootstrap";
 
 import { useParams } from 'react-router-dom';
 
 import { Mode, ActionTypes } from "./types";
 
+import { useGlobalState } from "global/GlobalProvider";
 import { CategoryProvider, useCategoryContext, useCategoryDispatch } from "./CategoryProvider";
 
 import CategoryList from "categories/components/CategoryList";
 import ViewCategory from "categories/components/ViewCategory";
 import EditCategory from "categories/components/EditCategory";
-import { useGlobalContext, useGlobalState } from 'global/GlobalProvider';
+import ViewQuestion from "categories/components/questions/ViewQuestion";
+import EditQuestion from "categories/components/questions/EditQuestion";
+import AddQuestion from './components/questions/AddQuestion';
+
+import { initialQuestion } from "categories/CategoriesReducer";
 
 interface IProps {
     categoryId_questionId: string | undefined
@@ -21,12 +25,12 @@ const Providered = ({ categoryId_questionId }: IProps) => {
     const { state, reloadCategoryNode } = useCategoryContext();
     const { lastCategoryExpanded, categoryId_questionId_done } = state;
 
-    const { db, isDarkMode, authUser, isAuthenticated } = useGlobalState();
+    const { isDarkMode, authUser } = useGlobalState();
 
     const [showAddQuestion, setShowAddQuestion] = useState(false);
     const handleClose = () => setShowAddQuestion(false);
 
-    //const [newQuestion, setNewQuestion] = useState({ ...initialQuestion, wsId: authUser.wsId });
+    const [newQuestion, setNewQuestion] = useState({ ...initialQuestion, wsId: authUser.wsId });
     const [createQuestionError, setCreateQuestionError] = useState("");
 
     const dispatch = useCategoryDispatch();
@@ -38,7 +42,7 @@ const Providered = ({ categoryId_questionId }: IProps) => {
                     const sNewQuestion = localStorage.getItem('New_Question');
                     if (sNewQuestion) {
                         const q = JSON.parse(sNewQuestion);
-                        //setNewQuestion({ ...initialQuestion, categoryTitle: 'Select', ...q })
+                        setNewQuestion({ ...initialQuestion, categoryTitle: 'Select', ...q })
                         setShowAddQuestion(true);
                         localStorage.removeItem('New_Question')
                     }
@@ -56,20 +60,16 @@ const Providered = ({ categoryId_questionId }: IProps) => {
         })()
     }, [lastCategoryExpanded, reloadCategoryNode, categoryId_questionId, categoryId_questionId_done])
 
-    if (!isAuthenticated || !db) {
-        return <div>loading...........</div>
+    if (categoryId_questionId !== 'add_question') {
+        if (lastCategoryExpanded || (categoryId_questionId && categoryId_questionId !== categoryId_questionId_done))
+            return <div>loading...</div>
     }
-
-    // if (categoryId_questionId !== 'add_question') {
-    //     if (lastCategoryExpanded || (categoryId_questionId && categoryId_questionId !== categoryId_questionId_done))
-    //         return <div>loading...</div>
-    // }
 
     return (
         <Container>
             <Button variant="secondary" size="sm" type="button"
                 onClick={() => dispatch({
-                    type: ActionTypes.ADD_CATEGORY,
+                    type: ActionTypes.ADD_SUB_CATEGORY,
                     payload: {
                         parentCategory: null,
                         level: 0
@@ -82,13 +82,7 @@ const Providered = ({ categoryId_questionId }: IProps) => {
             <Row className="my-1">
                 <Col xs={12} md={7}>
                     <div>
-                        {db && <CategoryList />}
-                        {!db &&
-                            <div className="glimmer-panel">
-                                <div className="glimmer-line" />
-                                <div className="glimmer-line" />
-                                <div className="glimmer-line" />
-                            </div>}
+                        <CategoryList parentCategory={null} level={1} title="root" />
                     </div>
                 </Col>
                 <Col xs={0} md={5}>
@@ -98,6 +92,8 @@ const Providered = ({ categoryId_questionId }: IProps) => {
                         {state.mode === Mode.ViewingCategory && <ViewCategory inLine={false} />}
                         {state.mode === Mode.EditingCategory && <EditCategory inLine={false} />}
                         {/* {state.mode === FORM_MODES.ADD_QUESTION && <AddQuestion category={null} />} */}
+                        {state.mode === Mode.ViewingQuestion && <ViewQuestion inLine={false} />}
+                        {state.mode === Mode.EditingQuestion && <EditQuestion inLine={false} />}
                     </div>
                 </Col>
             </Row>
@@ -115,47 +111,18 @@ const Providered = ({ categoryId_questionId }: IProps) => {
                     Put the new Question to Database
                 </Modal.Header>
                 <Modal.Body className="py-0">
-                    {/* <AddQuestion />*/}
+                    <AddQuestion
+                        question={newQuestion}
+                        closeModal={() => setShowAddQuestion(false)}
+                        inLine={true}
+                        showCloseButton={false}
+                        setError={(msg) => setCreateQuestionError(msg)}
+                    />
                 </Modal.Body>
                 <Modal.Footer>
                     {createQuestionError}
                 </Modal.Footer>
             </Modal>
-
-            {/* <Stack direction="horizontal" gap={3}>
-                <DropdownButton
-                    id="dropdown-button-dark-example2"
-                    variant="secondary"
-                    title="Light dropdown"
-                    className="mt-2"
-                    data-bs-theme={isDarkMode?'dark':'light'}
-                >
-                    <Dropdown.Item href="#/action-1" active>
-                        Action
-                    </Dropdown.Item>
-                    <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
-                    <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
-                    <Dropdown.Divider />
-                    <Dropdown.Item href="#/action-4">Separated link</Dropdown.Item>
-                </DropdownButton>
-
-                <DropdownButton
-                    id="dropdown-button-dark-example2"
-                    variant="secondary"
-                    title="Dark dropdown"
-                    className="mt-2"
-                    data-bs-theme={isDarkMode?'dark':'light'}
-                >
-                    <Dropdown.Item href="#/action-1" active>
-                        Action {isDarkMode?'dark':'light'}
-                    </Dropdown.Item>
-                    <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
-                    <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
-                    <Dropdown.Divider />
-                    <Dropdown.Item href="#/action-4">Separated link</Dropdown.Item>
-                </DropdownButton>
-            </Stack> */}
-
         </Container>
     );
 };
@@ -174,10 +141,11 @@ const Categories = () => {
         const arr = categoryId_questionId!.split('_');
         console.assert(arr.length === 2, "expected 'categoryId_questionId'")
     }
-    const isAuthenticated = true; // = globalState;
+    const globalState = useGlobalState();
+    const { isAuthenticated } = globalState;
 
     if (!isAuthenticated)
-        return <div>loading...???</div>;
+        return <div>loading...</div>;
 
     return (
         <CategoryProvider>

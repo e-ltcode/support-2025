@@ -5,10 +5,10 @@ import { IOption } from 'common/types';
 export const Mode = {
 	UNDEFINED: undefined,
 	NULL: null,
-	AddingAnswerGroup: 'AddingAnswerGroup',
-	ViewingAnswerGroup: 'ViewingAnswerGroup',
-	EditingAnswerGroup: 'EditingAnswerGroup',
-	DeletingAnswerGroup: 'DeletingAnswerGroup',
+	AddingKind: 'AddingKind',
+	ViewingKind: 'ViewingKind',
+	EditingKind: 'EditingKind',
+	DeletingKind: 'DeletingKind',
 	//////////////////////////////////////
 	// answers
 	AddingAnswer: 'AddingAnswer',
@@ -27,11 +27,11 @@ export enum FormMode {
 export interface IAnswer extends IRecord {
 	title: string,
 	level: number,
-	parentAnswerGroup?: IDBValidKey
+	parentKind: IDBValidKey
 }
 
-export interface IAnswerGroup extends IRecord {
-	parentAnswerGroup: IDBValidKey | null,
+export interface IKind extends IRecord {
+	parentKind: IDBValidKey | null,
 	Name: string,
 	level: number,
 	answers: IAnswer[],
@@ -39,37 +39,37 @@ export interface IAnswerGroup extends IRecord {
 	expandMe?: boolean
 }
 
-export interface IAnswerGroupInfo {
+export interface IKindInfo {
 	_id: IDBValidKey,
 	level: number
 }
 
 
 export interface IParentInfo {
-	parentAnswerGroup: IDBValidKey | null,
+	parentKind: IDBValidKey | null,
 	level: number,
 	inAdding?: boolean
 }
 
-export interface IAnswerGroupsState {
+export interface IKindsState {
 	mode: string | null,
 	loading: boolean,
-	kinds: IAnswerGroup[],
-	lastAnswerGroupExpanded: string;
-	error?: string;
+	kinds: IKind[],
+	lastKindExpanded: string;
+	error?: Error;
 }
 
-export interface IAnswerGroupsContext {
-	state: IAnswerGroupsState,
-	getSubAnswerGroups: ({ parentAnswerGroup, level }: IParentInfo) => void,
-	createAnswerGroup: (kind: IAnswerGroup) => void,
-	viewAnswerGroup: (_id: IDBValidKey) => void,
-	editAnswerGroup: (_id: IDBValidKey) => void,
-	updateAnswerGroup: (kind: IAnswerGroup) => void,
-	deleteAnswerGroup: (_id: IDBValidKey) => void,
+export interface IKindsContext {
+	state: IKindsState,
+	getSubKinds: ({ parentKind, level }: IParentInfo) => void,
+	createKind: (kind: IKind) => void,
+	viewKind: (_id: IDBValidKey) => void,
+	editKind: (_id: IDBValidKey) => void,
+	updateKind: (kind: IKind) => void,
+	deleteKind: (_id: IDBValidKey) => void,
 	//////////////
 	// answers
-	getAnswerGroupAnswers: ({parentAnswerGroup, level, inAdding}: IParentInfo) => void,
+	getKindAnswers: ({parentKind, level, inAdding}: IParentInfo) => void,
 	createAnswer: (answer: IAnswer) => void,
 	viewAnswer: (_id: IDBValidKey) => void,
 	editAnswer: (_id: IDBValidKey) => void,
@@ -77,11 +77,11 @@ export interface IAnswerGroupsContext {
 	deleteAnswer: (_id: IDBValidKey) => void
 }
 
-export interface IAnswerGroupFormProps {
+export interface IKindFormProps {
 	inLine: boolean;
-	kind: IAnswerGroup;
+	kind: IKind;
 	mode: FormMode;
-	submitForm: (kind: IAnswerGroup) => void,
+	submitForm: (kind: IKind) => void,
 	children: string
 }
 
@@ -95,18 +95,18 @@ export interface IAnswerFormProps {
 
 export enum ActionTypes {
 	SET_LOADING = 'SET_LOADING',
-	SET_SUB_ANSWERGROUPS = 'SET_SUB_ANSWERGROUPS',
+	SET_SUB_KINDS = 'SET_SUB_KINDS',
 	CLEAN_SUB_TREE = 'CLEAN_SUB_TREE',
 	SET_ERROR = 'SET_ERROR',
-	ADD_SUB_ANSWERGROUP = 'ADD_SUB_ANSWERGROUP',
-	SET_ANSWERGROUP = 'SET_ANSWERGROUP',
-	SET_ADDED_ANSWERGROUP = 'SET_ADDED_ANSWERGROUP',
-	VIEW_ANSWERGROUP = 'VIEW_ANSWERGROUP',
-	EDIT_ANSWERGROUP = 'EDIT_ANSWERGROUP',
+	ADD_SUB_KIND = 'ADD_SUB_KIND',
+	SET_KIND = 'SET_KIND',
+	SET_ADDED_KIND = 'SET_ADDED_KIND',
+	VIEW_KIND = 'VIEW_KIND',
+	EDIT_KIND = 'EDIT_KIND',
 	DELETE = 'DELETE',
 
-	CLOSE_ANSWERGROUP_FORM = 'CLOSE_ANSWERGROUP_FORM',
-	CANCEL_ANSWERGROUP_FORM = 'CANCEL_ANSWERGROUP_FORM',
+	CLOSE_KIND_FORM = 'CLOSE_KIND_FORM',
+	CANCEL_KIND_FORM = 'CANCEL_KIND_FORM',
 
 	// answers
 	ADD_ANSWER = 'ADD_ANSWER',
@@ -121,29 +121,29 @@ export enum ActionTypes {
 }
 
 
-export type AnswerGroupsPayload = {
+export type KindsPayload = {
 	[ActionTypes.SET_LOADING]: undefined;
 
-	[ActionTypes.SET_SUB_ANSWERGROUPS]: {
-		subAnswerGroups: IAnswerGroup[];
+	[ActionTypes.SET_SUB_KINDS]: {
+		subKinds: IKind[];
 	};
 	
-	[ActionTypes.ADD_SUB_ANSWERGROUP]: IParentInfo;
+	[ActionTypes.ADD_SUB_KIND]: IParentInfo;
 
-	[ActionTypes.VIEW_ANSWERGROUP]: {
-		kind: IAnswerGroup;
+	[ActionTypes.VIEW_KIND]: {
+		kind: IKind;
 	};
 
-	[ActionTypes.EDIT_ANSWERGROUP]: {
-		kind: IAnswerGroup;
+	[ActionTypes.EDIT_KIND]: {
+		kind: IKind;
 	};
 
-	[ActionTypes.SET_ANSWERGROUP]: {
-		kind: IAnswerGroup;
+	[ActionTypes.SET_KIND]: {
+		kind: IKind;
 	};
 
-	[ActionTypes.SET_ADDED_ANSWERGROUP]: {
-		kind: IAnswerGroup;
+	[ActionTypes.SET_ADDED_KIND]: {
+		kind: IKind;
 	};
 
 	[ActionTypes.DELETE]: {
@@ -151,22 +151,22 @@ export type AnswerGroupsPayload = {
 	};
 
 	[ActionTypes.CLEAN_SUB_TREE]: {
-		kind: IAnswerGroup;
+		kind: IKind;
 	};
 
-	[ActionTypes.CLOSE_ANSWERGROUP_FORM]: undefined;
+	[ActionTypes.CLOSE_KIND_FORM]: undefined;
 
-	[ActionTypes.CANCEL_ANSWERGROUP_FORM]: undefined;
+	[ActionTypes.CANCEL_KIND_FORM]: undefined;
 
 	[ActionTypes.SET_ERROR]: {
-		error: string;
+		error: Error;
 	};
 
 	/////////////
 	// answers
 
 	[ActionTypes.ADD_ANSWER]: {
-		kindInfo: IAnswerGroupInfo;
+		kindInfo: IKindInfo;
 	}
 
 	[ActionTypes.VIEW_ANSWER]: {
@@ -195,6 +195,6 @@ export type AnswerGroupsPayload = {
 
 };
 
-export type AnswerGroupsActions =	
-	ActionMap<AnswerGroupsPayload>[keyof ActionMap<AnswerGroupsPayload>];
+export type KindsActions =	
+	ActionMap<KindsPayload>[keyof ActionMap<KindsPayload>];
 

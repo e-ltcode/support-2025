@@ -18,6 +18,7 @@ const AddCategory = ({ category, inLine } : { category: ICategory, inLine: boole
         const object: ICategory = {
             ...categoryObject,
             _id: undefined,
+            wsId, 
             created: {
                 date: new Date(),
                 by: {

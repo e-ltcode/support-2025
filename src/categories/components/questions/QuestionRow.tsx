@@ -1,5 +1,4 @@
 import React from 'react';
-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faRemove, faQuestion, faPlus, faReply } from '@fortawesome/free-solid-svg-icons'
 
@@ -16,7 +15,7 @@ import EditQuestion from "categories/components/questions/EditQuestion";
 import ViewQuestion from "categories/components/questions/ViewQuestion";
 
 const QuestionRow = ({ question, categoryInAdding }: { question: IQuestion, categoryInAdding: boolean | undefined }) => {
-    const { _id, groupId, title, inViewing, inEditing, inAdding, numOfAnswers } = question;
+    const { _id, parentCategory, level, title, inViewing, inEditing, inAdding, numOfAnswers } = question;
 
     const { canEdit, isDarkMode, variant, bg } = useGlobalState();
 
@@ -97,7 +96,7 @@ const QuestionRow = ({ question, categoryInAdding }: { question: IQuestion, cate
                     title="Add Question"
                     onClick={() => {
                         console.log('click q')
-                        const categoryInfo: ICategoryInfo = { _id: groupId, level: 0 }
+                        const categoryInfo: ICategoryInfo = { _id: parentCategory, level }
                         dispatch({ type: ActionTypes.ADD_QUESTION, payload: { categoryInfo } })
                     }}
                 >

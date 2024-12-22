@@ -1,9 +1,6 @@
-
 import React, { useRef, useState, useEffect } from 'react';
 
 // import isMobile from 'ismobilejs'
-// import { isMobile } from 'react-device-detect'
-
 const isMob = false; //isMobile(navigator.userAgent).any;
 
 interface IHoverProps {

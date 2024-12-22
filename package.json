@@ -20,6 +20,7 @@
     "autosuggest-highlight": "^3.3.4",
     "bootstrap": "^5.3.3",
     "formik": "^2.4.6",
+    "idb": "^8.0.1",
     "react": "^19",
     "react-autosuggest": "^10.1.0",
     "react-bootstrap": "^2.10.6",

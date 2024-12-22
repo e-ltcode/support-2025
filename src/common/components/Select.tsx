@@ -1,6 +1,6 @@
-import React from "react";
+import React from 'react';
 import Form from 'react-bootstrap/Form';
-import { IOption, OptionValue } from 'global/types';
+import { IOption, OptionValue } from "common/types";
 
 type Props<T extends OptionValue> = {
     options: IOption<T>[];

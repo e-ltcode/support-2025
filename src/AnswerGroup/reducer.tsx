@@ -1,10 +1,11 @@
+import React from 'react';
 import { Mode, ActionTypes, IAnswerGroupsState, IAnswerGroup, IAnswer, AnswerGroupsActions } from "AnswerGroup/types";
 
 export const initialAnswer: IAnswer = {
   // temp _id for inAdding, to server as list key
   // it will be removed on submitForm
   // real _id will be given by the MongoDB 
-  //wsId: "", 
+  wsId: "", 
   parentAnswerGroup: undefined,
   _id: undefined,
   title: '',
@@ -15,6 +16,7 @@ export const initialAnswerGroup: IAnswerGroup = {
   // temp _id for inAdding, to server as list key
   // it will be removed on submitForm
   // real _id will be given by the MongoDB 
+  wsId: '',
   _id: 0,
   Name: '',
   level: 0,
@@ -73,7 +75,7 @@ export const reducer = (state: IAnswerGroupsState, action: AnswerGroupsActions) 
       const { parentAnswerGroup, _id } = answer;
       const inAdding = state.mode === Mode.AddingAnswer;
 
-      // for inAdding, _id is Types.ObjectId('000000000000000000000000')
+      // for inAdding, _id is IDBValidKey('000000000000000000000000')
       // thats why we look for q.inAdding instead of q._id === _id
       const kinds = state.kinds.map(c => c._id === parentAnswerGroup
         ? {

@@ -1,6 +1,4 @@
-import React from 'react';
-
-import { useEffect, useReducer } from "react";
+import React, { useEffect, useReducer } from "react";
 import { ListGroup } from "react-bootstrap";
 import CatRow from "categories/components/SelectCategory/CatRow";
 import { CatsActionTypes, ICatInfo, ICategory } from "categories/types";
@@ -9,15 +7,14 @@ import { CatsReducer, initialState } from "./CatsReducer";
 
 const CatList = ({ parentCategory, level, setParentCategory }: ICatInfo) => {
     const [state, dispatch] = useReducer(CatsReducer, initialState);
-    // const { getCats } = useCategoryContext();
-    // useEffect(() => {
-    //     (async () => {
-    //         // { parentCategory, level }
-    //         const subCats = await getCats();  
-    //         console.log('getSubCats', parentCategory, level, subCats);
-    //         dispatch({ type: CatsActionTypes.SET_SUB_CATS, payload: { subCats } });
-    //     })()
-    // }, [getCats, parentCategory, level]);
+    const { getSubCats } = useCategoryContext();
+    useEffect(() => {
+        (async () => {
+            const subCats = await getSubCats({ parentCategory, level });
+            console.log('getSubCats', parentCategory, level, subCats);
+            dispatch({ type: CatsActionTypes.SET_SUB_CATS, payload: { subCats } });
+        })()
+    }, [getSubCats, parentCategory, level]);
 
     const mySubCategories = state.cats.filter(c => c.parentCategory === parentCategory);
 

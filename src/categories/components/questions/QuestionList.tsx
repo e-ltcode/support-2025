@@ -5,42 +5,42 @@ import { IQuestion, IParentInfo } from "categories/types";
 import { useCategoryContext } from "categories/CategoryProvider";
 import { useGlobalState } from "global/GlobalProvider";
 
-const QuestionList = ({ title, groupId }: IParentInfo) => {
+const QuestionList = ({ title, parentCategory, level }: IParentInfo) => {
     const { canEdit } = useGlobalState();
 
-    const { state, loadCategoryQuestions, editQuestion, viewQuestion } = useCategoryContext();
-    // const { parentCategories } = state;
-    // const { categoryId, questionId } = parentCategories!;
+    const { state, getCategoryQuestions, editQuestion, viewQuestion } = useCategoryContext();
+    const { parentCategories } = state;
+    const { categoryId, questionId } = parentCategories!;
 
     useEffect(() => {
-         //console.log('getCategoryQuestions', title)
-         loadCategoryQuestions({ groupId });
-    }, [groupId]);
+        console.log('getCategoryQuestions', title, level)
+        getCategoryQuestions({ parentCategory, level });
+    }, [level, getCategoryQuestions, parentCategory, title]);
 
-    // useEffect(() => {
-    //     if (groupId != null) {
-    //         if (groupId === groupId!.toString() && questionId) {
-    //             setTimeout(() => {
-    //                 if (canEdit)
-    //                     editQuestion(new Types.ObjectId(questionId))
-    //                 else
-    //                     viewQuestion(new Types.ObjectId(questionId))
-    //             }, 3000)
-    //         }
-    //     }
-    // }, [viewQuestion, groupId, categoryId, questionId]);
+    useEffect(() => {
+        if (categoryId != null) {
+            if (categoryId === parentCategory!.toString() && questionId) {
+                setTimeout(() => {
+                    if (canEdit)
+                        editQuestion(questionId)
+                    else
+                        viewQuestion(questionId)
+                }, 3000)
+            }
+        }
+    }, [viewQuestion, parentCategory, categoryId, questionId]);
 
 
     // console.log('level, parentCategory:', level, parentCategory)
-    const category = state.categories.find(c => c._id === groupId);
+    const category = state.categories.find(c => c._id === parentCategory);
     const { questions } = category!;
 
-    console.log('QuestionList render'); 
+    // console.log('QuestionList render', questions, level)
 
     return (
         <div className={`ms-0`}>
             <>
-                <ListGroup as="ul" variant='dark' className={'mb-0 ms-2'}>
+                <ListGroup as="ul" variant='dark' className={level > 1 ? 'mb-0 ms-2' : 'mb-0'}>
                     {questions.map((question: IQuestion) =>
                         <QuestionRow
                             question={question}
@@ -59,4 +59,3 @@ const QuestionList = ({ title, groupId }: IParentInfo) => {
 };
 
 export default QuestionList;
-

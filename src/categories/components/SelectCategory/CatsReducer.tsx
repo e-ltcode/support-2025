@@ -1,4 +1,4 @@
-import React, { Reducer } from 'react';
+import React, { Reducer } from 'react'
 import { CatsActionTypes, ICategory, ICatsState, CatsActions } from "categories/types";
 
 export const initialState: ICatsState = {

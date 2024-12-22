@@ -1,6 +1,6 @@
-
-import { IAnswer } from 'AnswerGroup/types';
+import React from 'react';
 import { ActionMap, IDateAndBy, IRecord } from 'global/types';
+import { IAnswer } from 'kinds/types';
 
 export const Mode = {
 	UNDEFINED: undefined,
@@ -24,31 +24,30 @@ export enum FormMode {
 }
 
 export interface IQuestionAnswer {
-	categoryId: number;
-	questionId: number;
-	_id: number,
+	categoryId: IDBValidKey;
+	questionId: IDBValidKey;
+	_id: IDBValidKey,
 	answer: {
-		_id: string,
+		_id: IDBValidKey,
 		title: string
 	},
 	user: {
-		_id?: string,
+		_id?: IDBValidKey,
 		createdBy: string
 	}
 	assigned: IDateAndBy
 }
 
 export interface IFromUserAssignedAnswer {
-	_id: string,
+	_id: IDBValidKey,
 	createdBy: string
 }
 
 export interface IQuestion extends IRecord {
 	title: string,
-	//level: number,
-	//parentCategory: string | undefined,
-	categoryTitle?: string,
-	groupId: IDBValidKey,
+	level: number,
+	parentCategory: IDBValidKey,
+	categoryTitle: string,
 	questionAnswers: IQuestionAnswer[],
 	numOfAnswers?: number,
 	source: number,
@@ -57,12 +56,13 @@ export interface IQuestion extends IRecord {
 }
 
 export interface ICategory extends IRecord {
+	id: string,
+	parentCategory: string | null,
 	title: string,
 	level: number,
 	questions: IQuestion[],
 	numOfQuestions?: number,
-	isExpanded?: boolean,
-	parentCategory?: IDBValidKey
+	isExpanded?: boolean
 }
 
 export interface ICategoryInfo {
@@ -71,10 +71,17 @@ export interface ICategoryInfo {
 }
 
 
-export interface 	IParentInfo {
+export interface IParentInfo {
+	parentCategory: string | null,
+	level: number,
 	title?: string, // to easier follow getting the list of sub-categories
-	inAdding?: boolean,
-	groupId?: IDBValidKey
+	inAdding?: boolean
+}
+
+export interface ICatInfo {
+	parentCategory: string | null,
+	level: number,
+	setParentCategory : (category: ICategory) => void;
 }
 
 export interface ICategoriesState {
@@ -84,14 +91,23 @@ export interface ICategoriesState {
 	currentCategoryExpanded: string,
 	lastCategoryExpanded: string | null;
 	categoryId_questionId_done: string | null;
-	error?: string; //AxiosError;
+	parentCategories: IParentCategories;
+	error?: Error;
+}
+
+export interface ICatsState {
+	loading: boolean,
+	parentCategory: IDBValidKey | null,
+	title: string,
+	cats: ICategory[], // drop down categories
+	error?: Error;
 }
 
 export interface ICategoriesContext {
 	state: ICategoriesState,
 	reloadCategoryNode: (categoryId: string, questionId: string | null) => Promise<any>;
-	getCategories: ({ title }: IParentInfo) => void,
-	//getCats: () => Promise<any>,
+	getSubCategories: ({ parentCategory, level }: IParentInfo) => void,
+	getSubCats: ({ parentCategory, level }: IParentInfo) => Promise<any>,
 	createCategory: (category: ICategory) => void,
 	viewCategory: (_id: IDBValidKey) => void,
 	editCategory: (_id: IDBValidKey) => void,
@@ -99,17 +115,14 @@ export interface ICategoriesContext {
 	deleteCategory: (_id: IDBValidKey) => void,
 	//////////////
 	// questions
-	//getCategoryQuestions: ({ parentCategory, level, inAdding }: IParentInfo) => void,
-	loadCategoryQuestions: ({ groupId }: IParentInfo) => void,
+	getCategoryQuestions: ({ parentCategory, level, inAdding }: IParentInfo) => void,
 	createQuestion: (question: IQuestion, fromModal: boolean) => Promise<any>;
-
 	viewQuestion: (_id: IDBValidKey) => void;
 	editQuestion: (_id: IDBValidKey) => void;
 	updateQuestion: (question: IQuestion) => Promise<any>;
-	assignQuestionAnswer?: (questionId: IDBValidKey, answerId: IDBValidKey, assigned: IDateAndBy) => Promise<any>;
-	unAssignQuestionAnswer?: (questionId: IDBValidKey, answerId: IDBValidKey) => Promise<any>;
+	assignQuestionAnswer: (questionId: IDBValidKey, answerId: IDBValidKey, assigned: IDateAndBy) => Promise<any>;
+	unAssignQuestionAnswer: (questionId: IDBValidKey, answerId: IDBValidKey) => Promise<any>;
 	createAnswer: (answer: IAnswer) => Promise<any>;
-
 	deleteQuestion: (_id: IDBValidKey) => void
 }
 
@@ -130,17 +143,21 @@ export interface IQuestionFormProps {
 	children: string
 }
 
+export interface IParentCategories {
+	categoryId: string | null;
+	questionId: string | null;
+	categoryIds: string[] | null;
+}
 
 
 export enum ActionTypes {
 	SET_LOADING = 'SET_LOADING',
-	SET_CATEGORIES = 'SET_CATEGORIES',
+	SET_SUB_CATEGORIES = 'SET_SUB_CATEGORIES',
 	CLEAN_SUB_TREE = 'CLEAN_SUB_TREE',
 	CLEAN_TREE = 'CLEAN_TREE',
 	SET_ERROR = 'SET_ERROR',
-	ADD_CATEGORY = 'ADD_CATEGORY',
+	ADD_SUB_CATEGORY = 'ADD_SUB_CATEGORY',
 	SET_CATEGORY = 'SET_CATEGORY',
-	SET_CATEGORY_QUESTIONS = 'SET_CATEGORY_QUESTIONS',
 	SET_ADDED_CATEGORY = 'SET_ADDED_CATEGORY',
 	VIEW_CATEGORY = 'VIEW_CATEGORY',
 	EDIT_CATEGORY = 'EDIT_CATEGORY',
@@ -168,11 +185,15 @@ export enum ActionTypes {
 export type CategoriesPayload = {
 	[ActionTypes.SET_LOADING]: undefined;
 
-	[ActionTypes.SET_CATEGORIES]: {
-		categories: ICategory[];
+	[ActionTypes.SET_PARENT_CATEGORIES]: {
+		parentCategories: IParentCategories
 	};
 
-	[ActionTypes.ADD_CATEGORY]: IParentInfo;
+	[ActionTypes.SET_SUB_CATEGORIES]: {
+		subCategories: ICategory[];
+	};
+
+	[ActionTypes.ADD_SUB_CATEGORY]: IParentInfo;
 
 	[ActionTypes.VIEW_CATEGORY]: {
 		category: ICategory;
@@ -186,18 +207,12 @@ export type CategoriesPayload = {
 		category: ICategory;
 	};
 
-	[ActionTypes.SET_CATEGORY_QUESTIONS]: {
-		groupId: IDBValidKey,
-		questions: IQuestion[]
-	};
-
-
 	[ActionTypes.SET_ADDED_CATEGORY]: {
 		category: ICategory;
 	};
 
 	[ActionTypes.DELETE]: {
-		_id: number;
+		_id: IDBValidKey;
 	};
 
 	[ActionTypes.CLEAN_SUB_TREE]: {
@@ -211,12 +226,12 @@ export type CategoriesPayload = {
 	[ActionTypes.CANCEL_CATEGORY_FORM]: undefined;
 
 	[ActionTypes.SET_EXPANDED]: {
-		_id: number;
+		_id: IDBValidKey;
 		expanding: boolean;
 	}
 
 	[ActionTypes.SET_ERROR]: {
-		error: string; //AxiosError;
+		error: Error;
 	};
 
 	/////////////
@@ -233,7 +248,6 @@ export type CategoriesPayload = {
 	[ActionTypes.EDIT_QUESTION]: {
 		question: IQuestion;
 	};
-
 
 	[ActionTypes.SET_QUESTION]: {
 		question: IQuestion
@@ -282,12 +296,12 @@ export type CatsPayload = {
 	};
 
 	[CatsActionTypes.SET_EXPANDED]: {
-		_id: number;
+		_id: IDBValidKey;
 		expanding: boolean;
 	}
 
 	[CatsActionTypes.SET_ERROR]: {
-		error: ''; //AxiosError;
+		error: Error;
 	};
 
 	[CatsActionTypes.SET_PARENT_CATEGORY]: {
@@ -296,19 +310,5 @@ export type CatsPayload = {
 
 };
 
-
-export interface ICatInfo {
-	parentCategory: IDBValidKey | null,
-	level: number,
-	setParentCategory : (category: ICategory) => void;
-}
-
-export interface ICatsState {
-	loading: boolean,
-	parentCategory: IDBValidKey | null,
-	title: string,
-	cats: ICategory[], // drop down categories
-	error?: string;
-}
 export type CatsActions =
 	ActionMap<CatsPayload>[keyof ActionMap<CatsPayload>];

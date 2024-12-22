@@ -1,22 +1,17 @@
 // Define the Global State
-export type OptionValue = string | number;
-
-export type IOption<T extends OptionValue> = {
-	value: T;
-	label: string;
-	color?: string;
-	checked?: boolean;
-};
+import { IOption } from 'common/types';
+import { IDBPDatabase } from 'idb';
 
 export interface IDateAndBy {
 	date: Date,
 	by: {
-		userId: string,
+		userId: IDBValidKey,
 		userName?: string
 	}
 }
 
 export interface IRecord {
+	wsId: string,
 	_id?: IDBValidKey,
 	created?: IDateAndBy,
 	createdBy?: string,
@@ -27,16 +22,6 @@ export interface IRecord {
 	inAdding?: boolean
 }
 
-export interface IUser extends IRecord {
-	userName: string,
-	password?: string,
-	email: string,
-	role: ROLES,
-	color: string,
-	level: number,
-	parentGroup: string | null,  // null is allowed because of registerUser, and will be set at Server
-	confirmed: boolean
-}
 
 export interface IAuthUser {
 	wsId: string,
@@ -61,6 +46,7 @@ export enum ROLES {
 
 export interface IGlobalState {
 	isAuthenticated: boolean | null;
+	dbp: IDBPDatabase | null;
 	everLoggedIn: boolean;
 	authUser: IAuthUser;
 	canEdit: boolean,
@@ -75,47 +61,54 @@ export interface IGlobalState {
 
 export interface IGlobalContext {
 	globalState: IGlobalState;
-	openDB: () => Promise<any>;
+	registerUser: (loginUser: ILoginUser) => Promise<any>;
 	signInUser: (loginUser: ILoginUser) => Promise<any>;
+	OpenDB: () => Promise<any>;
+	getKindOptions: () => void;
 	health: () => void;
-}
-
-
-export interface ILoginUser {
-	wsName: string,
-	who?: string,
-	userName: string;
-	email?: string;
-	password: string;
-	date?: Date;
-}
-
-export interface IGlobalState {
-	db: IDBDatabase | null;
-	isAuthenticated: boolean | null;
-	everLoggedIn: boolean;
-	authUser: IAuthUser;
-	canEdit: boolean,
-	isOwner: boolean,
-	isDarkMode: boolean;
-	variant: string,
-	bg: string,
-	loading: boolean;
-	error?: Error;
-	kindOptions: IOption<string>[],
 }
 
 export enum GlobalActionTypes {
 	SET_LOADING = 'SET_LOADING',
 	AUTHENTICATE = "AUTHENTICATE",
 	UN_AUTHENTICATE = "UN_AUTHENTICATE",
-	SET_DB = "SET_DB",
+	SET_DBP = "SET_DBP",
 	SET_ERROR = 'SET_ERROR',
 	DARK_MODE = "DARK_MODE",
 	LIGHT_MODE = "LIGHT_MODE",
 	SET_KIND_OPTIONS = 'SET_KIND_OPTIONS',
 	SET_REGISTRATION_CONFIRMED = 'SET_REGISTRATION_CONFIRMED'
 }
+
+export interface ILoginUser {
+	// wsId: string,
+	// wsName: string,
+	// who?: string,
+	// userId?: string,
+	// userName: string;
+	// email?: string;
+	// password: string;
+	// date?: Date;
+	wsId: string,
+	wsName: string, 
+	who?: string,
+	userId?: string,
+	userName: string,
+	password: string,
+	email: string,
+	color?: string,
+	level?: number,
+	role?: ROLES,
+	confirmed?: boolean
+}
+
+export interface IJoinToWorkspace {
+	invitationId: string,
+	userName: string;
+	password: string;
+	date?: Date;
+}
+
 
 export type ActionMap<M extends Record<string, any>> = {
 	[Key in keyof M]: M[Key] extends undefined
@@ -139,8 +132,8 @@ export type GlobalPayload = {
 
 	[GlobalActionTypes.UN_AUTHENTICATE]: undefined;
 
-	[GlobalActionTypes.SET_DB]: {
-		db: IDBDatabase
+	[GlobalActionTypes.SET_DBP]: {
+		dbp: IDBPDatabase
 	};
 
 	[GlobalActionTypes.SET_ERROR]: {
@@ -158,39 +151,16 @@ export type GlobalPayload = {
 	[GlobalActionTypes.SET_REGISTRATION_CONFIRMED]: undefined
 };
 
-
-
-export type ICreatedModifiedProps = {
-	created?: IDateAndBy,
-	createdBy?: string,
-	modified?: IDateAndBy,
-	modifiedBy?: string
-	classes?: string
+export interface IUser extends IRecord {
+	userId?: string,
+	userName: string,
+	password?: string,
+	email: string,
+	color: string,
+	level: number,
+	parentGroup: IDBValidKey | null,  // null is allowed because of registerUser, and will be set at Server
+	role: ROLES,
+	confirmed: boolean
 }
-
-
-export const FORM_MODES = {
-	UNDEFINED: undefined,
-	NULL: null,
-	ADD: 'ADD',
-	EDIT: 'EDIT',
-	DELETE: 'DELETE'
-}
-
-export enum FormMode {
-	viewing,
-	adding,
-	editing
-}
-
-export interface IQuestionData {
-	title: string
-}
-
-export interface IQuestionGroupData {
-	title: string,
-	questions: IQuestionData[],
-}
-
 
 export type GlobalActions = ActionMap<GlobalPayload>[keyof ActionMap<GlobalPayload>];

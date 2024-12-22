@@ -1,3 +1,4 @@
+
 import { Reducer } from 'react'
 import { IGlobalState, GlobalActionTypes, GlobalActions, ROLES, IAuthUser } from "./types";
 
@@ -10,11 +11,11 @@ const initialAuthUser: IAuthUser = {
     email: '',
     color: 'blue',
     role: ROLES.VIEWER,
-    registrationConfirmed: false
+    registrationConfirmed: false,
 }
 
 const initGlobalState: IGlobalState = {
-    db: null,
+    dbp: null,
     authUser: initialAuthUser,
     isAuthenticated: false,
     everLoggedIn: false,
@@ -42,7 +43,8 @@ const hasMissingProps = (): boolean => {
             Object.keys(initGlobalState.authUser).forEach((prop: string) => {
                 if (!keys.includes(prop)) {
                     b = true;
-                    console.log('missing prop:', prop, ' try with SignOut')
+                    //console.log('missing prop:', prop, ' try with SignOut')
+                    alert('missing prop: ' + prop + ' try with SignOut')
                 }
             })
         }
@@ -60,7 +62,7 @@ if ('localStorage' in window) {
         }
         else {
             const { authUser } = globalStateFromLocalStorage!;
-            authUser.userId = ''; //new Types.ObjectId(authUser.userId);
+            authUser.userId = authUser.userId;
             console.log('===>>>globalStateFromLocalStorage', globalStateFromLocalStorage );
         }
     }
@@ -72,8 +74,6 @@ export const initialGlobalState: IGlobalState = globalStateFromLocalStorage
 
 export const globalReducer: Reducer<IGlobalState, GlobalActions> = (state, action) => {
     const newState = reducer(state, action);
-    
-    /*
     const aTypesToStore = [
         GlobalActionTypes.AUTHENTICATE,
         GlobalActionTypes.DARK_MODE,
@@ -83,17 +83,15 @@ export const globalReducer: Reducer<IGlobalState, GlobalActions> = (state, actio
     if (aTypesToStore.includes(action.type)) {
         localStorage.setItem('GLOBAL_STATE', JSON.stringify({
             ...newState,
-            db: null,
-            //isAuthenticated: false, ODAKLE JE OVO BILO (TODO)
+            isAuthenticated: false,
             error: undefined
         }));
     }
-    */
     return newState;
 }
 
 const reducer: Reducer<IGlobalState, GlobalActions> = (state, action) => {
-    const str = action.type;
+    const str = action.type
     switch (action.type) {
 
         case GlobalActionTypes.SET_LOADING:
@@ -111,33 +109,22 @@ const reducer: Reducer<IGlobalState, GlobalActions> = (state, action) => {
             };
         }
 
-        case GlobalActionTypes.SET_DB: {
-            const { db } = action.payload;
-            return {
-                ...state,
-                db,
-                loading: false,
-                isAuthenticated: true,  // obrisi ovo TODO
-                everLoggedIn: true,
-                canEdit: true
-            };
-        }
-
         case GlobalActionTypes.AUTHENTICATE: {
             const { user, wsName } = action.payload;
             return {
                 ...state,
                 authUser: {
-                    wsId: '',
+                    wsId: user.wsId,
                     wsName,
-                    userId: user._id!.toString(),
+                    userId: '', //user._id!,
                     userName: user.userName!,
                     password: user.password!,
                     role: user.role,
                     email: user.email,
                     color: 'blue',
                     registrationConfirmed: user.confirmed,
-                    registered: user.created!.date
+                    everLoggedIn: true,
+                    registered: user.created ? user.created.date: new Date()
                     //visited: user.visited!.date
                 },
                 canEdit: user.role !== ROLES.VIEWER,
@@ -145,6 +132,18 @@ const reducer: Reducer<IGlobalState, GlobalActions> = (state, action) => {
                 isAuthenticated: true,
                 everLoggedIn: true,
                 error: undefined
+            };
+        }
+
+        case GlobalActionTypes.SET_DBP: {
+            const { dbp } = action.payload;
+            return {
+                ...state,
+                dbp,
+                loading: false,
+                isAuthenticated: true,  // obrisi ovo TODO
+                everLoggedIn: true,
+                canEdit: true
             };
         }
 

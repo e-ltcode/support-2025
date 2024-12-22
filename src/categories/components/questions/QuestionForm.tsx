@@ -55,7 +55,7 @@ const QuestionForm = ({ mode, question, submitForm, children, showCloseButton, c
     initialValues: question,
     validationSchema: Yup.object().shape({
       title: Yup.string().required("Required"),
-      groupId: Yup.string().required("Required").notOneOf(['000000000000000000000000'])
+      parentCategory: Yup.string().required("Required").notOneOf(['000000000000000000000000'])
     }),
     onSubmit: (values: IQuestion) => {
       //alert(JSON.stringify(values, null, 2));
@@ -69,7 +69,7 @@ const QuestionForm = ({ mode, question, submitForm, children, showCloseButton, c
   const isDisabled = mode === FormMode.viewing;
 
   const setParentCategory = (cat: ICategory) => {
-    formik.setFieldValue('groupId', cat._id!);
+    formik.setFieldValue('parentCategory', cat._id!);
     formik.setFieldValue('categoryTitle', cat.title);
   }
 
@@ -79,41 +79,40 @@ const QuestionForm = ({ mode, question, submitForm, children, showCloseButton, c
       <Form onSubmit={formik.handleSubmit}>
 
         <Form.Label>Category</Form.Label>
-        <Form.Group controlId="groupId" className="category-select form-select-sm">
+        <Form.Group controlId="parentCategory" className="category-select form-select-sm">
           <Dropdown>
             <Dropdown.Toggle variant="light" id="dropdown-basic" className="px-2 py-1 text-primary" disabled={isDisabled}>
               {formik.values.categoryTitle}
             </Dropdown.Toggle>
             <Dropdown.Menu className="p-0">
               <Dropdown.Item className="p-0 m-0 rounded-3">
-                {/* <CatList
-                  groupId={null}
+                <CatList
+                  parentCategory={null}
                   level={1}
                   setParentCategory={setParentCategory}
-                /> */}
-                Cat List
+                />
               </Dropdown.Item>
             </Dropdown.Menu>
           </Dropdown>
 
           <Form.Control
             as="input"
-            name="groupId"
+            name="parentCategory"
             onChange={formik.handleChange}
             //onBlur={formik.handleBlur}
             // onBlur={(e: React.FocusEvent<HTMLTextAreaElement>): void => {
             //   if (isEdit && formik.initialValues.title !== formik.values.title)
             //     formik.submitForm();
             // }}
-            value={formik.values.groupId.toString()}
+            value={formik.values.parentCategory.toString()}
             placeholder='Category'
             className="text-primary w-100"
             disabled={isDisabled}
             hidden={true}
           />
           <Form.Text className="text-danger">
-            {formik.touched.groupId && formik.errors.groupId ? (
-              <div className="text-danger">{formik.errors.groupId ? 'required' : ''}</div>
+            {formik.touched.parentCategory && formik.errors.parentCategory ? (
+              <div className="text-danger">{formik.errors.parentCategory ? 'required' : ''}</div>
             ) : null}
           </Form.Text>
         </Form.Group>
@@ -189,6 +188,12 @@ const QuestionForm = ({ mode, question, submitForm, children, showCloseButton, c
 
         {(viewing || editing) &&
           <>
+            {/* <QuestionAnswers
+              questionId={_id!}
+              questionTitle={title}
+              questionAnswers={questionAnswers}
+              isDisabled={isDisabled}
+            /> */}
             Question Answers
 
             <CreatedModifiedForm

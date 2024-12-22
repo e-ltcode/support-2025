@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faRemove, faCaretRight, faCaretDown, faPlus, faQuestion } from '@fortawesome/free-solid-svg-icons'
@@ -10,10 +11,11 @@ import { useCategoryContext, useCategoryDispatch } from 'categories/CategoryProv
 import { useHover } from 'common/components/useHover';
 import { ICategory } from 'categories/types'
 
+import CategoryList from "categories/components/CategoryList";
 import AddCategory from "categories/components/AddCategory";
 import EditCategory from "categories/components/EditCategory";
 import ViewCategory from "categories/components/ViewCategory";
-import QuestionList from 'categories/components/questions/QuestionList';
+import QuestionList from "categories/components/questions/QuestionList";
 
 const CategoryRow = ({ category }: { category: ICategory }) => {
     const { _id, title, level, inViewing, inEditing, inAdding, numOfQuestions, isExpanded } = category;
@@ -51,6 +53,7 @@ const CategoryRow = ({ category }: { category: ICategory }) => {
     }
 
     const [hoverRef, hoverProps] = useHover();
+
     const Row1 =
         <div ref={hoverRef} className="d-flex justify-content-start align-items-center w-100 text-primary">
             <Button
@@ -67,7 +70,7 @@ const CategoryRow = ({ category }: { category: ICategory }) => {
                 variant='link'
                 size="sm"
                 className={`py-0 mx-0 text-decoration-none ${(inViewing || inEditing) ? 'fw-bold' : ''}`}
-                title={_id! as string}
+                title={_id!.toString()}
                 onClick={() => onSelectCategory(_id!)}
                 disabled={alreadyAdding}
             >
@@ -95,7 +98,7 @@ const CategoryRow = ({ category }: { category: ICategory }) => {
                 </Button>
             }
 
-            {/* {canEdit && !alreadyAdding && hoverProps.isHovered &&
+            {canEdit && !alreadyAdding && hoverProps.isHovered &&
                 <Button 
                     variant='link'
                     size="sm"
@@ -115,7 +118,7 @@ const CategoryRow = ({ category }: { category: ICategory }) => {
                 >
                     <FontAwesomeIcon icon={faPlus} size='lg' />
                 </Button>
-            } */}
+            }
 
             {canEdit && !alreadyAdding && hoverProps.isHovered &&
                 <Button
@@ -176,8 +179,9 @@ const CategoryRow = ({ category }: { category: ICategory }) => {
                 >
                     {isExpanded &&
                         <>
+                            <CategoryList level={level + 1} parentCategory={_id!.toString()} title={title} />
                             {showQuestions &&
-                                <QuestionList groupId={_id!} title={title} />
+                                <QuestionList level={level + 1} parentCategory={_id!.toString()} title={title} />
                             }
                         </>
                     }

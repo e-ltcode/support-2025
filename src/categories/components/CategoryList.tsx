@@ -1,25 +1,23 @@
-import React from 'react';
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { ListGroup } from "react-bootstrap";
 import CategoryRow from "categories/components/CategoryRow";
 import { IParentInfo } from "categories/types";
 import { useCategoryContext } from "categories/CategoryProvider";
 
-const CategoryList = ({ title }: IParentInfo) => {
-    const { state, getCategories } = useCategoryContext();
+const CategoryList = ({ title, parentCategory, level }: IParentInfo) => {
+    const { state, getSubCategories } = useCategoryContext();
     useEffect(() => {
-        console.log('getCategories', title)
-        getCategories({title});
-    }, [getCategories, title]);
+        console.log('getSubCategories', title, level)
+        getSubCategories({ parentCategory, level });
+    }, [getSubCategories, title, parentCategory, level]);
 
-   // const mySubCategories = state.categories.filter(c => c.parentCategory === parentCategory);
-   const categories = state.categories;
+    const mySubCategories = state.categories.filter(c => c.parentCategory === parentCategory);
     return (
-        <div className={'m-1'}>
+        <div className={level>1?'ms-2':''}>
             <>
                 <ListGroup as="ul" variant='dark' className="mb-0">
-                    {categories.map(category => 
-                        <CategoryRow category={category} key={category._id! as string} />)
+                    {mySubCategories.map(category => 
+                        <CategoryRow category={category} key={category._id!.toString()} />)
                     }
                 </ListGroup>
 

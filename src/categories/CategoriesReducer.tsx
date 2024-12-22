@@ -1,15 +1,16 @@
-import { Reducer } from 'react'
+import React, { Reducer } from 'react'
 import { Mode, ActionTypes, ICategoriesState, ICategory, IQuestion, CategoriesActions } from "categories/types";
 
 export const initialQuestion: IQuestion = {
   // temp _id for inAdding, to server as list key
   // it will be removed on submitForm
   // real _id will be given by the MongoDB 
-  groupId: 0,
-  //parentCategory: '',
-  //categoryTitle: '',
+  wsId: '',
+  parentCategory: '',
+  categoryTitle: '',
+  _id: '',
   title: '',
-  //level: 0,
+  level: 0,
   questionAnswers: [],
   source: 0,
   status: 0
@@ -19,9 +20,12 @@ export const initialCategory: ICategory = {
   // temp _id for inAdding, to server as list key
   // it will be removed on submitForm
   // real _id will be given by the MongoDB 
-  _id: 0,
+  wsId: '',
+  _id: '',
+  id: '',
   title: '',
   level: 0,
+  parentCategory: null,
   questions: [],
   isExpanded: false
 }
@@ -33,6 +37,11 @@ export const initialState: ICategoriesState = {
   currentCategoryExpanded: '',
   lastCategoryExpanded: null,
   categoryId_questionId_done: null,
+  parentCategories: {
+    categoryId: null,
+    questionId: null,
+    categoryIds: null
+  }
 }
 
 let initialStateFromLocalStorage: ICategoriesState | undefined;
@@ -57,11 +66,11 @@ if ('localStorage' in window) {
       initialStateFromLocalStorage = undefined;
     }
     else {
-      const { currentCategoryExpanded  } = initialStateFromLocalStorage!;
+      const { currentCategoryExpanded, parentCategories } = initialStateFromLocalStorage!;
       initialStateFromLocalStorage = {
         ...initialStateFromLocalStorage!,
         lastCategoryExpanded: currentCategoryExpanded,
-        
+        parentCategories
       }
       console.log('categories initialState FromLocalStorage', { initialStateFromLocalStorage });
     }
@@ -96,6 +105,50 @@ const reducer = (state: ICategoriesState, action: CategoriesActions) => {
         loading: true
       }
 
+    case ActionTypes.SET_PARENT_CATEGORIES: {
+      const { parentCategories } = action.payload;
+      console.log("SET_PARENT_CATEGORIES", parentCategories)
+      return {
+        ...state,
+        parentCategories,
+        lastCategoryExpanded: null,
+        categoryId_questionId_done: `${parentCategories.categoryId}_${parentCategories.questionId}`,
+      };
+    }
+
+    case ActionTypes.SET_SUB_CATEGORIES: {
+      const { subCategories } = action.payload;
+      const categories = state.categories.concat(subCategories);
+      return {
+        ...state,
+        categories,
+        loading: false
+      };
+    }
+
+    case ActionTypes.CLEAN_SUB_TREE: {
+      const { _id } = action.payload.category;
+      const arr = markForClean(state.categories, _id!)
+      console.log('clean:', arr)
+      const _ids = arr.map(c => c._id)
+      if (arr.length === 0)
+        return {
+          ...state
+        }
+      else
+        return {
+          ...state,
+          categories: state.categories.filter(c => !_ids.includes(c._id))
+        }
+    }
+
+    case ActionTypes.CLEAN_TREE: {
+      return {
+        ...state,
+        categories: []
+      }
+    }
+
     case ActionTypes.SET_ERROR: {
       const { error } = action.payload;
       return {
@@ -105,21 +158,13 @@ const reducer = (state: ICategoriesState, action: CategoriesActions) => {
       };
     }
 
-    case ActionTypes.SET_CATEGORIES: {
-      const { categories } = action.payload;
-      const newCategories = state.categories.concat(categories);
-      return {
-        ...state,
-        categories: newCategories,
-        loading: false
-      };
-    }
-
-    case ActionTypes.ADD_CATEGORY: {
+    case ActionTypes.ADD_SUB_CATEGORY: {
+      const { parentCategory, level } = action.payload;
       const category: ICategory = {
         ...initialCategory,
         title: '',
-        level: 1,
+        level: level + 1,
+        parentCategory,
         inAdding: true
       }
       return {
@@ -153,29 +198,6 @@ const reducer = (state: ICategoriesState, action: CategoriesActions) => {
         ...state,
         categories: state.categories.map(c => c._id === category._id
           ? { ...category, questions, inViewing: c.inViewing, inEditing: c.inEditing, inAdding: c.inAdding, isExpanded: c.isExpanded }
-          : c),
-        // keep mode
-        loading: false
-      }
-    }
-
-    case ActionTypes.SET_CATEGORY_QUESTIONS: {
-      const { groupId, questions } = action.payload; // category doesn't contain inViewing, inEditing, inAdding 
-      const category = state.categories.find(c => c._id === groupId);
-      const questionInAdding = category!.questions.find(q => q.inAdding);
-      if (questionInAdding) {
-        questions.unshift(questionInAdding);
-        console.assert(state.mode === Mode.AddingQuestion, "expected Mode.AddingQuestion")
-      }
-      return {
-        ...state,
-        categories: state.categories.map(c => c._id === groupId
-          ? { ...c, questions, numOfQuestions: questions.length,
-            inViewing: c.inViewing, 
-            inEditing: c.inEditing, 
-            inAdding: c.inAdding, 
-            isExpanded: c.isExpanded 
-          }
           : c),
         // keep mode
         loading: false
@@ -233,6 +255,12 @@ const reducer = (state: ICategoriesState, action: CategoriesActions) => {
       const { _id, expanding } = action.payload;
       let { categories } = state;
       if (!expanding) {
+        const arr = markForClean(categories, _id!)
+        console.log('clean:', arr)
+        const _ids = arr.map(c => c._id)
+        if (_ids.length > 0) {
+          categories = categories.filter(c => !_ids.includes(c._id))
+        }
       }
       return {
         ...state,
@@ -245,21 +273,200 @@ const reducer = (state: ICategoriesState, action: CategoriesActions) => {
       };
     }
 
-    
+    // First we add a new question to the category.guestions
+    // After user clicks Save, we call createQuestion 
+    case ActionTypes.ADD_QUESTION: {
+      const { categoryInfo } = action.payload;
+      const { _id, level } = categoryInfo;
+      const question: IQuestion = {
+        ...initialQuestion,
+        parentCategory: _id,
+        level,
+        inAdding: true
+      }
+      return {
+        ...state,
+        categories: state.categories.map(c => c._id === _id
+          ? { ...c, questions: [question, ...c.questions], inAdding: true }
+          : { ...c, inAdding: false }),
+        mode: Mode.AddingQuestion
+      };
+    }
+
+    case ActionTypes.VIEW_QUESTION: {
+      const { question } = action.payload;
+      return {
+        ...state,
+        categories: state.categories.map(c => c._id === question.parentCategory
+          ? {
+            ...c,
+            questions: c.questions.map(q => q._id === question._id ? {
+              ...question,
+              inViewing: true
+            }
+              : {
+                ...q,
+                inViewing: false
+              }),
+            inViewing: true
+          }
+          : {
+            ...c,
+            inViewing: false
+          }
+        ),
+        mode: Mode.ViewingQuestion,
+        loading: false
+      }
+    }
+
+    case ActionTypes.SET_QUESTION: {
+      const { question } = action.payload;
+      const { parentCategory, _id } = question;
+      const inAdding = state.mode === Mode.AddingQuestion;
+
+      // for inAdding, _id is IDBValidKey('000000000000000000000000')
+      // thats why we look for q.inAdding instead of q._id === _id
+      const categories = state.categories.map(c => c._id === parentCategory
+        ? {
+          ...c,
+          questions: inAdding
+            ? c.questions.map(q => q.inAdding ? question : q)
+            : c.questions.map(q => q._id === _id ? question : q),
+          inViewing: false,
+          inEditing: false,
+          inAdding: false
+        }
+        : c
+      );
+      return {
+        ...state,
+        categories,
+        mode: Mode.NULL,
+        loading: false
+      };
+    }
+
+    case ActionTypes.SET_QUESTION_AFTER_ASSIGN_ANSWER: {
+      const { question } = action.payload;
+      const { parentCategory, _id } = question;
+      const inAdding = state.mode === Mode.AddingQuestion;
+
+      // for inAdding, _id is IDBValidKey('000000000000000000000000')
+      // thats why we look for q.inAdding instead of q._id === _id
+      const categories = state.categories.map(c => c._id === parentCategory
+        ? {
+          ...c,
+          questions: inAdding
+            ? c.questions.map(q => q.inAdding ? { ...question, inAdding: q.inAdding } : q)
+            : c.questions.map(q => q._id === _id ? { ...question, inEditing: q.inEditing } : q),
+          inEditing: c.inEditing,
+          inAdding: c.inAdding
+        }
+        : c
+      );
+      console.log({ categories })
+      return {
+        ...state,
+        categories,
+        mode: state.mode, // keep mode
+        loading: false
+      };
+    }
+
+    case ActionTypes.EDIT_QUESTION: {
+      const { question } = action.payload;
+      return {
+        ...state,
+        categories: state.categories.map(c => c._id === question.parentCategory
+          ? {
+            ...c,
+            questions: c.questions.map(q => q._id === question._id ? {
+              ...question,
+              inEditing: true
+            }
+              : {
+                ...q,
+                inEditing: false
+              }),
+            inEditing: true
+          }
+          : {
+            ...c,
+            inEditing: false
+          }
+        ),
+        mode: Mode.EditingQuestion,
+        loading: false
+      };
+    }
+
+    case ActionTypes.DELETE_QUESTION: {
+      const { question } = action.payload;
+      const { _id, parentCategory } = question;
+      return {
+        ...state,
+        categories: state.categories.map(c => c._id === parentCategory
+          ? {
+            ...c,
+            questions: c.questions.filter(q => q._id !== _id)
+          }
+          : c
+        ),
+        mode: Mode.NULL
+      }
+    }
+
+    case ActionTypes.CANCEL_QUESTION_FORM:
+    case ActionTypes.CLOSE_QUESTION_FORM: {
+      const { question } = action.payload;
+      const category = state.categories.find(c => c._id === question.parentCategory)
+      let questions: IQuestion[] = [];
+      switch (state.mode) {
+        case Mode.AddingQuestion: {
+          console.assert(category!.inAdding, "expected category.inAdding");
+          questions = category!.questions.filter(q => !q.inAdding)
+          break;
+        }
+
+        case Mode.ViewingQuestion: {
+          console.assert(category!.inViewing, "expected category.inViewing");
+          questions = category!.questions.map(q => ({ ...q, inViewing: false }))
+          break;
+        }
+
+        case Mode.EditingQuestion: {
+          console.assert(category!.inEditing, "expected category.inEditing");
+          questions = category!.questions.map(q => ({ ...q, inEditing: false }))
+          break;
+        }
+
+        default:
+          break;
+      }
+
+      return {
+        ...state,
+        categories: state.categories.map(c => c._id === question.parentCategory
+          ? { ...c, questions, inAdding: false, inEditing: false, inViewing: false }
+          : c
+        ),
+        mode: Mode.NULL,
+      };
+    }
 
     default:
       return state;  // TODO throw error
   }
 };
 
-// function markForClean(categories: ICategory[], parentCategory: string) {
-//   let deca = categories
-//     .filter(c => c.parentCategory === parentCategory)
-//     .map(c => ({ _id: c._id, parentCategory: c.parentCategory }))
+function markForClean(categories: ICategory[], parentCategory: IDBValidKey) {
+  let deca = categories
+    .filter(c => c.parentCategory === parentCategory)
+    .map(c => ({ _id: c._id, parentCategory: c.parentCategory }))
 
-//   deca.forEach(c => {
-//     deca = deca.concat(markForClean(categories, c._id!))
-//   })
-//   return deca
-// }
-
+  deca.forEach(c => {
+    deca = deca.concat(markForClean(categories, c._id!))
+  })
+  return deca
+}

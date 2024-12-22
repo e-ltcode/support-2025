@@ -1,5 +1,5 @@
 import React from 'react';
-import { IOption, OptionValue } from "global/types";
+import { IOption, OptionValue } from "common/types";
 
 type Props<T extends OptionValue> = {
     options: IOption<T>[];

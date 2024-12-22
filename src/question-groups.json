@@ -1,24 +1,35 @@
-[{
-  "title": "Chrome Extensions",
-  "questions": [
-    {"title": "Does Chrome support Manifest 3 Extensions?", "source": 0, "status": 0  },
-    {"title": "Can you install Extensions in Safari for Mac?", "source": 0, "status": 0  },
-    {"title": "How do I install Chrome Extensions on Safari?", "source": 0, "status": 0  },
-    {"title": "Where is the Safari Extensions folder?", "source": 0, "status": 0  },
-    {"title": "Does Microsoft Edge support extensions?", "source": 0, "status": 0  },
-    {"title": "What file type are Microsoft Edge extensions?", "source": 0, "status": 0  },
-    {"title": "Where is Edge extension data stored?", "source": 0, "status": 0  },
-    {"title": "Is Microsoft Edge extension safe?", "source": 0, "status": 0  }
-  ]
-},{
-  "title": "Features",
-  "questions": [
-    {"title": "Which promocode rates do you apply?", "source": 0, "status": 0  },
-    {"title": "How do I expand my Microsoft Edge browser?", "source": 0, "status": 0  }   
-  ]
-},{
-  "title": "Bugs",
-  "questions": [
-    {"title": "Why promocode hasn't been applied?", "source": 0, "status": 0  }
-  ]
-}]
+[
+  {
+    "id": "EXT",
+    "title": "Chrome Extensions",
+    "level": 1
+  },
+  {
+    "id": "CHROME",
+    "title": "Chrome",
+    "parentCategory": "EXT",
+    "level": 2
+  },
+  {
+    "id": "EDGE",
+    "title": "Edge",
+    "parentCategory": "EXT",
+    "level": 2
+  },
+  {
+    "id": "SAFARI",
+    "title": "Safari",
+    "parentCategory": "EXT",
+    "level": 2
+  },
+  {
+    "id": "FEAT",
+    "title": "Features",
+    "level": 1
+  },
+  {
+    "id": "BUGS",
+    "title": "Bugs",
+    "level": 1
+  }
+]

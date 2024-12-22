@@ -1,5 +1,4 @@
 import React from 'react';
-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCaretRight, faCaretDown } from '@fortawesome/free-solid-svg-icons'
 
@@ -23,7 +22,7 @@ const CatRow = ({ category, dispatch, setParentCategory }: ICatRow) => {
     const { isDarkMode, variant, bg } = useGlobalState();
 
     const expand = (_id: IDBValidKey) => {
-        //dispatch({ type: CatsActionTypes.SET_EXPANDED, payload: { _id, expanding: !isExpanded } });
+        dispatch({ type: CatsActionTypes.SET_EXPANDED, payload: { _id, expanding: !isExpanded } });
     }
 
     const onSelectCategory = (category: ICategory) => {
@@ -75,7 +74,7 @@ const CatRow = ({ category, dispatch, setParentCategory }: ICatRow) => {
                 >
                     <CatList
                         level={level + 1}
-                        parentCategory={_id!}
+                        parentCategory={_id!.toString()}
                         setParentCategory={setParentCategory}
                     />
                 </ListGroup.Item>
