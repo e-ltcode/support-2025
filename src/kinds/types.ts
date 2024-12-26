@@ -147,7 +147,7 @@ export type KindsPayload = {
 	};
 
 	[ActionTypes.DELETE]: {
-		_id: IDBValidKey;
+		id: string;
 	};
 
 	[ActionTypes.CLEAN_SUB_TREE]: {

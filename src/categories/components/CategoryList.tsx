@@ -17,11 +17,11 @@ const CategoryList = ({ title, parentCategory, level }: IParentInfo) => {
             <>
                 <ListGroup as="ul" variant='dark' className="mb-0">
                     {mySubCategories.map(category => 
-                        <CategoryRow category={category} key={category._id!.toString()} />)
+                        <CategoryRow category={category} key={category.id} />)
                     }
                 </ListGroup>
 
-                {state.error && state.error}
+                {/* {state.error && state.error} */}
                 {/* {state.loading && <div>...loading</div>} */}
             </>
         </div>

@@ -17,17 +17,17 @@ interface ICatRow {
 }    
 
 const CatRow = ({ category, dispatch, setParentCategory }: ICatRow) => {
-    const { _id, title, level, isExpanded } = category;
+    const { id, title, level, isExpanded } = category;
 
     const { isDarkMode, variant, bg } = useGlobalState();
 
     const expand = (_id: IDBValidKey) => {
-        dispatch({ type: CatsActionTypes.SET_EXPANDED, payload: { _id, expanding: !isExpanded } });
+        dispatch({ type: CatsActionTypes.SET_EXPANDED, payload: { id, expanding: !isExpanded } });
     }
 
     const onSelectCategory = (category: ICategory) => {
         // Load data from server and reinitialize category
-        // viewCategory(_id);
+        // viewCategory(id);
         setParentCategory(category);
     }
 
@@ -38,7 +38,7 @@ const CatRow = ({ category, dispatch, setParentCategory }: ICatRow) => {
                 size="sm"
                 className="py-0 px-1"
                 onClick={(e) => {
-                    expand(_id!);
+                    expand(id!);
                     e.stopPropagation();
                 }}
                 title="Expand"
@@ -49,7 +49,7 @@ const CatRow = ({ category, dispatch, setParentCategory }: ICatRow) => {
                 variant='link'
                 size="sm"
                 className={`py-0 mx-0 text-decoration-none`}
-                title={_id!.toString()}
+                title={id}
                 onClick={() => onSelectCategory(category)}
             >
                 {title}
@@ -74,7 +74,7 @@ const CatRow = ({ category, dispatch, setParentCategory }: ICatRow) => {
                 >
                     <CatList
                         level={level + 1}
-                        parentCategory={_id!.toString()}
+                        parentCategory={id}
                         setParentCategory={setParentCategory}
                     />
                 </ListGroup.Item>

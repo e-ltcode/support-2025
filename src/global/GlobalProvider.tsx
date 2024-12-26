@@ -44,6 +44,7 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
 
   const registerUser = useCallback(async (loginUser: ILoginUser) => {
     const user: IUser = {
+      id: '',
       wsId: loginUser.wsId,
       userName: loginUser.userName,
       password: loginUser.password,
@@ -57,7 +58,7 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
     const url = `/api/users/register-user`;
     try {
       console.log("registerUser", { loginUser })
-      const user: IUser = {...loginUser, parentGroup: null, role: ROLES.ADMIN, color: 'blue', level: 0, confirmed: true, userId: '123'};
+      const user: IUser = { ...loginUser, id: '', parentGroup: 'null', role: ROLES.ADMIN, color: 'blue', level: 0, confirmed: true, userId: '123' };
       dispatch({ type: GlobalActionTypes.AUTHENTICATE, payload: { user, wsName: '' } });
       return user;
       // const res = await axios.post(url, { ...user, wsName: loginUser.wsName });
@@ -95,11 +96,12 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
 
 
   const signInUser = useCallback(async (loginUser: ILoginUser): Promise<any> => {
-    
+
     console.log("signInUser", { loginUser })
 
-    const user: IUser = { ...loginUser, parentGroup: null, color: 'blue', level: 0, role: ROLES.ADMIN, confirmed: true }
+    const user: IUser = { ...loginUser, id: loginUser.userId!, parentGroup: 'null', color: 'blue', level: 0, role: ROLES.ADMIN, confirmed: true }
     dispatch({ type: GlobalActionTypes.AUTHENTICATE, payload: { user, wsName: '' } })
+    return true;
     // try {
     //   const res = await axios.post(`/api/users/sign-in-user`, { ...loginUser, date: new Date() });
     //   const { status, data } = res;
@@ -173,18 +175,41 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
       // };
       try {
         data.forEach(async g => {
-          const { id, level, parentCategory, title } = g;
+          const { id, level, parentCategory, title, questions } = g;
           const group: ICategory = {
             wsId: '',
             id,
-            parentCategory: parentCategory ?? '',
+            parentCategory: parentCategory ?? 'null',
             title,
             level,
-            questions: []
+            questions: [],
+            created: {
+              date: new Date(),
+              by: {
+                userId: '',
+                userName: 'ADMIN'
+              }
+            },
           }
           console.log('group', group);
           await dbp.add('Groups', group);
-          console.log('data saved');
+          console.log('group added');
+          if (questions) {
+            questions.forEach(async q => {
+              const question: IQuestion = {
+                parentCategory: group.id,
+                title: q.title,
+                source: 0,
+                status: 0,
+                questionAnswers: [],
+                level: 0,
+                wsId: "",
+                id: ""
+              }
+              await dbp.add('Questions', question);
+              console.log('question added');
+            })
+          }
           // groupRequest.onsuccess = (event) => {
           //   console.log('dodao group');
           //   const groupId: IDBValidKey = groupRequest.result;
@@ -205,9 +230,9 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
           //   })
           // }
         })
-        //await tx.done;
+        await tx.done;
         console.log('trans complete')
-        dispatch({ type: GlobalActionTypes.SET_DBP, payload: { dbp } })
+        // dispatch({ type: GlobalActionTypes.SET_DBP, payload: { dbp } })
         resolve();
 
       } catch (err) {
@@ -226,12 +251,14 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
           // Question Groups
           const store = db.createObjectStore('Groups', { keyPath: 'id' });
           store.createIndex('title_idx', 'title', { unique: true });
+          // store.createIndex('created_idx', 'created.date', { unique: false });
+          store.createIndex('parentCategory_idx', 'parentCategory', { unique: false });
 
           // Questions
-          const questionsStore = db.createObjectStore('Questions', { keyPath: 'id' });
+          const questionsStore = db.createObjectStore('Questions', { autoIncrement: true });
           questionsStore.createIndex('title_idx', 'title', { unique: true });
-          questionsStore.createIndex('groupId_idx', 'groupId', { unique: false });
-          
+          questionsStore.createIndex('parentCategory_idx', 'parentCategory', { unique: false });
+
           initializeData = true;
 
           //const txn: IDBTransaction = event && event.target && (event.target as any).transaction;
@@ -246,14 +273,11 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
       if (initializeData) {
         addInitialData(dbp);
       }
-
-
       // This event handles the event whereby a new version of the database needs to be created
       // Either one has not been created before, or a new version number has been submitted via the
       // window.indexedDB.open line above
       //it is only implemented in recent browsers
       dispatch({ type: GlobalActionTypes.SET_DBP, payload: { dbp } })
-
       return true;
     }
     catch (err: any) {

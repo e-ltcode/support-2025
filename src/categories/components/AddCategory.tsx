@@ -17,7 +17,7 @@ const AddCategory = ({ category, inLine } : { category: ICategory, inLine: boole
         delete categoryObject.inAdding;
         const object: ICategory = {
             ...categoryObject,
-            _id: undefined,
+            id: '',
             wsId, 
             created: {
                 date: new Date(),

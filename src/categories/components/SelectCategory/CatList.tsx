@@ -32,7 +32,7 @@ const CatList = ({ parentCategory, level, setParentCategory }: ICatInfo) => {
                             category={category}
                             dispatch={dispatch}
                             setParentCategory={setParentCat}
-                            key={category._id!.toString()}
+                            key={category.id}
                         />
                     )
                     }

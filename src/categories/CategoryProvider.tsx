@@ -19,7 +19,7 @@ type Props = {
 export const CategoryProvider: React.FC<Props> = ({ children }) => {
 
   const globalState = useGlobalState();
-  const { dbp: db } = globalState;
+  const { dbp } = globalState;
   const { wsId } = globalState.authUser;
 
   const [state, dispatch] = useReducer(CategoriesReducer, initialCategoriesState);
@@ -28,6 +28,27 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
 
   const reloadCategoryNode = useCallback(async (categoryId: string, questionId: string | null): Promise<any> => {
     try {
+      const ids: { id: string, title: string }[] = [];
+      let category = await dbp!.get("Groups", categoryId);
+      if (category) {
+        ids.push({ id: category.id, title: category.title });
+      }
+      while (category && category.parentCategory !== 'null') {
+        category = await dbp!.get("Groups", category.parentCategory);
+        if (category) {
+          ids.push({ id: category.id, title: category.title })
+        }
+      }
+      dispatch({
+        type: ActionTypes.SET_PARENT_CATEGORIES, payload: {
+          parentCategories: {
+            categoryId,
+            questionId,
+            categoryIds: ids.map(c => c.id)
+          }
+        }
+      })
+
       // const res = await axios.get(`/api/categories/get-parent-categories/${categoryId}`);
       // const { status, data } = res;
       // if (status === 200) {
@@ -75,8 +96,27 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
     }
   }, [wsId]);
 
-  const getSubCategories = useCallback(({ parentCategory, level }: IParentInfo) => {
-    const url = `/api/categories/${wsId}-${parentCategory}`
+  const getSubCategories = useCallback(async ({ parentCategory, level }: IParentInfo) => {
+    //const url = `/api/categories/${wsId}-${parentCategory}`
+    try {
+      const tx = dbp!.transaction('Groups')
+      const index = tx.store.index('parentCategory_idx');
+      const list: ICategory[] = [];
+      for await (const cursor of index.iterate(parentCategory)) {
+        console.log(cursor.value);
+        list.push(cursor.value)
+      }
+      await tx.done;
+      const subCategories = list.map((c: ICategory) => ({
+        ...c,
+        questions: [],
+        isExpanded: categoryIds ? categoryIds.includes(c.id) : false
+      }))
+      dispatch({ type: ActionTypes.SET_SUB_CATEGORIES, payload: { subCategories } });
+    }
+    catch (err) {
+      console.log(err)
+    }
     //console.log('FETCHING --->>> getSubCategories', level, parentCategory)
     //dispatch({ type: ActionTypes.SET_LOADING })
     // axios
@@ -97,7 +137,7 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
 
   const createCategory = useCallback(async (category: ICategory) => {
     dispatch({ type: ActionTypes.SET_LOADING }) // TODO treba li ovo 
-    await db!.add('questionGroups', category);
+    await dbp!.add('Groups', category);
     console.log('Category successfully created')
     dispatch({ type: ActionTypes.SET_ADDED_CATEGORY, payload: { category: { ...category, questions: [] } } });
     dispatch({ type: ActionTypes.CLOSE_CATEGORY_FORM })
@@ -145,13 +185,22 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
   }, []);
 
 
-  const getCategory = (_id: IDBValidKey,
+  const getCategory = async (id: string,
     type:
       ActionTypes.VIEW_CATEGORY |
       ActionTypes.EDIT_CATEGORY |
       ActionTypes.SET_CATEGORY
   ) => {
-    const url = `/api/categories/get-category/${_id}`
+    const url = `/api/categories/get-category/${id}`
+
+    dispatch({ type: ActionTypes.SET_LOADING });
+    if (!dbp) {
+      dispatch({ type: ActionTypes.SET_ERROR, payload: { error: new Error("db is null") } });
+      return;
+    }
+
+    const category = await dbp.get("Groups", id);
+    dispatch({ type, payload: { category } });
     // dispatch({ type: ActionTypes.SET_LOADING })
     // axios
     //   .get(url)
@@ -164,17 +213,17 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
     //   });
   };
 
-  const viewCategory = useCallback((_id: IDBValidKey) => {
-    getCategory(_id, ActionTypes.VIEW_CATEGORY)
+  const viewCategory = useCallback((id: string) => {
+    getCategory(id, ActionTypes.VIEW_CATEGORY)
   }, []);
 
-  const editCategory = useCallback((_id: IDBValidKey) => {
-    getCategory(_id, ActionTypes.EDIT_CATEGORY)
+  const editCategory = useCallback((id: string) => {
+    getCategory(id, ActionTypes.EDIT_CATEGORY)
   }, []);
 
   const updateCategory = useCallback((category: ICategory) => {
     dispatch({ type: ActionTypes.SET_LOADING })
-    const url = `/api/categories/update-category/${category._id}`
+    const url = `/api/categories/update-category/${category.id}`
     // axios
     //   .put(url, category)
     //   .then(({ status, data: category }) => {
@@ -219,9 +268,33 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
   //
 
 
-  const getCategoryQuestions = useCallback(({ parentCategory: _id, level }: IParentInfo) => {
-    getCategory(_id!, ActionTypes.SET_CATEGORY)
-    //(state.mode === Mode.AddingCategory || state.mode === Mode.AddingQuestion) 
+  // const getCategoryQuestions = useCallback(({ parentCategory: _id, level }: IParentInfo) => {
+  //   getCategory(_id!, ActionTypes.SET_CATEGORY)
+  //   //(state.mode === Mode.AddingCategory || state.mode === Mode.AddingQuestion) 
+  // }, []);
+
+
+  const loadCategoryQuestions = useCallback(async ({ parentCategory }: IParentInfo) => {
+    //    getCategory(_id!, ActionTypes.SET_CATEGORY)
+    //    //(state.mode === Mode.AddingCategory || state.mode === Mode.AddingQuestion) 
+    // Load Questions
+    const questions: IQuestion[] = [];
+
+    try {
+      const tx = dbp!.transaction('Questions')
+      const index = tx.store.index('parentCategory_idx');
+      for await (const cursor of index.iterate(parentCategory)) {
+        console.log(cursor.value);
+        questions.push({ ...cursor.value, id: cursor.key })
+      }
+      await tx.done;
+      dispatch({ type: ActionTypes.SET_CATEGORY_QUESTIONS, payload: { groupId: parentCategory, questions } });
+    }
+    catch (error: any) {
+      console.log(error);
+      dispatch({ type: ActionTypes.SET_ERROR, payload: error });
+    }
+
   }, []);
 
 
@@ -285,8 +358,17 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
   }, []);
 
 
-  const getQuestion = (_id: IDBValidKey, type: ActionTypes.VIEW_QUESTION | ActionTypes.EDIT_QUESTION) => {
-    const url = `/api/questions/get-question/${_id}`
+  const getQuestion = async (id: string, type: ActionTypes.VIEW_QUESTION | ActionTypes.EDIT_QUESTION) => {
+    const url = `/api/questions/get-question/${id}`;
+    try {
+      const question = await dbp!.get("Questions", id);
+      dispatch({ type, payload: { question } });
+    }
+    catch (error: any) {
+      console.log(error);
+      dispatch({ type: ActionTypes.SET_ERROR, payload: error });
+    }
+
     //console.log(`FETCHING --->>> ${url}`)
     // dispatch({ type: ActionTypes.SET_LOADING })
     // axios
@@ -307,12 +389,12 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
     //   });
   };
 
-  const viewQuestion = useCallback((_id: IDBValidKey) => {
-    getQuestion(_id, ActionTypes.VIEW_QUESTION);
+  const viewQuestion = useCallback((id: string) => {
+    getQuestion(id, ActionTypes.VIEW_QUESTION);
   }, []);
 
-  const editQuestion = useCallback((_id: IDBValidKey) => {
-    getQuestion(_id, ActionTypes.EDIT_QUESTION);
+  const editQuestion = useCallback((id: string) => {
+    getQuestion(id, ActionTypes.EDIT_QUESTION);
   }, []);
 
   const updateQuestion = useCallback(async (question: IQuestion): Promise<any> => {
@@ -457,7 +539,7 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
     state,
     reloadCategoryNode,
     getSubCategories, getSubCats, createCategory, viewCategory, editCategory, updateCategory, deleteCategory,
-    getCategoryQuestions, createQuestion, viewQuestion, editQuestion, updateQuestion, deleteQuestion,
+    loadCategoryQuestions, createQuestion, viewQuestion, editQuestion, updateQuestion, deleteQuestion,
     assignQuestionAnswer, unAssignQuestionAnswer, createAnswer
   }
   return (

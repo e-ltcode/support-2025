@@ -8,14 +8,14 @@ import { useGlobalState } from "global/GlobalProvider";
 const QuestionList = ({ title, parentCategory, level }: IParentInfo) => {
     const { canEdit } = useGlobalState();
 
-    const { state, getCategoryQuestions, editQuestion, viewQuestion } = useCategoryContext();
+    const { state, loadCategoryQuestions, editQuestion, viewQuestion } = useCategoryContext();
     const { parentCategories } = state;
     const { categoryId, questionId } = parentCategories!;
 
     useEffect(() => {
-        console.log('getCategoryQuestions', title, level)
-        getCategoryQuestions({ parentCategory, level });
-    }, [level, getCategoryQuestions, parentCategory, title]);
+        //console.log('loadCategoryQuestions', title, level)
+        loadCategoryQuestions({ parentCategory, level });
+    }, [level, loadCategoryQuestions, parentCategory]);
 
     useEffect(() => {
         if (categoryId != null) {
@@ -32,7 +32,7 @@ const QuestionList = ({ title, parentCategory, level }: IParentInfo) => {
 
 
     // console.log('level, parentCategory:', level, parentCategory)
-    const category = state.categories.find(c => c._id === parentCategory);
+    const category = state.categories.find(c => c.id === parentCategory);
     const { questions } = category!;
 
     // console.log('QuestionList render', questions, level)
@@ -45,7 +45,7 @@ const QuestionList = ({ title, parentCategory, level }: IParentInfo) => {
                         <QuestionRow
                             question={question}
                             categoryInAdding={category!.inAdding}
-                            key={question._id!.toString()}
+                            key={question.id}
                         />)
                         // category={cat}
                     }

@@ -18,7 +18,7 @@ import ViewCategory from "categories/components/ViewCategory";
 import QuestionList from "categories/components/questions/QuestionList";
 
 const CategoryRow = ({ category }: { category: ICategory }) => {
-    const { _id, title, level, inViewing, inEditing, inAdding, numOfQuestions, isExpanded } = category;
+    const { id: id, title, level, inViewing, inEditing, inAdding, numOfQuestions, isExpanded } = category;
 
     const { canEdit, isDarkMode, variant, bg } = useGlobalState();
 
@@ -26,30 +26,30 @@ const CategoryRow = ({ category }: { category: ICategory }) => {
     const dispatch = useCategoryDispatch();
 
     const alreadyAdding = state.mode === Mode.AddingCategory;
-    const showQuestions = true; //questions && !questions.find(q => q.inAdding)
+    // const showQuestions = true; //questions && !questions.find(q => q.inAdding)
 
     const del = () => {
-        deleteCategory(_id!);
+        deleteCategory(id!);
     };
 
-    const expand = (_id: IDBValidKey) => {
+    const expand = (id: string) => {
         //const collapse = isExpanded;
-        dispatch({ type: ActionTypes.SET_EXPANDED, payload: { _id, expanding: !isExpanded } });
+        dispatch({ type: ActionTypes.SET_EXPANDED, payload: { id, expanding: !isExpanded } });
         // if (collapse)
-        //     dispatch({ type: ActionTypes.CLEAN_SUB_TREE, payload: { _id } })
+        //     dispatch({ type: ActionTypes.CLEAN_SUB_TREE, payload: { id } })
     }
 
-    const edit = (_id: IDBValidKey) => {
+    const edit = (id: string) => {
         // Load data from server and reinitialize category
-        editCategory(_id);
+        editCategory(id);
     }
 
-    const onSelectCategory = (_id: IDBValidKey) => {
+    const onSelectCategory = (id: string) => {
         // Load data from server and reinitialize category
         if (canEdit)
-            editCategory(_id);
+            editCategory(id);
         else
-            viewCategory(_id);
+            viewCategory(id);
     }
 
     const [hoverRef, hoverProps] = useHover();
@@ -60,7 +60,7 @@ const CategoryRow = ({ category }: { category: ICategory }) => {
                 variant='link'
                 size="sm"
                 className="py-0 px-1"
-                onClick={() => expand(_id!)}
+                onClick={() => expand(id!)}
                 title="Expand"
                 disabled={alreadyAdding}
             >
@@ -70,8 +70,8 @@ const CategoryRow = ({ category }: { category: ICategory }) => {
                 variant='link'
                 size="sm"
                 className={`py-0 mx-0 text-decoration-none ${(inViewing || inEditing) ? 'fw-bold' : ''}`}
-                title={_id!.toString()}
-                onClick={() => onSelectCategory(_id!)}
+                title={id!.toString()}
+                onClick={() => onSelectCategory(id!)}
                 disabled={alreadyAdding}
             >
                 {title}
@@ -84,7 +84,7 @@ const CategoryRow = ({ category }: { category: ICategory }) => {
             {/* {canEdit && !alreadyAdding && hoverProps.isHovered &&
                 <Button variant='link' size="sm" className="ms-1 py-0 px-0"
                     //onClick={() => { dispatch({ type: ActionTypes.EDIT, category }) }}>
-                    onClick={() => edit(_id!)}
+                    onClick={() => edit(id!)}
                 >
                     <FontAwesomeIcon icon={faEdit} size='lg' />
                 </Button>
@@ -108,12 +108,12 @@ const CategoryRow = ({ category }: { category: ICategory }) => {
                         dispatch({
                             type: ActionTypes.ADD_SUB_CATEGORY,
                             payload: {
-                                parentCategory: category._id,
+                                parentCategory: category.id,
                                 level: category.level
                             }
                         })
                         if (!isExpanded)
-                            dispatch({ type: ActionTypes.SET_EXPANDED, payload: { _id: _id!, expanding: true } });
+                            dispatch({ type: ActionTypes.SET_EXPANDED, payload: { id, expanding: true } });
                     }}
                 >
                     <FontAwesomeIcon icon={faPlus} size='lg' />
@@ -127,11 +127,11 @@ const CategoryRow = ({ category }: { category: ICategory }) => {
                     className="ms-2 py-0 mx-1 text-secondary"
                     title="Add Question"
                     onClick={() => {
-                        const categoryInfo: ICategoryInfo = { _id: category._id!, level: category.level }
+                        const categoryInfo: ICategoryInfo = { id: category.id, level: category.level }
                         dispatch({ type: ActionTypes.ADD_QUESTION, payload: { categoryInfo } })
                         console.log('CLICK row')
                         if (!isExpanded)
-                            dispatch({ type: ActionTypes.SET_EXPANDED, payload: { _id: _id!, expanding: true } });
+                            dispatch({ type: ActionTypes.SET_EXPANDED, payload: { id, expanding: true } });
                     }}
                 >
                     <FontAwesomeIcon icon={faPlus} size='lg' />
@@ -179,10 +179,10 @@ const CategoryRow = ({ category }: { category: ICategory }) => {
                 >
                     {isExpanded &&
                         <>
-                            <CategoryList level={level + 1} parentCategory={_id!.toString()} title={title} />
-                            {showQuestions &&
-                                <QuestionList level={level + 1} parentCategory={_id!.toString()} title={title} />
-                            }
+                            <CategoryList level={level + 1} parentCategory={id!.toString()} title={title} />
+                            {/* {showQuestions &&
+                                <QuestionList level={level + 1} parentCategory={id!.toString()} title={title} />
+                            } */}
                         </>
                     }
 

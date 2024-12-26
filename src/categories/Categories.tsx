@@ -62,7 +62,7 @@ const Providered = ({ categoryId_questionId }: IProps) => {
 
     if (categoryId_questionId !== 'add_question') {
         if (lastCategoryExpanded || (categoryId_questionId && categoryId_questionId !== categoryId_questionId_done))
-            return <div>loading...</div>
+            return <div>`loading...${lastCategoryExpanded} ${categoryId_questionId} ${categoryId_questionId_done}`</div>
     }
 
     return (
@@ -80,12 +80,12 @@ const Providered = ({ categoryId_questionId }: IProps) => {
                 Add Category
             </Button>
             <Row className="my-1">
-                <Col xs={12} md={7}>
+                <Col xs={12} md={4}>
                     <div>
-                        <CategoryList parentCategory={null} level={1} title="root" />
+                        <CategoryList parentCategory={'null'} level={1} title="root" />
                     </div>
                 </Col>
-                <Col xs={0} md={5}>
+                <Col xs={0} md={8}>
                     {/* {store.mode === FORM_MODES.ADD && <Add category={category??initialCategory} />} */}
                     {/* <div class="d-none d-lg-block">hide on screens smaller than lg</div> */}
                     <div id='div-details' className="d-none d-md-block">
@@ -142,9 +142,9 @@ const Categories = () => {
         console.assert(arr.length === 2, "expected 'categoryId_questionId'")
     }
     const globalState = useGlobalState();
-    const { isAuthenticated } = globalState;
+    const { isAuthenticated, dbp } = globalState;
 
-    if (!isAuthenticated)
+    if (!isAuthenticated || !dbp)
         return <div>loading...</div>;
 
     return (

@@ -21,18 +21,19 @@ const AddQuestion = ({ question, inLine, closeModal, showCloseButton, setError }
     const dispatch = useCategoryDispatch();
     const { state, createQuestion, reloadCategoryNode } = useCategoryContext();
     if (!closeModal) {
-        const cat = state.categories.find(c => c._id === question.parentCategory)
+        const cat = state.categories.find(c => c.id === question.parentCategory)
         question.categoryTitle = cat? cat.title: '';
     }
     const [formValues] = useState(question)
 
     const submitForm = async (questionObject: IQuestion) => {
-        delete questionObject.inAdding;
-        delete questionObject._id;
+        const obj: any = {...questionObject}
+        delete obj.inAdding;
+        delete obj.id;
         const object: IQuestion = {
-            ...questionObject,
+            ...obj,
             wsId,
-            //_id: undefined,
+            //id: undefined,
             created: {
                 date: new Date(),
                 by: {
@@ -47,8 +48,8 @@ const AddQuestion = ({ question, inLine, closeModal, showCloseButton, setError }
             }
             else if (closeModal) {
                 closeModal();
-                dispatch({ type: ActionTypes.CLEAN_TREE, payload: { _id: question.parentCategory } })
-                await reloadCategoryNode(question.parentCategory, question._id);
+                dispatch({ type: ActionTypes.CLEAN_TREE, payload: { id: question.parentCategory } })
+                await reloadCategoryNode(question.parentCategory, question.id);
             }
         }
     }

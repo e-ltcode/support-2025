@@ -62,7 +62,7 @@ if ('localStorage' in window) {
         }
         else {
             const { authUser } = globalStateFromLocalStorage!;
-            authUser.userId = authUser.userId;
+            //authUser.userId = authUser.userId;
             console.log('===>>>globalStateFromLocalStorage', globalStateFromLocalStorage );
         }
     }
@@ -83,6 +83,10 @@ export const globalReducer: Reducer<IGlobalState, GlobalActions> = (state, actio
     if (aTypesToStore.includes(action.type)) {
         localStorage.setItem('GLOBAL_STATE', JSON.stringify({
             ...newState,
+            authUser: {
+                ...newState.authUser,
+                userId: '' // TODO dodaj pravi
+            },
             isAuthenticated: false,
             error: undefined
         }));

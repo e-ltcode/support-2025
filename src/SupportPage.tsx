@@ -32,12 +32,11 @@ const SupportPage: React.FC = () => {
 	// if (!isAuthenticated)
 	//     return <div>loading...</div>;
 
-
 	const onSelectQuestion = async (categoryId: string, questionId: string) => {
 		navigate(`/categories/${categoryId.toString()}_${questionId.toString()}`)
 	}
 
-	const { canEdit, authUser, isDarkMode, variant, bg } = useGlobalState();
+	const { dbp, canEdit, authUser, isDarkMode, variant, bg } = useGlobalState();
 	const { wsId } = authUser;
 
 	return (
@@ -47,6 +46,7 @@ const SupportPage: React.FC = () => {
 					<div className="d-flex justify-content-start align-items-center">
 						<div className="w-75">
 							<AutoSuggestQuestions
+								dbp={dbp!}
 								wsId={wsId}
 								tekst={tekst}
 								onSelectQuestion={onSelectQuestion}

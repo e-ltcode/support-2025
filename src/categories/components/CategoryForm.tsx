@@ -7,12 +7,16 @@ import { FormButtons } from "common/FormButtons"
 import { FormMode, ActionTypes, ICategoryFormProps, ICategory } from "categories/types";
 
 import { useCategoryDispatch } from "categories/CategoryProvider";
+import QuestionList from "categories/components/questions/QuestionList";
 
 const CategoryForm = ({ mode, category, submitForm, children }: ICategoryFormProps) => {
 
   const viewing = mode === FormMode.viewing;
   const editing = mode === FormMode.editing;
   const adding = mode === FormMode.adding;
+
+  const { id, title, questions } = category;
+  const showQuestions = questions && !questions.find(q => q.inAdding)
 
   const dispatch = useCategoryDispatch();
 
@@ -85,6 +89,12 @@ const CategoryForm = ({ mode, category, submitForm, children }: ICategoryFormPro
           <Form.Label>Number of Questions </Form.Label>
           <div className="text-secondary">{formik.values.numOfQuestions}</div>
           {/* <div className="p-1 bg-dark text-white">{createdBy}, {formatDate(created.date)}</div> */}
+        </Form.Group>
+        <Form.Group>
+          <Form.Label>Questions </Form.Label>
+          {showQuestions &&
+            <QuestionList level={1} parentCategory={id} title={title} />
+          }
         </Form.Group>
 
         {(viewing || editing) &&

@@ -80,7 +80,8 @@ export function Navigation(props: INavigation) {
               }}
             >
               {isAuthenticated &&
-                <NavLink to={`/supporter/0/${encodeURIComponent('Does Firefox support Manifest 3?')}/xyz`} className="nav-link"
+                // <NavLink to={`/supporter/0/${encodeURIComponent('Does Firefox support Manifest 3?')}/xyz`} className="nav-link"
+                <NavLink to={`/supporter/0/${encodeURIComponent('Does?')}/xyz`} className="nav-link"
                   onClick={() => {
                     //closeQuestionForm();
                   }

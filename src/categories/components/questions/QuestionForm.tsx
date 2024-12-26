@@ -21,7 +21,7 @@ const QuestionForm = ({ mode, question, submitForm, children, showCloseButton, c
   const editing = mode === FormMode.editing;
   const adding = mode === FormMode.adding;
 
-  const { title, _id, questionAnswers } = question;
+  const { title, id, questionAnswers } = question;
 
   const dispatch = useCategoryDispatch();
 
@@ -69,7 +69,7 @@ const QuestionForm = ({ mode, question, submitForm, children, showCloseButton, c
   const isDisabled = mode === FormMode.viewing;
 
   const setParentCategory = (cat: ICategory) => {
-    formik.setFieldValue('parentCategory', cat._id!);
+    formik.setFieldValue('parentCategory', cat.id);
     formik.setFieldValue('categoryTitle', cat.title);
   }
 
@@ -87,7 +87,7 @@ const QuestionForm = ({ mode, question, submitForm, children, showCloseButton, c
             <Dropdown.Menu className="p-0">
               <Dropdown.Item className="p-0 m-0 rounded-3">
                 <CatList
-                  parentCategory={null}
+                  parentCategory='null'
                   level={1}
                   setParentCategory={setParentCategory}
                 />
@@ -189,7 +189,7 @@ const QuestionForm = ({ mode, question, submitForm, children, showCloseButton, c
         {(viewing || editing) &&
           <>
             {/* <QuestionAnswers
-              questionId={_id!}
+              questionId={id!}
               questionTitle={title}
               questionAnswers={questionAnswers}
               isDisabled={isDisabled}

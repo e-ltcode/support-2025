@@ -15,7 +15,7 @@ import EditQuestion from "categories/components/questions/EditQuestion";
 import ViewQuestion from "categories/components/questions/ViewQuestion";
 
 const QuestionRow = ({ question, categoryInAdding }: { question: IQuestion, categoryInAdding: boolean | undefined }) => {
-    const { _id, parentCategory, level, title, inViewing, inEditing, inAdding, numOfAnswers } = question;
+    const {id, parentCategory, level, title, inViewing, inEditing, inAdding, numOfAnswers } = question;
 
     const { canEdit, isDarkMode, variant, bg } = useGlobalState();
 
@@ -25,20 +25,20 @@ const QuestionRow = ({ question, categoryInAdding }: { question: IQuestion, cate
     const alreadyAdding = state.mode === Mode.AddingQuestion;
 
     const del = () => {
-        deleteQuestion(_id!);
+        deleteQuestion(id);
     };
 
-    const edit = (_id: IDBValidKey) => {
+    const edit = (id: string) => {
         // Load data from server and reinitialize question
-        editQuestion(_id);
+        editQuestion(id);
     }
 
-    const onSelectQuestion = (_id: IDBValidKey) => {
+    const onSelectQuestion = (id: string) => {
         // Load data from server and reinitialize question
         if (canEdit)
-            editQuestion(_id);
+            editQuestion(id);
         else 
-            viewQuestion(_id);
+            viewQuestion(id);
     }
     
     const [hoverRef, hoverProps] = useHover();
@@ -64,8 +64,8 @@ const QuestionRow = ({ question, categoryInAdding }: { question: IQuestion, cate
                 variant='link'
                 size="sm"
                 className={`py-0 mx-0 text-decoration-none text-secondary ${(inViewing || inEditing) ? 'fw-bold' : ''}`}
-                title={_id!.toString()}
-                onClick={() => onSelectQuestion(_id!)}
+                title={id}
+                onClick={() => onSelectQuestion(id)}
                 disabled={alreadyAdding}
             >
                 {title}
@@ -96,7 +96,7 @@ const QuestionRow = ({ question, categoryInAdding }: { question: IQuestion, cate
                     title="Add Question"
                     onClick={() => {
                         console.log('click q')
-                        const categoryInfo: ICategoryInfo = { _id: parentCategory, level }
+                        const categoryInfo: ICategoryInfo = { id: parentCategory, level }
                         dispatch({ type: ActionTypes.ADD_QUESTION, payload: { categoryInfo } })
                     }}
                 >

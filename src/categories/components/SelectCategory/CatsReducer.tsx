@@ -32,19 +32,19 @@ export const CatsReducer: Reducer<ICatsState, CatsActions> = (state, action) => 
     }
 
     case CatsActionTypes.SET_EXPANDED: {
-      const { _id, expanding } = action.payload;
+      const { id, expanding } = action.payload;
       let { cats } = state;
       if (!expanding) {
-        const arr = markForClean(cats, _id!)
+        const arr = markForClean(cats, id!)
         console.log('clean:', arr)
-        const _ids = arr.map(c => c._id)
-        if (_ids.length > 0) {
-          cats = cats.filter(c => !_ids.includes(c._id))
+        const ids = arr.map(c => c.id)
+        if (ids.length > 0) {
+          cats = cats.filter(c => !ids.includes(c.id))
         }
       }
       return {
         ...state,
-        cats: state.cats.map(c => c._id === _id
+        cats: state.cats.map(c => c.id === id
           ? { ...c, isExpanded: expanding }
           : c
         )
@@ -53,10 +53,10 @@ export const CatsReducer: Reducer<ICatsState, CatsActions> = (state, action) => 
 
     case CatsActionTypes.SET_PARENT_CATEGORY: {
       const { category } = action.payload;
-      const { _id, title } = category;
+      const { id, title } = category;
       return {
         ...state,
-        parentCategory: _id!,
+        parentCategory: id!,
         title
       };
     }
@@ -69,10 +69,10 @@ export const CatsReducer: Reducer<ICatsState, CatsActions> = (state, action) => 
 function markForClean(categories: ICategory[], parentCategory: IDBValidKey) {
   let deca = categories
     .filter(c => c.parentCategory === parentCategory)
-    .map(c => ({ _id: c._id, parentCategory: c.parentCategory }))
+    .map(c => ({ id: c.id, parentCategory: c.parentCategory }))
 
   deca.forEach(c => {
-    deca = deca.concat(markForClean(categories, c._id!))
+    deca = deca.concat(markForClean(categories, c.id!))
   })
   return deca
 }

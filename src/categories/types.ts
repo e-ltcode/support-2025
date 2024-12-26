@@ -46,8 +46,8 @@ export interface IFromUserAssignedAnswer {
 export interface IQuestion extends IRecord {
 	title: string,
 	level: number,
-	parentCategory: IDBValidKey,
-	categoryTitle: string,
+	parentCategory: string,
+	categoryTitle?: string,
 	questionAnswers: IQuestionAnswer[],
 	numOfAnswers?: number,
 	source: number,
@@ -57,7 +57,8 @@ export interface IQuestion extends IRecord {
 
 export interface ICategory extends IRecord {
 	id: string,
-	parentCategory: string | null,
+	parentCategory: string, // | null is a valid value so you can store data with null value in indexeddb 
+	// but it is not a valid key
 	title: string,
 	level: number,
 	questions: IQuestion[],
@@ -66,20 +67,20 @@ export interface ICategory extends IRecord {
 }
 
 export interface ICategoryInfo {
-	_id: IDBValidKey,
+	id: string,
 	level: number
 }
 
 
 export interface IParentInfo {
-	parentCategory: string | null,
+	parentCategory: string,
 	level: number,
 	title?: string, // to easier follow getting the list of sub-categories
 	inAdding?: boolean
 }
 
 export interface ICatInfo {
-	parentCategory: string | null,
+	parentCategory: string,
 	level: number,
 	setParentCategory : (category: ICategory) => void;
 }
@@ -109,21 +110,22 @@ export interface ICategoriesContext {
 	getSubCategories: ({ parentCategory, level }: IParentInfo) => void,
 	getSubCats: ({ parentCategory, level }: IParentInfo) => Promise<any>,
 	createCategory: (category: ICategory) => void,
-	viewCategory: (_id: IDBValidKey) => void,
-	editCategory: (_id: IDBValidKey) => void,
+	viewCategory: (id: string) => void,
+	editCategory: (_id: string) => void,
 	updateCategory: (category: ICategory) => void,
-	deleteCategory: (_id: IDBValidKey) => void,
+	deleteCategory: (_id: string) => void,
 	//////////////
 	// questions
-	getCategoryQuestions: ({ parentCategory, level, inAdding }: IParentInfo) => void,
+	//getCategoryQuestions: ({ parentCategory, level, inAdding }: IParentInfo) => void,
+	loadCategoryQuestions: ({ parentCategory }: IParentInfo) => void,
 	createQuestion: (question: IQuestion, fromModal: boolean) => Promise<any>;
-	viewQuestion: (_id: IDBValidKey) => void;
-	editQuestion: (_id: IDBValidKey) => void;
+	viewQuestion: (id: string) => void;
+	editQuestion: (id: string) => void;
 	updateQuestion: (question: IQuestion) => Promise<any>;
-	assignQuestionAnswer: (questionId: IDBValidKey, answerId: IDBValidKey, assigned: IDateAndBy) => Promise<any>;
-	unAssignQuestionAnswer: (questionId: IDBValidKey, answerId: IDBValidKey) => Promise<any>;
+	assignQuestionAnswer: (questionId: string, answerId: string, assigned: IDateAndBy) => Promise<any>;
+	unAssignQuestionAnswer: (questionId: string, answerId: string) => Promise<any>;
 	createAnswer: (answer: IAnswer) => Promise<any>;
-	deleteQuestion: (_id: IDBValidKey) => void
+	deleteQuestion: (id: string) => void
 }
 
 export interface ICategoryFormProps {
@@ -169,6 +171,7 @@ export enum ActionTypes {
 	SET_PARENT_CATEGORIES = "SET_PARENT_CATEGORIES",
 
 	// questions
+	SET_CATEGORY_QUESTIONS = 'SET_CATEGORY_QUESTIONS',
 	ADD_QUESTION = 'ADD_QUESTION',
 	VIEW_QUESTION = 'VIEW_QUESTION',
 	EDIT_QUESTION = 'EDIT_QUESTION',
@@ -212,7 +215,7 @@ export type CategoriesPayload = {
 	};
 
 	[ActionTypes.DELETE]: {
-		_id: IDBValidKey;
+		id: string;
 	};
 
 	[ActionTypes.CLEAN_SUB_TREE]: {
@@ -226,7 +229,7 @@ export type CategoriesPayload = {
 	[ActionTypes.CANCEL_CATEGORY_FORM]: undefined;
 
 	[ActionTypes.SET_EXPANDED]: {
-		_id: IDBValidKey;
+		id: string;
 		expanding: boolean;
 	}
 
@@ -236,6 +239,10 @@ export type CategoriesPayload = {
 
 	/////////////
 	// questions
+	[ActionTypes.SET_CATEGORY_QUESTIONS]: {
+		groupId: IDBValidKey,
+		questions: IQuestion[]
+	};
 
 	[ActionTypes.ADD_QUESTION]: {
 		categoryInfo: ICategoryInfo;
@@ -296,7 +303,7 @@ export type CatsPayload = {
 	};
 
 	[CatsActionTypes.SET_EXPANDED]: {
-		_id: IDBValidKey;
+		id: string;
 		expanding: boolean;
 	}
 

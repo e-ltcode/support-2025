@@ -7,7 +7,7 @@ export const initialAnswer: IAnswer = {
   // real _id will be given by the MongoDB 
   wsId: "", 
   parentAnswerGroup: undefined,
-  _id: undefined,
+  id: '',
   title: '',
   level: 0
 }
@@ -17,7 +17,7 @@ export const initialAnswerGroup: IAnswerGroup = {
   // it will be removed on submitForm
   // real _id will be given by the MongoDB 
   wsId: '',
-  _id: 0,
+  id: '',
   Name: '',
   level: 0,
   parentAnswerGroup: null,
@@ -47,10 +47,10 @@ export const reducer = (state: IAnswerGroupsState, action: AnswerGroupsActions) 
       const { answer } = action.payload;
       return {
         ...state,
-        kinds: state.kinds.map(c => c._id === answer.parentAnswerGroup
+        kinds: state.kinds.map(c => c.id === answer.parentAnswerGroup
           ? {
             ...c,
-            answers: c.answers.map(q => q._id === answer._id ? {
+            answers: c.answers.map(q => q.id === answer.id ? {
               ...answer,
               inViewing: true
             }
@@ -72,17 +72,17 @@ export const reducer = (state: IAnswerGroupsState, action: AnswerGroupsActions) 
 
     case ActionTypes.SET_ANSWER:
       const { answer } = action.payload;
-      const { parentAnswerGroup, _id } = answer;
+      const { parentAnswerGroup, id } = answer;
       const inAdding = state.mode === Mode.AddingAnswer;
 
       // for inAdding, _id is IDBValidKey('000000000000000000000000')
       // thats why we look for q.inAdding instead of q._id === _id
-      const kinds = state.kinds.map(c => c._id === parentAnswerGroup
+      const kinds = state.kinds.map(c => c.id === parentAnswerGroup
         ? {
           ...c,
           answers: inAdding
             ? c.answers.map(q => q.inAdding ? answer : q)
-            : c.answers.map(q => q._id === _id ? answer : q),
+            : c.answers.map(q => q.id === id ? answer : q),
           inViewing: false,
           inEditing: false,
           inAdding: false
@@ -100,10 +100,10 @@ export const reducer = (state: IAnswerGroupsState, action: AnswerGroupsActions) 
       const { answer } = action.payload;
       return {
         ...state,
-        kinds: state.kinds.map(c => c._id === answer.parentAnswerGroup
+        kinds: state.kinds.map(c => c.id === answer.parentAnswerGroup
           ? {
             ...c,
-            answers: c.answers.map(q => q._id === answer._id ? {
+            answers: c.answers.map(q => q.id === answer.id ? {
               ...answer,
               inEditing: true
             }
@@ -125,13 +125,13 @@ export const reducer = (state: IAnswerGroupsState, action: AnswerGroupsActions) 
 
     case ActionTypes.DELETE_ANSWER: {
       const { answer } = action.payload;
-      const { _id, parentAnswerGroup } = answer;
+      const { id, parentAnswerGroup } = answer;
       return {
         ...state,
-        kinds: state.kinds.map(c => c._id === parentAnswerGroup
+        kinds: state.kinds.map(c => c.id === parentAnswerGroup
           ? {
             ...c,
-            answers: c.answers.filter(q => q._id !== _id)
+            answers: c.answers.filter(q => q.id !== id)
           }
           : c
         ),
@@ -142,7 +142,7 @@ export const reducer = (state: IAnswerGroupsState, action: AnswerGroupsActions) 
     case ActionTypes.CANCEL_ANSWER_FORM:
     case ActionTypes.CLOSE_ANSWER_FORM: {
       const { answer } = action.payload;
-      const kind = state.kinds.find(c => c._id === answer.parentAnswerGroup)
+      const kind = state.kinds.find(c => c.id === answer.parentAnswerGroup)
       let answers: IAnswer[] = [];
       switch (state.mode) {
         case Mode.AddingAnswer: {
@@ -169,7 +169,7 @@ export const reducer = (state: IAnswerGroupsState, action: AnswerGroupsActions) 
 
       return {
         ...state,
-        kinds: state.kinds.map(c => c._id === answer.parentAnswerGroup
+        kinds: state.kinds.map(c => c.id === answer.parentAnswerGroup
           ? { ...c, answers, inAdding: false, inEditing: false, inViewing: false }
           : c
         ),

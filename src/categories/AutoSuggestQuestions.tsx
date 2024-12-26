@@ -5,18 +5,37 @@ import AutosuggestHighlightParse from "autosuggest-highlight/parse";
 import { isMobile } from 'react-device-detect'
 
 import './AutoSuggestQuestions.css'
+import { IDBPDatabase } from 'idb';
 
 interface IQuestionShort {
-	_id: string,
-	parentCategory: string,
-	title: string,
+	id: string;
+	parentCategory: string;
+	title: string;
 }
 
 interface ICategoryShort {
-	_id: string,
+	id: string,
 	parentCategoryUp: string,
 	categoryParentTitle: string,
 	categoryTitle: string,
+	questions: IQuestionShort[]
+}
+
+interface IQuestionRow {
+	categoryId: string,
+	categoryTitle: string,
+	parentCategoryUp: string,
+	categoryParentTitle: string, // TODO ???
+	id: string,
+	parentCategory: string,
+	title: string
+}
+
+interface IQuestionRowShort {
+	categoryId: string,
+	categoryTitle: string,
+	parentCategoryUp: string,
+	categoryParentTitle: string, // TODO ???
 	questions: IQuestionShort[]
 }
 
@@ -33,16 +52,17 @@ function escapeRegexCharacters(str: string): string {
 const QuestionAutosuggestMulti = Autosuggest as { new(): Autosuggest<IQuestionShort, ICategoryShort> };
 
 export class AutoSuggestQuestions extends React.Component<{
+	dbp: IDBPDatabase,
 	wsId: string,
 	tekst: string | undefined,
 	onSelectQuestion: (categoryId: string, questionId: string) => void
 }, any
 > {
 	// region Fields
-
 	state: any;
 	isMob: boolean;
 	wsId: string;
+	dbp: IDBPDatabase;
 	//inputAutosuggest: React.RefObject<HTMLInputElement>;
 	// endregion region Constructor
 	constructor(props: any) {
@@ -54,7 +74,7 @@ export class AutoSuggestQuestions extends React.Component<{
 			highlighted: ''
 		};
 		//this.inputAutosuggest = createRef<HTMLInputElement>();
-		//this.isMob = isMobile(navigator.userAgent).any;
+		this.dbp = props.dbp;
 		this.isMob = isMobile;
 		this.wsId = props.wsId;
 	}
@@ -112,7 +132,7 @@ export class AutoSuggestQuestions extends React.Component<{
 	protected onSuggestionSelected(event: React.FormEvent<any>, data: Autosuggest.SuggestionSelectedEventData<IQuestionShort>): void {
 		const question: IQuestionShort = data.suggestion;
 		// alert(`Selected question is ${question.questionId} (${question.text}).`);
-		this.props.onSelectQuestion(question.parentCategory, question._id);
+		this.props.onSelectQuestion(question.parentCategory, question.id);
 	}
 
 	/*
@@ -183,8 +203,8 @@ export class AutoSuggestQuestions extends React.Component<{
 	//   );
 
 
-	protected renderSuggestionsContainer({ containerProps, children, query }: 
-			Autosuggest.RenderSuggestionsContainerParams): JSX.Element {
+	protected renderSuggestionsContainer({ containerProps, children, query }:
+		Autosuggest.RenderSuggestionsContainerParams): JSX.Element {
 		return (
 			<div {...containerProps}>
 				<span>{children}</span>
@@ -197,10 +217,103 @@ export class AutoSuggestQuestions extends React.Component<{
 		this.setState({ value: newValue });
 	}
 
-	protected onSuggestionsFetchRequested({ value }: any): void {
-		if (value.length < 2)
+
+	// getParentTitle = async (id: string): Promise<any> => {
+	// 	let category = await this.dbp.get('Groups', id);
+	// 	return { parentCategoryTitle: category.title, parentCategoryUp: '' };
+	// }
+
+	protected async onSuggestionsFetchRequested({ value }: any): Promise<void> {
+		if (!this.dbp || value.length < 2)
 			return;
-		const search = encodeURIComponent(value.trim().replaceAll('?', ''));
+
+		//const search = encodeURIComponent(value.trim().replaceAll('?', ''));
+		const search = value.trim().toLowerCase().replaceAll('?', '');
+		try {
+			const tx = this.dbp!.transaction(['Groups', 'Questions'], 'readwrite');
+			const groupsStore = tx.objectStore('Groups')
+			// const index = tx.store.index('title_idx');
+			let parentCategoryTitle = '';
+			const questionRows: IQuestionRow[] = [];
+			for await (const cursor of tx.objectStore('Questions').iterate()) {
+				const q = { ...cursor.value, id: cursor.key }
+				if (q.title.toLowerCase().includes(search)) {
+					let category = await groupsStore.get(q.parentCategory);
+					parentCategoryTitle = category.title;
+					const parentCategoryUp = '';
+					const row: IQuestionRow = {
+						categoryId: q.parentCategory,
+						categoryTitle: category.title,
+						categoryParentTitle: parentCategoryTitle,
+						parentCategoryUp,
+						//questionShort: {
+						id: q.id,
+						title: q.title,
+						parentCategory: q.parentCategory
+						//}
+					}
+					questionRows.push(row)
+				}
+				console.log(q);
+				//questions.push({ ...cursor.value, id: cursor.key })
+				/*
+				const z = {
+					"_id": "645250c80081ac3894275619",
+					"parentCategoryUp": "",
+					"categoryParentTitle": "Featuressss",
+					"categoryTitle": "Taxes",
+					"questions": [
+						{
+							"_id": "645250c80081ac3894275625",
+							"title": "Does Chrome support Manifest 3 Extensions?\n",
+							"parentCategory": "645250c80081ac3894275619"
+						}
+					]
+				}
+				*/
+			}
+			await tx.done;
+
+			const map = new Map<string, IQuestionRow[]>();
+			questionRows.forEach((row) => {
+				map.has(row.categoryId)
+					? map.get(row.categoryId)!.push(row)
+					: map.set(row.categoryId, [row])
+			});
+			console.log('map', map)
+
+			let values = map.values();
+			let data: IQuestionRowShort[] = [];
+			while (true) {
+				let result = values.next();
+				if (result.done) break;
+				const rows = result.value as unknown as IQuestionRow[];
+				const questionRowShort: IQuestionRowShort = {
+					categoryId: '',
+					categoryTitle: '',
+					categoryParentTitle: '',
+					parentCategoryUp: '',
+					questions: []
+				};
+				rows.forEach(row => {
+					console.log(row);
+					const { id, title, categoryId, categoryTitle, parentCategory, parentCategoryUp } = row;
+					if (questionRowShort.categoryId === '') {
+						questionRowShort.categoryId = categoryId;
+						questionRowShort.categoryTitle = categoryTitle;
+						questionRowShort.categoryParentTitle = parentCategoryTitle;
+						questionRowShort.parentCategoryUp = parentCategoryUp;
+					}
+					questionRowShort.questions.push({ id, title, parentCategory } as IQuestionShort)
+				});
+				data.push(questionRowShort);
+			}
+			console.log(data)
+			this.setState({ suggestions: data, noSuggestions: data.length === 0 })
+		}
+		catch (error: any) {
+			console.log(error)
+		};
 		// axios
 		// 	.get(`/api/questions/get-questions/${this.wsId}/${search}`)
 		// 	.then(({ data }) => {

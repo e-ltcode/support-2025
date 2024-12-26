@@ -5,14 +5,14 @@ import { IDBPDatabase } from 'idb';
 export interface IDateAndBy {
 	date: Date,
 	by: {
-		userId: IDBValidKey,
+		userId: string,
 		userName?: string
 	}
 }
 
 export interface IRecord {
 	wsId: string,
-	_id?: IDBValidKey,
+	id: string,
 	created?: IDateAndBy,
 	createdBy?: string,
 	modified?: IDateAndBy,
