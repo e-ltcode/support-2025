@@ -1,4 +1,4 @@
-import React, { Reducer } from 'react'
+import { Reducer } from 'react'
 import { Mode, ActionTypes, ICategoriesState, ICategory, IQuestion, CategoriesActions } from "categories/types";
 
 export const initialQuestion: IQuestion = {
@@ -26,7 +26,8 @@ export const initialCategory: ICategory = {
   level: 0,
   parentCategory: 'null',
   questions: [],
-  isExpanded: false
+  numOfQuestions:0,
+  isExpanded: false,
 }
 
 export const initialState: ICategoriesState = {
@@ -103,6 +104,15 @@ const reducer = (state: ICategoriesState, action: CategoriesActions) => {
         ...state,
         loading: true
       }
+      
+      case ActionTypes.SET_CATEGORY_LOADING:
+        const { id, isLoading } = action.payload; // category doesn't contain inViewing, inEditing, inAdding 
+        return {
+          ...state,
+          categories: state.categories.map(c => c.id === id
+            ? { ...c, isLoading }
+            : c)
+        }
 
     case ActionTypes.SET_PARENT_CATEGORIES: {
       const { parentCategories } = action.payload;
@@ -196,7 +206,7 @@ const reducer = (state: ICategoriesState, action: CategoriesActions) => {
       return {
         ...state,
         categories: state.categories.map(c => c.id === category.id
-          ? { ...category, questions, inViewing: c.inViewing, inEditing: c.inEditing, inAdding: c.inAdding, isExpanded: c.isExpanded }
+          ? { ...category, questions, isLoading: false, inViewing: c.inViewing, inEditing: c.inEditing, inAdding: c.inAdding, isExpanded: c.isExpanded }
           : c),
         // keep mode
         loading: false
@@ -204,7 +214,7 @@ const reducer = (state: ICategoriesState, action: CategoriesActions) => {
     }
 
     case ActionTypes.SET_CATEGORY_QUESTIONS: {
-      const { groupId: parentCategory, questions } = action.payload; // category doesn't contain inViewing, inEditing, inAdding 
+      const { groupId: parentCategory, questions, page } = action.payload; // category doesn't contain inViewing, inEditing, inAdding 
       const category = state.categories.find(c => c.id === parentCategory);
       const questionInAdding = category!.questions.find(q => q.inAdding);
       if (questionInAdding) {
@@ -214,7 +224,14 @@ const reducer = (state: ICategoriesState, action: CategoriesActions) => {
       return {
         ...state,
         categories: state.categories.map(c => c.id === parentCategory
-          ? { ...c, questions, numOfQuestions: questions.length,
+          ? { ...c, 
+            questions: c.questions.concat(questions),
+            numOfQuestions: c.questions.length + questions.length,
+            paging : {
+              page,
+		          numOfQuestionsTotal: 0,
+		          isLoading: false
+            },
             inViewing: c.inViewing, 
             inEditing: c.inEditing, 
             inAdding: c.inAdding, 

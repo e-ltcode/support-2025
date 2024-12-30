@@ -15,10 +15,9 @@ import CategoryList from "categories/components/CategoryList";
 import AddCategory from "categories/components/AddCategory";
 import EditCategory from "categories/components/EditCategory";
 import ViewCategory from "categories/components/ViewCategory";
-import QuestionList from "categories/components/questions/QuestionList";
 
 const CategoryRow = ({ category }: { category: ICategory }) => {
-    const { id: id, title, level, inViewing, inEditing, inAdding, numOfQuestions, isExpanded } = category;
+    const { id: id, title, level, inViewing, inEditing, inAdding, questions, isExpanded } = category;
 
     const { canEdit, isDarkMode, variant, bg } = useGlobalState();
 
@@ -27,6 +26,7 @@ const CategoryRow = ({ category }: { category: ICategory }) => {
 
     const alreadyAdding = state.mode === Mode.AddingCategory;
     // const showQuestions = true; //questions && !questions.find(q => q.inAdding)
+    const numOfQuestions = questions.length;
 
     const del = () => {
         deleteCategory(id!);
@@ -120,7 +120,7 @@ const CategoryRow = ({ category }: { category: ICategory }) => {
                 </Button>
             }
 
-            {canEdit && !alreadyAdding && hoverProps.isHovered &&
+            {/* {canEdit && !alreadyAdding && hoverProps.isHovered &&
                 <Button
                     variant='link'
                     size="sm"
@@ -137,7 +137,7 @@ const CategoryRow = ({ category }: { category: ICategory }) => {
                     <FontAwesomeIcon icon={faPlus} size='lg' />
                     <FontAwesomeIcon icon={faQuestion} size='lg' style={{ marginLeft: '-5px' }} />
                 </Button>
-            }
+            } */}
         </div>
 
     // console.log({ title, isExpanded })

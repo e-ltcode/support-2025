@@ -1,4 +1,3 @@
-import React from 'react';
 import { ActionMap, IDateAndBy, IRecord } from 'global/types';
 import { IAnswer } from 'kinds/types';
 
@@ -56,14 +55,19 @@ export interface IQuestion extends IRecord {
 }
 
 export interface ICategory extends IRecord {
-	id: string,
-	parentCategory: string, // | null is a valid value so you can store data with null value in indexeddb 
+	id: string;
+	parentCategory: string; // | null is a valid value so you can store data with null value in indexeddb 
 	// but it is not a valid key
-	title: string,
-	level: number,
-	questions: IQuestion[],
-	numOfQuestions?: number,
-	isExpanded?: boolean
+	title: string;
+	level: number;
+	questions: IQuestion[];
+	numOfQuestions: number;
+	questionsPaging?: {
+		page: number;
+		numOfQuestionsTotal: number;
+		isLoading: boolean;
+	}
+	isExpanded?: boolean;
 }
 
 export interface ICategoryInfo {
@@ -76,7 +80,8 @@ export interface IParentInfo {
 	parentCategory: string,
 	level: number,
 	title?: string, // to easier follow getting the list of sub-categories
-	inAdding?: boolean
+	inAdding?: boolean,
+	page?: number
 }
 
 export interface ICatInfo {
@@ -154,6 +159,7 @@ export interface IParentCategories {
 
 export enum ActionTypes {
 	SET_LOADING = 'SET_LOADING',
+	SET_CATEGORY_LOADING = 'SET_CATEGORY_LOADING',
 	SET_SUB_CATEGORIES = 'SET_SUB_CATEGORIES',
 	CLEAN_SUB_TREE = 'CLEAN_SUB_TREE',
 	CLEAN_TREE = 'CLEAN_TREE',
@@ -187,6 +193,11 @@ export enum ActionTypes {
 
 export type CategoriesPayload = {
 	[ActionTypes.SET_LOADING]: undefined;
+
+	[ActionTypes.SET_CATEGORY_LOADING]: {
+		id: string;
+		isLoading: boolean;
+	}
 
 	[ActionTypes.SET_PARENT_CATEGORIES]: {
 		parentCategories: IParentCategories
@@ -240,8 +251,9 @@ export type CategoriesPayload = {
 	/////////////
 	// questions
 	[ActionTypes.SET_CATEGORY_QUESTIONS]: {
-		groupId: IDBValidKey,
-		questions: IQuestion[]
+		groupId: string,
+		questions: IQuestion[],
+		page: number
 	};
 
 	[ActionTypes.ADD_QUESTION]: {

@@ -1,10 +1,10 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Form, CloseButton } from "react-bootstrap";
 import { CreatedModifiedForm } from "common/CreateModifiedForm"
 import { FormButtons } from "common/FormButtons"
-import { FormMode, ActionTypes, ICategoryFormProps, ICategory } from "categories/types";
+import { FormMode, ActionTypes, ICategoryFormProps, ICategory, IQuestion } from "categories/types";
 
 import { useCategoryDispatch } from "categories/CategoryProvider";
 import QuestionList from "categories/components/questions/QuestionList";
@@ -17,8 +17,9 @@ const CategoryForm = ({ mode, category, submitForm, children }: ICategoryFormPro
 
   const { id, title, questions } = category;
   const showQuestions = questions && !questions.find(q => q.inAdding)
-
+  
   const dispatch = useCategoryDispatch();
+
 
   const closeForm = () => {
     dispatch({ type: ActionTypes.CLOSE_CATEGORY_FORM })

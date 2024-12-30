@@ -110,6 +110,7 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
       const subCategories = list.map((c: ICategory) => ({
         ...c,
         questions: [],
+        page: 0,
         isExpanded: categoryIds ? categoryIds.includes(c.id) : false
       }))
       dispatch({ type: ActionTypes.SET_SUB_CATEGORIES, payload: { subCategories } });
@@ -184,23 +185,36 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
     // transaction.commit();
   }, []);
 
-
-  const getCategory = async (id: string,
-    type:
-      ActionTypes.VIEW_CATEGORY |
-      ActionTypes.EDIT_CATEGORY |
-      ActionTypes.SET_CATEGORY
-  ) => {
-    const url = `/api/categories/get-category/${id}`
-
+  const setCategory = async (id: string, type: ActionTypes.SET_CATEGORY) => {
     dispatch({ type: ActionTypes.SET_LOADING });
     if (!dbp) {
       dispatch({ type: ActionTypes.SET_ERROR, payload: { error: new Error("db is null") } });
       return;
     }
-
     const category = await dbp.get("Groups", id);
-    dispatch({ type, payload: { category } });
+    dispatch({ type, payload: { category: { ...category } } });
+  };
+
+  const getCategory = async (id: string, type: ActionTypes.VIEW_CATEGORY | ActionTypes.EDIT_CATEGORY) => {
+    dispatch({ type: ActionTypes.SET_LOADING });
+    if (!dbp) {
+      dispatch({ type: ActionTypes.SET_ERROR, payload: { error: new Error("db is null") } });
+      return;
+    }
+    const category = await dbp.get("Groups", id);
+    dispatch({
+      type, payload: {
+        category: {
+          ...category,
+          questionsPaging: {
+            page: 0,
+            numOfQuestions: 0,
+            numOfQuestionsTotal: 0,
+            isLoading: false
+          }
+        }
+      }
+    });
     // dispatch({ type: ActionTypes.SET_LOADING })
     // axios
     //   .get(url)
@@ -222,8 +236,8 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
   }, []);
 
   const updateCategory = useCallback((category: ICategory) => {
-    dispatch({ type: ActionTypes.SET_LOADING })
-    const url = `/api/categories/update-category/${category.id}`
+    dispatch({ type: ActionTypes.SET_CATEGORY_LOADING, payload: { id: category.id, isLoading: false } })
+    //const url = `/api/categories/update-category/${category.id}`
     // axios
     //   .put(url, category)
     //   .then(({ status, data: category }) => {
@@ -274,25 +288,41 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
   // }, []);
 
 
-  const loadCategoryQuestions = useCallback(async ({ parentCategory }: IParentInfo) => {
+  const pageSize = 30;
+  const loadCategoryQuestions = useCallback(async ({ parentCategory, page }: IParentInfo) => {
     //    getCategory(_id!, ActionTypes.SET_CATEGORY)
     //    //(state.mode === Mode.AddingCategory || state.mode === Mode.AddingQuestion) 
     // Load Questions
     const questions: IQuestion[] = [];
-
     try {
+      dispatch({ type: ActionTypes.SET_CATEGORY_LOADING, payload: { id: parentCategory, isLoading: true } })
+      let n = 0;
       const tx = dbp!.transaction('Questions')
-      const index = tx.store.index('parentCategory_idx');
-      for await (const cursor of index.iterate(parentCategory)) {
-        console.log(cursor.value);
+      const index = tx.store.index('parentCategory_title_idx');
+      for await (const cursor of index.iterate(IDBKeyRange.bound([parentCategory, ''], [parentCategory, 'ZZZZZ'], true, true))) {
+        if (page !== 0)
+          cursor.advance(pageSize * page!);
+        console.log(cursor.value.title);
         questions.push({ ...cursor.value, id: cursor.key })
+        if (++n > pageSize)
+          break;
       }
+      // const index = tx.store.index('parentCategory_idx');
+      // for await (const cursor of index.iterate(parentCategory)) {
+      //   if (questionsPage !== 0)
+      //     cursor.advance(pageSize! * questionsPage!);
+      //   console.log(cursor.value);
+      //   questions.push({ ...cursor.value, id: cursor.key })
+      //   if (++n > pageSize!)
+      //     break;
+      // }
       await tx.done;
-      dispatch({ type: ActionTypes.SET_CATEGORY_QUESTIONS, payload: { groupId: parentCategory, questions } });
+      dispatch({ type: ActionTypes.SET_CATEGORY_QUESTIONS, payload: { groupId: parentCategory, questions, page: page! + 1  } });
     }
     catch (error: any) {
       console.log(error);
       dispatch({ type: ActionTypes.SET_ERROR, payload: error });
+      dispatch({ type: ActionTypes.SET_CATEGORY_LOADING, payload: { id: parentCategory, isLoading: false } })
     }
 
   }, []);

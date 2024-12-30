@@ -160,20 +160,14 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
   }, [globalState.authUser.wsId]);
 
 
+  const sleep = (ms: number | undefined) => new Promise(r => setTimeout(r, ms));
+
   const addInitialData = async (dbp: IDBPDatabase): Promise<void> => {
     new Promise<void>(async (resolve) => {
       // Open a read/write DB transaction, ready for adding the data
       const tx = dbp.transaction(['Groups', 'Questions'], 'readwrite');
-      // tx.oncomplete = () => {
-      //   console.log('trans complete')
-      //   dispatch({ type: GlobalActionTypes.SET_DB, payload: { db } })
-      //   resolve();
-      // };
-      // tx.onerror = () => {
-      //   //alert(`${transaction.error}`);
-      //   console.log(`${tx.error}`);
-      // };
       try {
+        let lastQuestion: IQuestion | null = null;
         data.forEach(async g => {
           const { id, level, parentCategory, title, questions } = g;
           const group: ICategory = {
@@ -183,6 +177,7 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
             title,
             level,
             questions: [],
+            numOfQuestions: 0,
             created: {
               date: new Date(),
               by: {
@@ -191,9 +186,8 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
               }
             },
           }
-          console.log('group', group);
           await dbp.add('Groups', group);
-          console.log('group added');
+          console.log('group added', group);
           if (questions) {
             questions.forEach(async q => {
               const question: IQuestion = {
@@ -206,31 +200,12 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
                 wsId: "",
                 id: ""
               }
+              await sleep(100)
               await dbp.add('Questions', question);
-              console.log('question added');
+              // console.log('question added', question);
             })
           }
-          // groupRequest.onsuccess = (event) => {
-          //   console.log('dodao group');
-          //   const groupId: IDBValidKey = groupRequest.result;
-          //   // add questions
-          //   g.questions.forEach(q => {
-          //     const question: IQuestion = {
-          //       groupId,
-          //       title: q.title,
-          //       source: q.source,
-          //       status: q.status,
-          //       questionAnswers: []
-          //     }
-          //     console.log('question', question)
-          //     const questionRequest = questionStore.add(question);
-          //     questionRequest.onsuccess = (event) => {
-          //       console.log('dodao question')
-          //     }
-          //   })
-          // }
         })
-        await tx.done;
         console.log('trans complete')
         // dispatch({ type: GlobalActionTypes.SET_DBP, payload: { dbp } })
         resolve();
@@ -238,6 +213,8 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
       } catch (err) {
         console.log('error', err);
       }
+
+      await tx.done;
     })
   }
 
@@ -256,14 +233,19 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
 
           // Questions
           const questionsStore = db.createObjectStore('Questions', { autoIncrement: true });
-          questionsStore.createIndex('title_idx', 'title', { unique: true });
+          //questionsStore.createIndex('title_idx', 'title, ', { unique: true });
+          questionsStore.createIndex('parentCategory_title_idx', ['parentCategory', 'title'], { unique: true });
           questionsStore.createIndex('parentCategory_idx', 'parentCategory', { unique: false });
+          // IDBKeyRange
 
+          const arr = data[3];
+          const questions = arr.questions!;
+          const lastQuestion = questions[questions.length-1];
+          const tit = lastQuestion.title;
+          for (var i=600; i > 100; i--) {
+            questions.push({...lastQuestion, title: tit+i});
+          }
           initializeData = true;
-
-          //const txn: IDBTransaction = event && event.target && (event.target as any).transaction;
-          //txn.oncomplete = () => {
-          //}
         },
         terminated() {
           alert('terminated')
@@ -271,7 +253,7 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
       });
       // Add initial data
       if (initializeData) {
-        addInitialData(dbp);
+        await addInitialData(dbp);
       }
       // This event handles the event whereby a new version of the database needs to be created
       // Either one has not been created before, or a new version number has been submitted via the

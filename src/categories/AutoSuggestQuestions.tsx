@@ -233,24 +233,21 @@ export class AutoSuggestQuestions extends React.Component<{
 			const tx = this.dbp!.transaction(['Groups', 'Questions'], 'readwrite');
 			const groupsStore = tx.objectStore('Groups')
 			// const index = tx.store.index('title_idx');
-			let parentCategoryTitle = '';
 			const questionRows: IQuestionRow[] = [];
 			for await (const cursor of tx.objectStore('Questions').iterate()) {
 				const q = { ...cursor.value, id: cursor.key }
 				if (q.title.toLowerCase().includes(search)) {
 					let category = await groupsStore.get(q.parentCategory);
-					parentCategoryTitle = category.title;
+					const categoryTitle = category.title;
 					const parentCategoryUp = '';
 					const row: IQuestionRow = {
 						categoryId: q.parentCategory,
-						categoryTitle: category.title,
-						categoryParentTitle: parentCategoryTitle,
+						categoryTitle,
+						categoryParentTitle: '',
 						parentCategoryUp,
-						//questionShort: {
 						id: q.id,
 						title: q.title,
 						parentCategory: q.parentCategory
-						//}
 					}
 					questionRows.push(row)
 				}
@@ -272,7 +269,6 @@ export class AutoSuggestQuestions extends React.Component<{
 				}
 				*/
 			}
-			await tx.done;
 
 			const map = new Map<string, IQuestionRow[]>();
 			questionRows.forEach((row) => {
@@ -295,19 +291,28 @@ export class AutoSuggestQuestions extends React.Component<{
 					parentCategoryUp: '',
 					questions: []
 				};
-				rows.forEach(row => {
+				rows.forEach(async row => {
 					console.log(row);
 					const { id, title, categoryId, categoryTitle, parentCategory, parentCategoryUp } = row;
+					let categoryParentTitle = '';
+
+					let category = await groupsStore.get(categoryId);
+					while (category.parentCategory !== 'null') {
+						category = await groupsStore.get(category.parentCategory);
+						categoryParentTitle += '/' + category.title;
+					}
+		
 					if (questionRowShort.categoryId === '') {
 						questionRowShort.categoryId = categoryId;
 						questionRowShort.categoryTitle = categoryTitle;
-						questionRowShort.categoryParentTitle = parentCategoryTitle;
+						questionRowShort.categoryParentTitle = categoryParentTitle;
 						questionRowShort.parentCategoryUp = parentCategoryUp;
 					}
 					questionRowShort.questions.push({ id, title, parentCategory } as IQuestionShort)
 				});
 				data.push(questionRowShort);
 			}
+			await tx.done;
 			console.log(data)
 			this.setState({ suggestions: data, noSuggestions: data.length === 0 })
 		}
