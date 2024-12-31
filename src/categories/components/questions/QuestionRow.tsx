@@ -13,9 +13,12 @@ import { IQuestion } from 'categories/types'
 import AddQuestion from "categories/components/questions/AddQuestion";
 import EditQuestion from "categories/components/questions/EditQuestion";
 import ViewQuestion from "categories/components/questions/ViewQuestion";
+// import { IntersectionObserverHookRefCallback } from 'react-intersection-observer-hook';
 
+
+//const QuestionRow = ({ question, categoryInAdding }: { ref: React.ForwardedRef<HTMLLIElement>, question: IQuestion, categoryInAdding: boolean | undefined }) => {
 const QuestionRow = ({ question, categoryInAdding }: { question: IQuestion, categoryInAdding: boolean | undefined }) => {
-    const {id, parentCategory, level, title, inViewing, inEditing, inAdding, numOfAnswers } = question;
+        const { id, parentCategory, level, title, inViewing, inEditing, inAdding, numOfAnswers } = question;
 
     const { canEdit, isDarkMode, variant, bg } = useGlobalState();
 
@@ -37,10 +40,10 @@ const QuestionRow = ({ question, categoryInAdding }: { question: IQuestion, cate
         // Load data from server and reinitialize question
         if (canEdit)
             editQuestion(id);
-        else 
+        else
             viewQuestion(id);
     }
-    
+
     const [hoverRef, hoverProps] = useHover();
 
     const Row1 =
@@ -107,11 +110,12 @@ const QuestionRow = ({ question, categoryInAdding }: { question: IQuestion, cate
         </div>
 
     return (
-        <ListGroup.Item
-            variant={"secondary"}
-            className="py-0 px-1 w-100"
-            as="li"
-        >
+        // <ListGroup.Item
+        //     variant={"secondary"}
+        //     className="py-0 px-1 w-100"
+        //     as="li"
+        // >
+        <li className="py-0 px-1 w-100 list-group-item">
             {inAdding && categoryInAdding && state.mode === Mode.AddingQuestion ? (
                 <AddQuestion question={question} inLine={true} showCloseButton={true} />
             )
@@ -132,7 +136,8 @@ const QuestionRow = ({ question, categoryInAdding }: { question: IQuestion, cate
                         Row1
                     )
             }
-        </ListGroup.Item>
+        </li>
+        // </ListGroup.Item>
     );
 };
 

@@ -7,8 +7,11 @@ type ListProps = {
 
 export function List({ direction, ...rest }: ListProps) {
   return (
+    // <ListGroup as="ul" variant='dark' className={level > 1 ? 'mb-0 ms-2' : 'mb-0'}
+    // <ListGroup as="ul" variant='dark' className={'block mb-0 ms-2'}>
+    // </ListGroup>
     <ul
-      className={`p-2 ${direction === 'horizontal' ? 'flex' : 'block'}`}
+      className={`p-2 ${direction === 'horizontal' ? 'flex' : 'block'} list-group list-group-dark`}
       {...rest}
     />
   );

@@ -7,13 +7,13 @@ type Props<T extends OptionValue> = {
 };
 
 export interface IProps {
-	options: IOption<number>[];
-  id: number;
+    options: IOption<number>[];
+    id: number;
 }
 
 export function OptionName<T extends OptionValue>(props: Props<T>) {
     const { id } = props;
-    const option: IOption<T>|undefined = props.options.find(option => option.value === id);
+    const option: IOption<T> | undefined = props.options.find(option => option.value === id);
     return (
         <span>
             {option
