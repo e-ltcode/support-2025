@@ -1,12 +1,10 @@
-import React, { forwardRef, useCallback, useEffect, useRef } from "react";
-import { IParentInfo, IQuestionAnswer } from "categories/types";
+import React, { forwardRef, useCallback, useEffect, useRef, useState } from "react";
+import { IParentInfo, IQuestion, IQuestionAnswer } from "categories/types";
 import { useCategoryContext } from "categories/CategoryProvider";
 import { useGlobalState } from "global/GlobalProvider";
-import { useLoadItems } from './utils';
 import useInfiniteScroll from "react-infinite-scroll-hook";
 import { Button } from "react-bootstrap";
 import { ListItem } from "./list";
-import { Item } from "./utils"
 import QuestionRow from "categories/components/questions/QuestionRow";
 
 
@@ -23,7 +21,7 @@ type ListProps = {
 // };
 
 
-// function QuestionRow({ item }: { item: Item }) {
+// function QuestionRow({ item }: { item: IQuestion }) {
 //     return (
 //         <div className="py-0 px-1 w-100 secondary" key={item.key}>
 //             <Button
@@ -38,7 +36,7 @@ type ListProps = {
 //     )
 // }
 
-// , value }: Item  { ref: React.ForwardedRef<HTMLLIElement>, question: IQuestion, categoryInAdding: boolean | undefined }) => {
+// , value }: IQuestion  { ref: React.ForwardedRef<HTMLLIElement>, question: IQuestion, categoryInAdding: boolean | undefined }) => {
 
 
 
@@ -55,31 +53,70 @@ function List({ direction, ...rest }: ListProps) {
     );
 }
 
-
-
-// export const ListItem = forwardRef<React.ComponentRef<'li'>, ListItemProps>(
-//     function ListItem(props, ref) {
-//         // return <li ref={ref} className="m-1 border bg-slate-200 p-2" {...props} />;
-//         //         key={props.question.id}
-//         return <QstionRow  ref={ref} {...props} />
-//     },
-// );
-
 export function Loading() {
     return (
         <div className="animate-pulse bg-slate-600 p-2 text-white">Loading...</div>
     );
 }
 
-interface IQuestion {
-    wsId: string,
-	id: string,
-    title: string,
-    level: number,
-    parentCategory: string,
-    questionAnswers: IQuestionAnswer[],
-    source: number,
-    status: number
+interface Response {
+  hasNextPage: boolean;
+  data: IQuestion[];
+}
+
+const ARRAY_SIZE = 20;
+const RESPONSE_TIME_IN_MS = 1000;
+
+function loadItems(startCursor = 0): Promise<Response> {
+  return new Promise((resolve) => {
+    let newArray: IQuestion[] = [];
+
+    setTimeout(() => {
+      for (let i = startCursor; i < startCursor + ARRAY_SIZE; i++) {
+        const newItem = {
+          id: i.toString(),
+          title: `This is item ${i.toString()}`,
+          wsId: '',
+          level: 0,
+          parentCategory: 'SAFARI',
+          questionAnswers: [],
+          source: 0,
+          status: 0
+        };
+        newArray = [...newArray, newItem];
+      }
+
+      resolve({ hasNextPage: true, data: newArray });
+    }, RESPONSE_TIME_IN_MS);
+  });
+}
+
+export function useLoadQuestions() {
+  const [loading, setLoading] = useState(false);
+  const [questions, setQuestions] = useState<IQuestion[]>([]);
+  const [hasNextPage, setHasNextPage] = useState<boolean>(true);
+  const [error, setError] = useState<Error>();
+
+  async function loadMore() {
+    setLoading(true);
+    try {
+      const { data, hasNextPage: newHasNextPage } = await loadItems(
+        questions.length,
+      );
+      setQuestions((current) => [...current, ...data]);
+      setHasNextPage(newHasNextPage);
+    }
+    catch (error_) {
+      setError(
+        error_ instanceof Error ? error_ : new Error('Something went wrong'),
+      );
+    }
+    finally {
+      setLoading(false);
+    }
+  }
+
+  return { loading, questions, hasNextPage, error, loadMore };
 }
 
 
@@ -93,10 +130,10 @@ const QuestionList = ({ title, parentCategory, level }: IParentInfo) => {
     const { categoryId, questionId } = parentCategories!;
 
     const category = categories.find(c => c.id === parentCategory)!
-    const { questions, numOfQuestions, questionsPaging } = category;
+    const { /*questions,*/ numOfQuestions, questionsPaging } = category;
     const { page, isLoading, numOfQuestionsTotal } = questionsPaging!;
 
-    const { loading, items, hasNextPage/*, error*/, loadMore } = useLoadItems();
+    const { loading, questions, hasNextPage/*, error*/, loadMore } = useLoadQuestions();
 
     const [infiniteRef, { rootRef }] = useInfiniteScroll({
         loading,
@@ -107,7 +144,9 @@ const QuestionList = ({ title, parentCategory, level }: IParentInfo) => {
     });
 
     useEffect(() => {
-    }, [viewQuestion, parentCategory, categoryId, questionId, canEdit]);
+            console.log('loadCategoryQuestions', page)
+            loadCategoryQuestions({ parentCategory, startCursor: page, level });
+    }, [loadCategoryQuestions, parentCategory, page]);
 
     useEffect(() => {
         if (categoryId != null) {
@@ -154,20 +193,12 @@ const QuestionList = ({ title, parentCategory, level }: IParentInfo) => {
             style={{ height: '300px', overflowY: 'auto' }}
         >
             <List>
-                {items.map((item: Item) => {
-                    const question: IQuestion = {
-                        id: item.key.toString(), 
-                        title: item.value,
-                        wsId: '',
-                        level: 0,
-                        parentCategory: 'SAFARI',
-                        questionAnswers: [],
-                        source: 0,
-                        status: 0
-                    }
-
-                    return <ListItem key={item.key}>
-                        <QuestionRow question={question} categoryInAdding={false}   />
+                {questions.map((question: IQuestion) => {
+                    return <ListItem key={question.id}>
+                        <QuestionRow 
+                            question={question}
+                            categoryInAdding={category!.inAdding}
+                        />
                     </ListItem>
                 })}
                 {hasNextPage && (

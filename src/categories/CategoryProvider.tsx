@@ -289,7 +289,7 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
 
 
   const pageSize = 30;
-  const loadCategoryQuestions = useCallback(async ({ parentCategory, page }: IParentInfo) => {
+  const loadCategoryQuestions = useCallback(async ({ parentCategory, startCursor }: IParentInfo) => {
     //    getCategory(_id!, ActionTypes.SET_CATEGORY)
     //    //(state.mode === Mode.AddingCategory || state.mode === Mode.AddingQuestion) 
     // Load Questions
@@ -300,8 +300,8 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
       const tx = dbp!.transaction('Questions')
       const index = tx.store.index('parentCategory_title_idx');
       for await (const cursor of index.iterate(IDBKeyRange.bound([parentCategory, ''], [parentCategory, 'ZZZZZ'], true, true))) {
-        if (page !== 0)
-          cursor.advance(pageSize * page!);
+        if (startCursor !== 0)
+          cursor.advance(startCursor!);
         console.log(cursor.value.title);
         questions.push({ ...cursor.value, id: cursor.key })
         if (++n > pageSize)
@@ -321,8 +321,8 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
     }
     catch (error: any) {
       console.log(error);
-      dispatch({ type: ActionTypes.SET_ERROR, payload: error });
-      dispatch({ type: ActionTypes.SET_CATEGORY_LOADING, payload: { id: parentCategory, isLoading: false } })
+      dispatch({ type: ActionTypes.SET_ERROR, payload: error }); 
+      dispatch({ type: ActionTypes.SET_CATEGORY_LOADING, payload: { id: parentCategory, isLoading: false } }) // TODO proveri
     }
 
   }, []);

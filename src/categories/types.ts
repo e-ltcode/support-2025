@@ -81,7 +81,7 @@ export interface IParentInfo {
 	level: number,
 	title?: string, // to easier follow getting the list of sub-categories
 	inAdding?: boolean,
-	page?: number
+	startCursor?: number
 }
 
 export interface ICatInfo {
