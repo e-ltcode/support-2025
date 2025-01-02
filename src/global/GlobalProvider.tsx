@@ -177,7 +177,7 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
             title,
             level,
             questions: [],
-            numOfQuestions: 0,
+            numOfQuestions: questions?.length || 0,
             created: {
               date: new Date(),
               by: {

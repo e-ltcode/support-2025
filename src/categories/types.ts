@@ -62,11 +62,6 @@ export interface ICategory extends IRecord {
 	level: number;
 	questions: IQuestion[];
 	numOfQuestions: number;
-	questionsPaging?: {
-		page: number;
-		numOfQuestionsTotal: number;
-		isLoading: boolean;
-	}
 	isExpanded?: boolean;
 }
 
@@ -92,12 +87,13 @@ export interface ICatInfo {
 
 export interface ICategoriesState {
 	mode: string | null,
-	loading: boolean,
 	categories: ICategory[],
 	currentCategoryExpanded: string,
 	lastCategoryExpanded: string | null;
 	categoryId_questionId_done: string | null;
 	parentCategories: IParentCategories;
+	loading: boolean,
+	questionLoading: boolean,
 	error?: Error;
 }
 
@@ -253,7 +249,7 @@ export type CategoriesPayload = {
 	[ActionTypes.SET_CATEGORY_QUESTIONS]: {
 		groupId: string,
 		questions: IQuestion[],
-		page: number
+		hasMore: boolean
 	};
 
 	[ActionTypes.ADD_QUESTION]: {

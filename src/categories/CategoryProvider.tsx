@@ -297,15 +297,18 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
     try {
       dispatch({ type: ActionTypes.SET_CATEGORY_LOADING, payload: { id: parentCategory, isLoading: true } })
       let n = 0;
+      let hasMore = false;
       const tx = dbp!.transaction('Questions')
-      const index = tx.store.index('parentCategory_title_idx');
+      const index = tx.store.index('parentCategory_title_idx');     
       for await (const cursor of index.iterate(IDBKeyRange.bound([parentCategory, ''], [parentCategory, 'ZZZZZ'], true, true))) {
         if (startCursor !== 0)
           cursor.advance(startCursor!);
         console.log(cursor.value.title);
         questions.push({ ...cursor.value, id: cursor.key })
-        if (++n > pageSize)
+        if (++n > pageSize) {
+          hasMore = true;
           break;
+        }
       }
       // const index = tx.store.index('parentCategory_idx');
       // for await (const cursor of index.iterate(parentCategory)) {
@@ -317,7 +320,7 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
       //     break;
       // }
       await tx.done;
-      dispatch({ type: ActionTypes.SET_CATEGORY_QUESTIONS, payload: { groupId: parentCategory, questions, page: page! + 1  } });
+      dispatch({ type: ActionTypes.SET_CATEGORY_QUESTIONS, payload: { groupId: parentCategory, questions, hasMore } });
     }
     catch (error: any) {
       console.log(error);

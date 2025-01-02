@@ -26,13 +26,12 @@ export const initialCategory: ICategory = {
   level: 0,
   parentCategory: 'null',
   questions: [],
-  numOfQuestions:0,
+  numOfQuestions: 0,
   isExpanded: false,
 }
 
 export const initialState: ICategoriesState = {
   mode: Mode.NULL,
-  loading: false,
   categories: [],
   currentCategoryExpanded: '',
   lastCategoryExpanded: null,
@@ -41,7 +40,9 @@ export const initialState: ICategoriesState = {
     categoryId: null,
     questionId: null,
     categoryIds: null
-  }
+  },
+  loading: false,
+  questionLoading: false
 }
 
 let initialStateFromLocalStorage: ICategoriesState | undefined;
@@ -109,9 +110,10 @@ const reducer = (state: ICategoriesState, action: CategoriesActions) => {
         const { id, isLoading } = action.payload; // category doesn't contain inViewing, inEditing, inAdding 
         return {
           ...state,
-          categories: state.categories.map(c => c.id === id
-            ? { ...c, isLoading }
-            : c)
+          // categories: state.categories.map(c => c.id === id
+          //   ? { ...c, isLoading }
+          //   : c)
+          questionLoading: true
         }
 
     case ActionTypes.SET_PARENT_CATEGORIES: {
@@ -214,7 +216,7 @@ const reducer = (state: ICategoriesState, action: CategoriesActions) => {
     }
 
     case ActionTypes.SET_CATEGORY_QUESTIONS: {
-      const { groupId: parentCategory, questions, page } = action.payload; // category doesn't contain inViewing, inEditing, inAdding 
+      const { groupId: parentCategory, questions, hasMore } = action.payload; // category doesn't contain inViewing, inEditing, inAdding 
       const category = state.categories.find(c => c.id === parentCategory);
       const questionInAdding = category!.questions.find(q => q.inAdding);
       if (questionInAdding) {
@@ -226,12 +228,7 @@ const reducer = (state: ICategoriesState, action: CategoriesActions) => {
         categories: state.categories.map(c => c.id === parentCategory
           ? { ...c, 
             questions: c.questions.concat(questions),
-            numOfQuestions: c.questions.length + questions.length,
-            paging : {
-              page,
-		          numOfQuestionsTotal: 0,
-		          isLoading: false
-            },
+            totalNumOfQuestions: 9999,
             inViewing: c.inViewing, 
             inEditing: c.inEditing, 
             inAdding: c.inAdding, 
@@ -239,7 +236,8 @@ const reducer = (state: ICategoriesState, action: CategoriesActions) => {
           }
           : c),
         // keep mode
-        loading: false
+        //loading: false TODO ?
+        questionLoading: false
       }
     }
 

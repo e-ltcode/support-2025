@@ -100,8 +100,7 @@ export function useLoadQuestions() {
   async function loadMore() {
     setLoading(true);
     try {
-      const { data, hasNextPage: newHasNextPage } = await loadItems(
-        questions.length,
+      const { data, hasNextPage: newHasNextPage } = await loadItems(questions.length
       );
       setQuestions((current) => [...current, ...data]);
       setHasNextPage(newHasNextPage);
@@ -130,8 +129,8 @@ const QuestionList = ({ title, parentCategory, level }: IParentInfo) => {
     const { categoryId, questionId } = parentCategories!;
 
     const category = categories.find(c => c.id === parentCategory)!
-    const { /*questions,*/ numOfQuestions, questionsPaging } = category;
-    const { page, isLoading, numOfQuestionsTotal } = questionsPaging!;
+    // const { /*questions,*/ numOfQuestions, questionsPaging } = category;
+    // const { page, isLoading, numOfQuestionsTotal } = questionsPaging!;
 
     const { loading, questions, hasNextPage/*, error*/, loadMore } = useLoadQuestions();
 
@@ -143,10 +142,10 @@ const QuestionList = ({ title, parentCategory, level }: IParentInfo) => {
         rootMargin: '0px 0px 400px 0px',
     });
 
-    useEffect(() => {
-            console.log('loadCategoryQuestions', page)
-            loadCategoryQuestions({ parentCategory, startCursor: page, level });
-    }, [loadCategoryQuestions, parentCategory, page]);
+    // useEffect(() => {
+    //         console.log('loadCategoryQuestions', page)
+    //         loadCategoryQuestions({ parentCategory, startCursor: page, level });
+    // }, [loadCategoryQuestions, parentCategory, page]);
 
     useEffect(() => {
         if (categoryId != null) {
