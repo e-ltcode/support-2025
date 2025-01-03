@@ -23,7 +23,13 @@
       {"title": "Does Microsoft Edge support extensions?", "source": 0, "status": 0  },
       {"title": "What file type are Microsoft Edge extensions?", "source": 0, "status": 0  },
       {"title": "Where is Edge extension data stored?", "source": 0, "status": 0  },
-      {"title": "Is Microsoft Edge extension safe?", "source": 0, "status": 0  }
+      {"title": "Is Microsoft Edge extension safe?", "source": 0, "status": 0  },
+      
+      {"title": "Can you install Extensions in Safari for Mac?", "source": 0, "status": 0  },
+      {"title": "How do I install Chrome Extensions on Safari?", "source": 0, "status": 0  },
+      {"title": "Does you fuck regurarly on safari?", "source": 0, "status": 0  },
+      {"title": "Where is the Safari Extensions folder?", "source": 0, "status": 0  },
+      {"title": "Does safari fuck?", "source": 0, "status": 0  }
     ]
   },
   {
@@ -31,13 +37,7 @@
     "title": "Safari",
     "parentCategory": "EXT",
     "level": 2,
-    "questions": [
-      {"title": "Can you install Extensions in Safari for Mac?", "source": 0, "status": 0  },
-      {"title": "How do I install Chrome Extensions on Safari?", "source": 0, "status": 0  },
-      {"title": "Does you fuck regurarly on safari?", "source": 0, "status": 0  },
-      {"title": "Where is the Safari Extensions folder?", "source": 0, "status": 0  },
-      {"title": "Does safari fuck?", "source": 0, "status": 0  }
-    ]
+    "questions": [{"title": "FIKTIVNO?", "source": 0, "status": 0  }]
   },
   {
     "id": "FEAT",

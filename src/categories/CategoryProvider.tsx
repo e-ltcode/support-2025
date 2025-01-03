@@ -110,7 +110,7 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
       const subCategories = list.map((c: ICategory) => ({
         ...c,
         questions: [],
-        page: 0,
+        hasMore: true,
         isExpanded: categoryIds ? categoryIds.includes(c.id) : false
       }))
       dispatch({ type: ActionTypes.SET_SUB_CATEGORIES, payload: { subCategories } });
@@ -206,12 +206,7 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
       type, payload: {
         category: {
           ...category,
-          questionsPaging: {
-            page: 0,
-            numOfQuestions: 0,
-            numOfQuestionsTotal: 0,
-            isLoading: false
-          }
+          hasMore: true
         }
       }
     });
@@ -236,7 +231,7 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
   }, []);
 
   const updateCategory = useCallback((category: ICategory) => {
-    dispatch({ type: ActionTypes.SET_CATEGORY_LOADING, payload: { id: category.id, isLoading: false } })
+    dispatch({ type: ActionTypes.SET_CATEGORY_LOADING, payload: { id: category.id, loading: false } })
     //const url = `/api/categories/update-category/${category.id}`
     // axios
     //   .put(url, category)
@@ -288,45 +283,39 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
   // }, []);
 
 
-  const pageSize = 30;
-  const loadCategoryQuestions = useCallback(async ({ parentCategory, startCursor }: IParentInfo) => {
-    //    getCategory(_id!, ActionTypes.SET_CATEGORY)
-    //    //(state.mode === Mode.AddingCategory || state.mode === Mode.AddingQuestion) 
-    // Load Questions
+  const pageSize = 20;
+  const loadCategoryQuestions = useCallback(async ({ parentCategory, startCursor }: IParentInfo) : Promise<any>=> {
     const questions: IQuestion[] = [];
     try {
-      dispatch({ type: ActionTypes.SET_CATEGORY_LOADING, payload: { id: parentCategory, isLoading: true } })
+      dispatch({ type: ActionTypes.SET_CATEGORY_QUESTIONS_LOADING, payload: { questionLoading: true } }) // id: parentCategory,
       let n = 0;
       let hasMore = false;
+      let advanced = false;
       const tx = dbp!.transaction('Questions')
-      const index = tx.store.index('parentCategory_title_idx');     
-      for await (const cursor of index.iterate(IDBKeyRange.bound([parentCategory, ''], [parentCategory, 'ZZZZZ'], true, true))) {
-        if (startCursor !== 0)
+      const index = tx.store.index('parentCategory_title_idx');
+      for await (const cursor of index.iterate(IDBKeyRange.bound([parentCategory, ''], [parentCategory, 'zzzzz'], true, true))) {
+        if (startCursor! > 0 && !advanced ) {
           cursor.advance(startCursor!);
-        console.log(cursor.value.title);
-        questions.push({ ...cursor.value, id: cursor.key })
-        if (++n > pageSize) {
-          hasMore = true;
-          break;
+          advanced = true;
+        }
+        else {
+          console.log(cursor.value.title);
+          questions.push({ ...cursor.value, id: cursor.key })
+          if (++n === pageSize) {
+            hasMore = true;
+            break;
+          }
         }
       }
-      // const index = tx.store.index('parentCategory_idx');
-      // for await (const cursor of index.iterate(parentCategory)) {
-      //   if (questionsPage !== 0)
-      //     cursor.advance(pageSize! * questionsPage!);
-      //   console.log(cursor.value);
-      //   questions.push({ ...cursor.value, id: cursor.key })
-      //   if (++n > pageSize!)
-      //     break;
-      // }
       await tx.done;
-      dispatch({ type: ActionTypes.SET_CATEGORY_QUESTIONS, payload: { groupId: parentCategory, questions, hasMore } });
+      dispatch({ type: ActionTypes.SET_CATEGORY_QUESTIONS, payload: { parentCategory, questions, hasMore } });
     }
     catch (error: any) {
       console.log(error);
-      dispatch({ type: ActionTypes.SET_ERROR, payload: error }); 
-      dispatch({ type: ActionTypes.SET_CATEGORY_LOADING, payload: { id: parentCategory, isLoading: false } }) // TODO proveri
+      dispatch({ type: ActionTypes.SET_ERROR, payload: error });
+      dispatch({ type: ActionTypes.SET_CATEGORY_QUESTIONS_LOADING, payload: { questionLoading: false } })
     }
+    return true;
 
   }, []);
 

@@ -62,6 +62,7 @@ export interface ICategory extends IRecord {
 	level: number;
 	questions: IQuestion[];
 	numOfQuestions: number;
+	hasMore?: boolean;
 	isExpanded?: boolean;
 }
 
@@ -156,6 +157,7 @@ export interface IParentCategories {
 export enum ActionTypes {
 	SET_LOADING = 'SET_LOADING',
 	SET_CATEGORY_LOADING = 'SET_CATEGORY_LOADING',
+	SET_CATEGORY_QUESTIONS_LOADING = 'SET_CATEGORY_QUESTIONS_LOADING',
 	SET_SUB_CATEGORIES = 'SET_SUB_CATEGORIES',
 	CLEAN_SUB_TREE = 'CLEAN_SUB_TREE',
 	CLEAN_TREE = 'CLEAN_TREE',
@@ -192,8 +194,13 @@ export type CategoriesPayload = {
 
 	[ActionTypes.SET_CATEGORY_LOADING]: {
 		id: string;
-		isLoading: boolean;
+		loading: boolean;
 	}
+
+	[ActionTypes.SET_CATEGORY_QUESTIONS_LOADING]: {
+		questionLoading: boolean;
+	}
+
 
 	[ActionTypes.SET_PARENT_CATEGORIES]: {
 		parentCategories: IParentCategories
@@ -247,7 +254,7 @@ export type CategoriesPayload = {
 	/////////////
 	// questions
 	[ActionTypes.SET_CATEGORY_QUESTIONS]: {
-		groupId: string,
+		parentCategory: string,
 		questions: IQuestion[],
 		hasMore: boolean
 	};

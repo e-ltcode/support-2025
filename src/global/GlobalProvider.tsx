@@ -167,9 +167,22 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
       // Open a read/write DB transaction, ready for adding the data
       const tx = dbp.transaction(['Groups', 'Questions'], 'readwrite');
       try {
-        let lastQuestion: IQuestion | null = null;
         data.forEach(async g => {
-          const { id, level, parentCategory, title, questions } = g;
+          const { id, level, parentCategory, title } = g;
+          let questions = [];
+          if (id !== 'SAFARI') {
+            questions = g.questions ?? [];
+          }
+          else {
+            const q = {
+              title: '',
+              source: 0,
+              status: 0,
+            }
+            for (var i = 600; i > 100; i--) {
+              questions!.push({ ...q, title: 'Zagor' + i });
+            }
+          }
           const group: ICategory = {
             wsId: '',
             id,
@@ -196,7 +209,7 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
                 source: 0,
                 status: 0,
                 questionAnswers: [],
-                level: 0,
+                level: 2,
                 wsId: "",
                 id: ""
               }
@@ -237,14 +250,6 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
           questionsStore.createIndex('parentCategory_title_idx', ['parentCategory', 'title'], { unique: true });
           questionsStore.createIndex('parentCategory_idx', 'parentCategory', { unique: false });
           // IDBKeyRange
-
-          const arr = data[3];
-          const questions = arr.questions!;
-          const lastQuestion = questions[questions.length-1];
-          const tit = lastQuestion.title;
-          for (var i=600; i > 100; i--) {
-            questions.push({...lastQuestion, title: tit+i});
-          }
           initializeData = true;
         },
         terminated() {
