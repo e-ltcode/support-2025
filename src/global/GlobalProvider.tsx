@@ -179,7 +179,7 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
               source: 0,
               status: 0,
             }
-            for (var i = 600; i > 100; i--) {
+            for (var i = 999; i > 100; i--) {
               questions!.push({ ...q, title: 'Zagor' + i });
             }
           }
@@ -215,7 +215,6 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
               }
               await sleep(100)
               await dbp.add('Questions', question);
-              // console.log('question added', question);
             })
           }
         })

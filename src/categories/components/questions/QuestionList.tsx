@@ -46,7 +46,7 @@ function List({ direction, ...rest }: ListProps) {
     // <ListGroup as="ul" variant='dark' className={'block mb-0 ms-2'}>
     // </ListGroup>
     <ul
-      className={`p-2 ${direction === 'horizontal' ? 'flex' : 'block'} list-group list-group-dark`}
+      className={`p-0 ${direction === 'horizontal' ? 'flex' : 'block'} list-group list-group-dark`}
       {...rest}
     />
   );
@@ -130,25 +130,14 @@ const QuestionList = ({ title, parentCategory, level }: IParentInfo) => {
 
   const category = categories.find(c => c.id === parentCategory)!
   const { questions, numOfQuestions, hasMore } = category;
-  // const { page, isLoading, numOfQuestionsTotal } = questionsPaging!;
-
-  //const { loading, questions, hasNextPage/*, error*/, loadMore } = useLoadQuestions();
 
   async function loadMore() {
-    //setLoading(true);
     try {
-      // const { data, hasNextPage: newHasNextPage } = await loadItems(questions.length);
-      // setQuestions((current) => [...current, ...data]);
-      // setHasNextPage(newHasNextPage);
       await loadCategoryQuestions({ parentCategory, startCursor: questions.length, level: 0 });
     }
     catch (error_) {
-      // setError(
-      //   error_ instanceof Error ? error_ : new Error('Something went wrong'),
-      // );
     }
     finally {
-      // setLoading(false);
     }
   }
 
@@ -157,7 +146,7 @@ const QuestionList = ({ title, parentCategory, level }: IParentInfo) => {
     hasNextPage: hasMore!,
     onLoadMore: loadMore,
     disabled: Boolean(error),
-    rootMargin: '0px 0px 400px 0px',
+    rootMargin: '0px 0px 100px 0px',
   });
 
   useEffect(() => {

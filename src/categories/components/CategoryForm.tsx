@@ -4,22 +4,31 @@ import { useFormik } from "formik";
 import { Form, CloseButton } from "react-bootstrap";
 import { CreatedModifiedForm } from "common/CreateModifiedForm"
 import { FormButtons } from "common/FormButtons"
-import { FormMode, ActionTypes, ICategoryFormProps, ICategory, IQuestion } from "categories/types";
+import { FormMode, ActionTypes, ICategoryFormProps, ICategory } from "categories/types";
 
 import { useCategoryDispatch } from "categories/CategoryProvider";
 import QuestionList from "categories/components/questions/QuestionList";
 
-const CategoryForm = ({ mode, category, submitForm, children }: ICategoryFormProps) => {
+const CategoryForm = ({ inLine, mode, category, submitForm, children }: ICategoryFormProps) => {
 
   const viewing = mode === FormMode.viewing;
   const editing = mode === FormMode.editing;
   const adding = mode === FormMode.adding;
 
   const { id, title, questions } = category;
-  const showQuestions = questions && !questions.find(q => q.inAdding)
+
+  if (!document.getElementById('div-details')) {
+
+  }
+  const showQuestions = questions && !questions.find(q => q.inAdding);
+  /* We have, at two places:
+    <EditCategory inLine={true} />
+    <EditCategory inLine={false} />
+    so we execute loadCategoryQuestions() twice in QuestionList, but OK
+  */
+
   
   const dispatch = useCategoryDispatch();
-
 
   const closeForm = () => {
     dispatch({ type: ActionTypes.CLOSE_CATEGORY_FORM })
@@ -58,6 +67,7 @@ const CategoryForm = ({ mode, category, submitForm, children }: ICategoryFormPro
     nameRef.current!.focus()
   }, [nameRef])
 
+  
   return (
     <div className="form-wrapper p-2">
       <CloseButton onClick={closeForm} className="float-end" />
@@ -86,13 +96,14 @@ const CategoryForm = ({ mode, category, submitForm, children }: ICategoryFormPro
           </Form.Text>
         </Form.Group>
 
-        <Form.Group>
+        {/* <Form.Group>
           <Form.Label>Number of Questions </Form.Label>
           <div className="text-secondary">{formik.values.numOfQuestions}</div>
-          {/* <div className="p-1 bg-dark text-white">{createdBy}, {formatDate(created.date)}</div> */}
-        </Form.Group>
+          // <div className="p-1 bg-dark text-white">{createdBy}, {formatDate(created.date)}</div> 
+        </Form.Group> */}
+
         <Form.Group>
-          <Form.Label>Questions </Form.Label>
+          <Form.Label className="m-1 mb-0">Questions ({`${formik.values.numOfQuestions}`}) </Form.Label>
           {showQuestions &&
             <QuestionList level={1} parentCategory={id} title={title} />
           }

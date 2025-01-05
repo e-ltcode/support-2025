@@ -23,7 +23,7 @@ type ListItemProps = {
 
 export const ListItem = forwardRef<React.ComponentRef<'li'>, ListItemProps>(
   function ListItem(props, ref) {
-    return <li ref={ref} className="m-1 border bg-slate-200 p-2" {...props} />;
+    return <li ref={ref} className="m-0 border bg-slate-200 p-0" {...props} />;
   },
 );
 

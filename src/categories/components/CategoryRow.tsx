@@ -152,10 +152,10 @@ const CategoryRow = ({ category }: { category: ICategory }) => {
                     <AddCategory category={category} inLine={true} />
                 )
                     : ((inEditing && state.mode === Mode.EditingCategory) ||
-                        (inViewing && state.mode === Mode.ViewingCategory)) ? (
+                       (inViewing && state.mode === Mode.ViewingCategory)) ? (
                         <>
                             {/* <div class="d-lg-none">hide on lg and wider screens</div> */}
-                            <div className="ms-0 d-md-none w-100">
+                            <div id='divInLine' className="ms-0 d-md-none w-100">
                                 {inEditing && <EditCategory inLine={true} />}
                                 {inViewing && <ViewCategory inLine={true} />}
                             </div>

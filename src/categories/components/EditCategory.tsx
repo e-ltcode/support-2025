@@ -5,10 +5,10 @@ import { useGlobalState } from 'global/GlobalProvider'
 import CategoryForm from "categories/components/CategoryForm";
 import { FormMode, ICategory } from "categories/types";
 
-const EditCategory = ({ inLine }: {inLine: boolean}) => {
+const EditCategory = ({ inLine }: { inLine: boolean }) => {
     const globalState = useGlobalState();
     const { state, updateCategory } = useCategoryContext();
-    const category = state.categories.find(c=>c.inEditing);
+    const category = state.categories.find(c => c.inEditing);
 
     const submitForm = (categoryObject: ICategory) => {
         const object: ICategory = {

@@ -175,7 +175,7 @@ export enum ActionTypes {
 	SET_PARENT_CATEGORIES = "SET_PARENT_CATEGORIES",
 
 	// questions
-	SET_CATEGORY_QUESTIONS = 'SET_CATEGORY_QUESTIONS',
+	LOAD_CATEGORY_QUESTIONS = 'LOAD_CATEGORY_QUESTIONS',
 	ADD_QUESTION = 'ADD_QUESTION',
 	VIEW_QUESTION = 'VIEW_QUESTION',
 	EDIT_QUESTION = 'EDIT_QUESTION',
@@ -253,7 +253,7 @@ export type CategoriesPayload = {
 
 	/////////////
 	// questions
-	[ActionTypes.SET_CATEGORY_QUESTIONS]: {
+	[ActionTypes.LOAD_CATEGORY_QUESTIONS]: {
 		parentCategory: string,
 		questions: IQuestion[],
 		hasMore: boolean

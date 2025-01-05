@@ -138,51 +138,16 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
 
   const createCategory = useCallback(async (category: ICategory) => {
     dispatch({ type: ActionTypes.SET_LOADING }) // TODO treba li ovo 
-    await dbp!.add('Groups', category);
-    console.log('Category successfully created')
-    dispatch({ type: ActionTypes.SET_ADDED_CATEGORY, payload: { category: { ...category, questions: [] } } });
-    dispatch({ type: ActionTypes.CLOSE_CATEGORY_FORM })
-    // axios
-    //   .post(`/api/categories/create-category`, category)
-    //   .then(({ status, data }) => {
-    //     if (status === 200) {
-    //       console.log('Category successfully created')
-    //       dispatch({ type: ActionTypes.SET_ADDED_CATEGORY, payload: { category: { ...data, questions: [] } } });
-    //       dispatch({ type: ActionTypes.CLOSE_CATEGORY_FORM })
-    //     }
-    //     else {
-    //       console.log('Status is not 200', status)
-    //       dispatch({
-    //         type: ActionTypes.SET_ERROR,
-    //         payload: {
-    //           error: new Error('Status is not 200 status:' + status)
-    //         }
-    //       })
-    //     }
-    //   })
-    //   .catch((error) => {
-    //     console.log(error);
-    //     dispatch({ type: ActionTypes.SET_ERROR, payload: error });
-    //   });
-    // const transaction = db!.transaction(['QuestionGroup'], 'readwrite');
-    // transaction.oncomplete = () => {
-    //   console.log('trans complete')
-    //   // resolve();
-    //   dispatch({ type: ActionTypes.SET_ADDED_CATEGORY, payload: { category: { ...category, questions: [] } } });
-    //   dispatch({ type: ActionTypes.CLOSE_CATEGORY_FORM })
-    // };
-    // transaction.onerror = () => {
-    //   //alert(`${transaction.error}`);
-    //   console.log(`${transaction.error}`);
-    // };
-    // const groupStore = transaction.objectStore('QuestionGroup');
-    // const groupRequest = groupStore.add(category);
-    // groupRequest.onsuccess = (event) => {
-    //   console.log('dodao group');
-    //   const groupId: IDBValidKey = groupRequest.result;
-    //   category._id = groupId!
-    // }
-    // transaction.commit();
+    try {
+      await dbp!.add('Groups', category);
+      console.log('Category successfully created')
+      dispatch({ type: ActionTypes.SET_ADDED_CATEGORY, payload: { category: { ...category, questions: [] } } });
+      dispatch({ type: ActionTypes.CLOSE_CATEGORY_FORM })
+      }
+    catch (error: any) {
+      console.log('error', error);
+      dispatch({ type: ActionTypes.SET_ERROR, payload: { error } });
+    }
   }, []);
 
   const setCategory = async (id: string, type: ActionTypes.SET_CATEGORY) => {
@@ -230,77 +195,64 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
     getCategory(id, ActionTypes.EDIT_CATEGORY)
   }, []);
 
-  const updateCategory = useCallback((category: ICategory) => {
-    dispatch({ type: ActionTypes.SET_CATEGORY_LOADING, payload: { id: category.id, loading: false } })
-    //const url = `/api/categories/update-category/${category.id}`
-    // axios
-    //   .put(url, category)
-    //   .then(({ status, data: category }) => {
-    //     if (status === 200) {
-    //       console.log("Category successfully updated");
-    //       dispatch({ type: ActionTypes.CLEAN_SUB_TREE, payload: { category } });
-    //       dispatch({ type: ActionTypes.SET_CATEGORY, payload: { category } });
-    //       dispatch({ type: ActionTypes.CLOSE_CATEGORY_FORM })
-    //     }
-    //     else {
-    //       console.log('Status is not 200', status)
-    //       dispatch({
-    //         type: ActionTypes.SET_ERROR,
-    //         payload: { error: new Error('Status is not 200 status:' + status) }
-    //       });
-    //     }
-    //   })
-    //   .catch((error) => {
-    //     console.log(error);
-    //     dispatch({ type: ActionTypes.SET_ERROR, payload: error });
-    //   });
+  const updateCategory = useCallback(async (c: ICategory) => {
+    const { id } = c;
+    dispatch({ type: ActionTypes.SET_CATEGORY_LOADING, payload: { id, loading: false } });
+    try {
+      const category = await dbp!.get('Groups', id);
+      const obj: ICategory = {
+        ...category, 
+        title: c.title,
+        modified: c.modified
+      }
+      await dbp!.put('Groups', obj);
+      console.log("Category successfully updated");
+      dispatch({ type: ActionTypes.CLEAN_SUB_TREE, payload: { category: obj } });
+      dispatch({ type: ActionTypes.SET_CATEGORY, payload: { category: obj } });
+      dispatch({ type: ActionTypes.CLOSE_CATEGORY_FORM })
+    }
+    catch (error: any) {
+      console.log('error', error);
+      dispatch({ type: ActionTypes.SET_ERROR, payload: { error } });
+    }
   }, []);
 
-  const deleteCategory = (_id: IDBValidKey) => {
-    // dispatch({ type: ActionTypes.SET_LOADING })
-    // axios
-    //   .delete(`/api/categories/delete-category/${_id}`)
-    //   .then(res => {
-    //     if (res.status === 200) {
-    //       console.log("Category successfully deleted");
-    //       dispatch({ type: ActionTypes.DELETE, payload: { _id } });
-    //     }
-    //   })
-    //   .catch((error) => {
-    //     console.log(error);
-    //     dispatch({ type: ActionTypes.SET_ERROR, payload: error });
-    //   });
+  const deleteCategory = async (id: string) => {
+    try {
+      const category = await dbp!.delete('Groups', id);
+      console.log("Category successfully deleted");
+      dispatch({ type: ActionTypes.DELETE, payload: { id } });
+    }
+    catch (error: any) {
+      console.log('error', error);
+      dispatch({ type: ActionTypes.SET_ERROR, payload: { error } });
+    }
+    
   };
 
   /////////////
   // Questions
   //
 
-
-  // const getCategoryQuestions = useCallback(({ parentCategory: _id, level }: IParentInfo) => {
-  //   getCategory(_id!, ActionTypes.SET_CATEGORY)
-  //   //(state.mode === Mode.AddingCategory || state.mode === Mode.AddingQuestion) 
-  // }, []);
-
-
-  const pageSize = 20;
-  const loadCategoryQuestions = useCallback(async ({ parentCategory, startCursor }: IParentInfo) : Promise<any>=> {
+  const pageSize = 12;
+  const loadCategoryQuestions = useCallback(async ({ parentCategory, startCursor }: IParentInfo): Promise<any> => {
     const questions: IQuestion[] = [];
     try {
       dispatch({ type: ActionTypes.SET_CATEGORY_QUESTIONS_LOADING, payload: { questionLoading: true } }) // id: parentCategory,
       let n = 0;
       let hasMore = false;
       let advanced = false;
-      const tx = dbp!.transaction('Questions')
+      console.time();
+      const tx = dbp!.transaction('Questions', 'readonly');
       const index = tx.store.index('parentCategory_title_idx');
       for await (const cursor of index.iterate(IDBKeyRange.bound([parentCategory, ''], [parentCategory, 'zzzzz'], true, true))) {
-        if (startCursor! > 0 && !advanced ) {
+        if (startCursor! > 0 && !advanced) {
           cursor.advance(startCursor!);
           advanced = true;
         }
         else {
           console.log(cursor.value.title);
-          questions.push({ ...cursor.value, id: cursor.key })
+          questions.push({ ...cursor.value, id: cursor.primaryKey })
           if (++n === pageSize) {
             hasMore = true;
             break;
@@ -308,7 +260,8 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
         }
       }
       await tx.done;
-      dispatch({ type: ActionTypes.SET_CATEGORY_QUESTIONS, payload: { parentCategory, questions, hasMore } });
+      console.timeEnd()
+      dispatch({ type: ActionTypes.LOAD_CATEGORY_QUESTIONS, payload: { parentCategory, questions, hasMore } });
     }
     catch (error: any) {
       console.log(error);
@@ -319,21 +272,6 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
 
   }, []);
 
-
-  // const getQuestionAnswers = useCallback((questionId: IDBValidKey) => {
-  //   const url = `/api/questions/question-answers/${questionId}`
-  //   axios
-  //     .get(url)
-  //     .then(({ data }) => {
-  //       const answers: IQuestionAnswer[] = data;
-  //       console.log(answers)
-  //       dispatch({type:  ActionTypes.SET_QUESTION_ANSWERS, payload: { answers } });
-  //     })
-  //     .catch((error) => { 
-  //       console.log(error);
-  //       dispatch({ type: ActionTypes.SET_ERROR, payload: error });
-  //     });
-  //   }, []);
 
   const createQuestion = useCallback(async (question: IQuestion, fromModal: boolean): Promise<any> => {
     try {
@@ -381,9 +319,10 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
 
 
   const getQuestion = async (id: string, type: ActionTypes.VIEW_QUESTION | ActionTypes.EDIT_QUESTION) => {
-    const url = `/api/questions/get-question/${id}`;
+    // const url = `/api/questions/get-question/${id}`;
     try {
       const question = await dbp!.get("Questions", id);
+      question.id = id;
       dispatch({ type, payload: { question } });
     }
     catch (error: any) {

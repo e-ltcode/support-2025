@@ -106,23 +106,23 @@ const reducer = (state: ICategoriesState, action: CategoriesActions) => {
         ...state,
         loading: true
       }
-      
-      case ActionTypes.SET_CATEGORY_LOADING:
-        const { id, loading } = action.payload; // category doesn't contain inViewing, inEditing, inAdding 
-        return {
-          ...state,
-          // categories: state.categories.map(c => c.id === id
-          //   ? { ...c, isLoading }
-          //   : c)
-          loading
-        }
 
-        case ActionTypes.SET_CATEGORY_QUESTIONS_LOADING:
-          const { questionLoading } = action.payload; // category doesn't contain inViewing, inEditing, inAdding 
-          return {
-            ...state,
-            questionLoading
-          }        
+    case ActionTypes.SET_CATEGORY_LOADING:
+      const { id, loading } = action.payload; // category doesn't contain inViewing, inEditing, inAdding 
+      return {
+        ...state,
+        // categories: state.categories.map(c => c.id === id
+        //   ? { ...c, isLoading }
+        //   : c)
+        loading
+      }
+
+    case ActionTypes.SET_CATEGORY_QUESTIONS_LOADING:
+      const { questionLoading } = action.payload; // category doesn't contain inViewing, inEditing, inAdding 
+      return {
+        ...state,
+        questionLoading
+      }
 
     case ActionTypes.SET_PARENT_CATEGORIES: {
       const { parentCategories } = action.payload;
@@ -183,12 +183,12 @@ const reducer = (state: ICategoriesState, action: CategoriesActions) => {
         ...initialCategory,
         title: '',
         level: level + 1,
-        parentCategory,
+        parentCategory: parentCategory??'null',
         inAdding: true
       }
       return {
         ...state,
-        categories: [category, ...state.categories],
+        categories: [...state.categories, category],
         mode: Mode.AddingCategory
       };
     }
@@ -216,16 +216,18 @@ const reducer = (state: ICategoriesState, action: CategoriesActions) => {
       return {
         ...state,
         categories: state.categories.map(c => c.id === category.id
-          ? { ...category, 
-            questions, 
-            inViewing: c.inViewing, inEditing: c.inEditing, inAdding: c.inAdding, isExpanded: c.isExpanded }
+          ? {
+            ...category,
+            questions,
+            inViewing: c.inViewing, inEditing: c.inEditing, inAdding: c.inAdding, isExpanded: c.isExpanded
+          }
           : c),
         // keep mode
         loading: false
       }
     }
 
-    case ActionTypes.SET_CATEGORY_QUESTIONS: {
+    case ActionTypes.LOAD_CATEGORY_QUESTIONS: {
       const { parentCategory, questions, hasMore } = action.payload; // category doesn't contain inViewing, inEditing, inAdding 
       const category = state.categories.find(c => c.id === parentCategory);
       const questionInAdding = category!.questions.find(q => q.inAdding);
@@ -233,16 +235,18 @@ const reducer = (state: ICategoriesState, action: CategoriesActions) => {
         questions.unshift(questionInAdding);
         console.assert(state.mode === Mode.AddingQuestion, "expected Mode.AddingQuestion")
       }
+      console.log('num of questions', category!.questions.length + questions.length)
       return {
         ...state,
         categories: state.categories.map(c => c.id === parentCategory
-          ? { ...c, 
+          ? {
+            ...c,
             questions: c.questions.concat(questions),
             hasMore,
-            inViewing: c.inViewing, 
-            inEditing: c.inEditing, 
-            inAdding: c.inAdding, 
-            isExpanded: c.isExpanded 
+            inViewing: c.inViewing,
+            inEditing: c.inEditing,
+            inAdding: c.inAdding,
+            isExpanded: c.isExpanded
           }
           : c),
         // keep mode

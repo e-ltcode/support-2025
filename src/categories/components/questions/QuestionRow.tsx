@@ -115,7 +115,7 @@ const QuestionRow = ({ question, categoryInAdding }: { question: IQuestion, cate
         //     className="py-0 px-1 w-100"
         //     as="li"
         // >
-        <li className="py-0 px-1 w-100 list-group-item">
+        <div className="py-0 px-1 w-100 list-group-item">
             {inAdding && categoryInAdding && state.mode === Mode.AddingQuestion ? (
                 <AddQuestion question={question} inLine={true} showCloseButton={true} />
             )
@@ -123,7 +123,7 @@ const QuestionRow = ({ question, categoryInAdding }: { question: IQuestion, cate
                     (inViewing && state.mode === Mode.ViewingQuestion)) ? (
                     <>
                         {/* <div class="d-lg-none">hide on lg and wider screens</div> */}
-                        <div className="ms-0 d-md-none w-100">
+                        <div id='div-question' className="ms-0 d-md-none w-100">
                             {inEditing && <EditQuestion inLine={true} />}
                             {inViewing && <ViewQuestion inLine={true} />}
                         </div>
@@ -136,7 +136,7 @@ const QuestionRow = ({ question, categoryInAdding }: { question: IQuestion, cate
                         Row1
                     )
             }
-        </li>
+        </div>
         // </ListGroup.Item>
     );
 };

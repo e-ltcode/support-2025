@@ -29,7 +29,6 @@ const EditQuestion = ({ inLine }: { inLine: boolean }) => {
             await reloadCategoryNode(q.parentCategory, q._id);
         }
     };
-  
 
     return (
         <QuestionForm
