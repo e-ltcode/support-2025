@@ -7,7 +7,6 @@ export const initialAnswer: IAnswer = {
   // real _id will be given by the MongoDB 
   wsId: "", 
   parentAnswerGroup: undefined,
-  id: '',
   title: '',
   level: 0
 }

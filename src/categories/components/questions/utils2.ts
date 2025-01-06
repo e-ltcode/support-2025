@@ -21,7 +21,7 @@ function loadItems(startCursor = 0): Promise<Response> {
     setTimeout(() => {
       for (let i = startCursor; i < startCursor + ARRAY_SIZE; i++) {
         const newItem = {
-          id: i.toString(),
+          id: i,
           title: `This is item ${i.toString()}`,
           wsId: '',
           level: 0,

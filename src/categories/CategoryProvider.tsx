@@ -255,7 +255,6 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
       console.log('error', error);
       dispatch({ type: ActionTypes.SET_ERROR, payload: { error } });
     }
-
   };
 
   /////////////
@@ -306,11 +305,9 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
       dispatch({ type: ActionTypes.SET_LOADING }) // TODO treba li ovo 
       try {
         const id = await dbp!.add('Questions', question);
-        const q: IQuestion = await dbp!.get("Questions", id);
-        question.id = id.toString();
+        question.id = parseInt(id.toString());
         console.log('Question successfully created')
         // TODO check setting inViewing, inEditing, inAdding to false
-        dispatch({ type: ActionTypes.SET_ADDED_QUESTION, payload: { question } }); // first put id to question
         dispatch({ type: ActionTypes.SET_QUESTION, payload: { question } });
       }
       catch (error: any) {
@@ -360,10 +357,10 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
   }, []);
 
 
-  const getQuestion = async (id: string, type: ActionTypes.VIEW_QUESTION | ActionTypes.EDIT_QUESTION) => {
+  const getQuestion = async (id: number, type: ActionTypes.VIEW_QUESTION | ActionTypes.EDIT_QUESTION) => {
     // const url = `/api/questions/get-question/${id}`;
     try {
-      const question: IQuestion = await dbp!.get("Questions", parseInt(id));
+      const question: IQuestion = await dbp!.get("Questions", id);
       const category: ICategory = await dbp!.get("Groups", question.parentCategory)
       question.id = id;
       question.categoryTitle = category.title;
@@ -394,15 +391,36 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
     //   });
   };
 
-  const viewQuestion = useCallback((id: string) => {
+  const viewQuestion = useCallback((id: number) => {
     getQuestion(id, ActionTypes.VIEW_QUESTION);
   }, []);
 
-  const editQuestion = useCallback((id: string) => {
+  const editQuestion = useCallback((id: number) => {
     getQuestion(id, ActionTypes.EDIT_QUESTION);
   }, []);
 
-  const updateQuestion = useCallback(async (question: IQuestion): Promise<any> => {
+  const updateQuestion = useCallback(async (q: IQuestion): Promise<any> => {
+    const { id } = q;
+    //dispatch({ type: ActionTypes.SET_CATEGORY_LOADING, payload: { id, loading: false } });
+    try {
+      const question = await dbp!.get('Questions', id!);
+      const obj: IQuestion = {
+        ...question,
+        title: q.title,
+        modified: q.modified,
+        source: q.source,
+        status: q.status
+      }
+      await dbp!.put('Questions', obj, id);
+      console.log("Question successfully updated");
+      obj.id = id;
+      dispatch({ type: ActionTypes.SET_QUESTION, payload: { question: obj } });
+      return obj;
+    }
+    catch (error: any) {
+      console.log('error', error);
+      dispatch({ type: ActionTypes.SET_ERROR, payload: { error } });
+    }
     // try {
     //   const url = `/api/questions/update-question/${question._id}`
     //   const res = await axios.put(url, question)
@@ -524,7 +542,18 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
     return null;
   }, []);
 
-  const deleteQuestion = (_id: IDBValidKey) => {
+  const deleteQuestion = async (id: number, parentCategory: string) => {
+    dispatch({ type: ActionTypes.SET_LOADING })
+    try {
+      const res = await dbp!.delete('Questions', id);
+      console.log("Question successfully deleted");
+      dispatch({ type: ActionTypes.DELETE_QUESTION, payload: { id, parentCategory } });
+    }
+    catch (error: any) {
+      console.log('error', error);
+      dispatch({ type: ActionTypes.SET_ERROR, payload: { error } });
+    }
+
     // dispatch({ type: ActionTypes.SET_LOADING })
     // axios
     //   .delete(`/api/questions/delete-question/${_id}`)

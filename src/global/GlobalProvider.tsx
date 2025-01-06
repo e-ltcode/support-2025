@@ -210,8 +210,7 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
                 status: 0,
                 questionAnswers: [],
                 level: 2,
-                wsId: "",
-                id: ""
+                wsId: ""
               }
               await sleep(100)
               await dbp.add('Questions', question);

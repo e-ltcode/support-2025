@@ -5,10 +5,10 @@ export const initialQuestion: IQuestion = {
   // temp _id for inAdding, to server as list key
   // it will be removed on submitForm
   // real _id will be given by the MongoDB 
+  id: 0, // real id will be given by DB
   wsId: '',
   parentCategory: '',
   categoryTitle: '',
-  id: '',
   title: '',
   level: 0,
   questionAnswers: [],
@@ -344,30 +344,6 @@ const reducer = (state: ICategoriesState, action: CategoriesActions) => {
       };
     }
 
-    case ActionTypes.SET_ADDED_QUESTION: {
-      const { question } = action.payload;
-      const { parentCategory, id } = question;
-      const inAdding = state.mode === Mode.AddingQuestion;
-      const categories = state.categories.map(c => c.id === parentCategory
-        ? {
-          ...c,
-          questions: inAdding
-            ? c.questions.map(q => q.inAdding ? {...question, id, inAdding: false} : q)
-            : c.questions,
-          inViewing: false,
-          inEditing: false,
-          inAdding: false
-        }
-        : c
-      );
-      return {
-        ...state,
-        categories,
-        mode: Mode.NULL,
-        loading: false
-      };
-    }
-
     case ActionTypes.VIEW_QUESTION: {
       const { question } = action.payload;
       return {
@@ -406,8 +382,8 @@ const reducer = (state: ICategoriesState, action: CategoriesActions) => {
         ? {
           ...c,
           questions: inAdding
-            ? c.questions.map(q => q.inAdding ? question : q)
-            : c.questions.map(q => q.id === id ? question : q),
+            ? c.questions.map(q => q.inAdding ? { ...question, inAdding: false } : q)
+            : c.questions.map(q => q.id === id ? {...question, inEditing: false, inViewing: false } : q),
           inViewing: false,
           inEditing: false,
           inAdding: false
@@ -477,8 +453,7 @@ const reducer = (state: ICategoriesState, action: CategoriesActions) => {
     }
 
     case ActionTypes.DELETE_QUESTION: {
-      const { question } = action.payload;
-      const { id, parentCategory } = question;
+      const { id, parentCategory } = action.payload;
       return {
         ...state,
         categories: state.categories.map(c => c.id === parentCategory

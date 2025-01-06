@@ -43,6 +43,7 @@ export interface IFromUserAssignedAnswer {
 }
 
 export interface IQuestion extends IRecord {
+	id?: number,
 	title: string,
 	level: number,
 	parentCategory: string,
@@ -114,21 +115,21 @@ export interface ICategoriesContext {
 	getSubCats: ({ parentCategory, level }: IParentInfo) => Promise<any>,
 	createCategory: (category: ICategory) => void,
 	viewCategory: (id: string) => void,
-	editCategory: (_id: string) => void,
+	editCategory: (id: string) => void,
 	updateCategory: (category: ICategory) => void,
-	deleteCategory: (_id: string) => void,
+	deleteCategory: (id: string) => void,
 	//////////////
 	// questions
 	//getCategoryQuestions: ({ parentCategory, level, inAdding }: IParentInfo) => void,
 	loadCategoryQuestions: ({ parentCategory }: IParentInfo) => void,
 	createQuestion: (question: IQuestion, fromModal: boolean) => Promise<any>;
-	viewQuestion: (id: string) => void;
-	editQuestion: (id: string) => void;
+	viewQuestion: (id: number) => void;
+	editQuestion: (id: number) => void;
 	updateQuestion: (question: IQuestion) => Promise<any>;
 	assignQuestionAnswer: (questionId: string, answerId: string, assigned: IDateAndBy) => Promise<any>;
 	unAssignQuestionAnswer: (questionId: string, answerId: string) => Promise<any>;
 	createAnswer: (answer: IAnswer) => Promise<any>;
-	deleteQuestion: (id: string) => void
+	deleteQuestion: (id: number, parentCategory: string) => void
 }
 
 export interface ICategoryFormProps {
@@ -178,7 +179,6 @@ export enum ActionTypes {
 	// questions
 	LOAD_CATEGORY_QUESTIONS = 'LOAD_CATEGORY_QUESTIONS',
 	ADD_QUESTION = 'ADD_QUESTION',
-	SET_ADDED_QUESTION = 'SET_ADDED_QUESTION',
 	VIEW_QUESTION = 'VIEW_QUESTION',
 	EDIT_QUESTION = 'EDIT_QUESTION',
 
@@ -265,10 +265,6 @@ export type CategoriesPayload = {
 		categoryInfo: ICategoryInfo;
 	}
 
-	[ActionTypes.SET_ADDED_QUESTION]: {
-		question: IQuestion
-	};
-
 	[ActionTypes.VIEW_QUESTION]: {
 		question: IQuestion;
 	};
@@ -290,7 +286,8 @@ export type CategoriesPayload = {
 	};
 
 	[ActionTypes.DELETE_QUESTION]: {
-		question: IQuestion;
+		id: number;
+		parentCategory: string
 	};
 
 	[ActionTypes.CLOSE_QUESTION_FORM]: {

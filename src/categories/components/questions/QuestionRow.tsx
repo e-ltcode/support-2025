@@ -28,15 +28,15 @@ const QuestionRow = ({ question, categoryInAdding }: { question: IQuestion, cate
     const alreadyAdding = state.mode === Mode.AddingQuestion;
 
     const del = () => {
-        deleteQuestion(id);
+        deleteQuestion(id!, parentCategory);
     };
 
-    const edit = (id: string) => {
+    const edit = (id: number) => {
         // Load data from server and reinitialize question
         editQuestion(id);
     }
 
-    const onSelectQuestion = (id: string) => {
+    const onSelectQuestion = (id: number) => {
         // Load data from server and reinitialize question
         if (canEdit)
             editQuestion(id);
@@ -67,8 +67,8 @@ const QuestionRow = ({ question, categoryInAdding }: { question: IQuestion, cate
                 variant='link'
                 size="sm"
                 className={`py-0 mx-0 text-decoration-none text-secondary ${(inViewing || inEditing) ? 'fw-bold' : ''}`}
-                title={id}
-                onClick={() => onSelectQuestion(id)}
+                title={id!.toString()}
+                onClick={() => onSelectQuestion(id!)}
                 disabled={alreadyAdding}
             >
                 {title}

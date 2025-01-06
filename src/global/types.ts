@@ -12,7 +12,6 @@ export interface IDateAndBy {
 
 export interface IRecord {
 	wsId: string,
-	id: string,
 	created?: IDateAndBy,
 	createdBy?: string,
 	modified?: IDateAndBy,
@@ -152,6 +151,7 @@ export type GlobalPayload = {
 };
 
 export interface IUser extends IRecord {
+	id: string,
 	userId?: string,
 	userName: string,
 	password?: string,

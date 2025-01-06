@@ -71,10 +71,10 @@ function loadItems(startCursor = 0): Promise<Response> {
     let newArray: IQuestion[] = [];
 
     setTimeout(() => {
-      for (let i = startCursor; i < startCursor + ARRAY_SIZE; i++) {
+      for (let id = startCursor; id < startCursor + ARRAY_SIZE; id++) {
         const newItem = {
-          id: i.toString(),
-          title: `This is item ${i.toString()}`,
+          id,
+          title: `This is item ${id.toString()}`,
           wsId: '',
           level: 0,
           parentCategory: 'SAFARI',
@@ -154,9 +154,9 @@ const QuestionList = ({ title, parentCategory, level }: IParentInfo) => {
       if (categoryId === parentCategory!.toString() && questionId) {
         setTimeout(() => {
           if (canEdit)
-            editQuestion(questionId)
+            editQuestion(parseInt(questionId))
           else
-            viewQuestion(questionId)
+            viewQuestion(parseInt(questionId))
         }, 3000)
       }
     }

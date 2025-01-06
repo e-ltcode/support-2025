@@ -25,12 +25,14 @@ export enum FormMode {
 
 
 export interface IAnswer extends IRecord {
+	id?: number,
 	title: string,
 	level: number,
 	parentAnswerGroup?: IDBValidKey
 }
 
 export interface IAnswerGroup extends IRecord {
+	id: string,
 	parentAnswerGroup: IDBValidKey | null,
 	Name: string,
 	level: number,
