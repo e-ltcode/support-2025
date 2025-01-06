@@ -72,6 +72,28 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
 
   const getSubCats = useCallback(async ({ parentCategory, level }: IParentInfo): Promise<any> => {
     try {
+
+      try {
+        const tx = dbp!.transaction('Groups')
+        const index = tx.store.index('parentCategory_idx');
+        const list: ICategory[] = [];
+        for await (const cursor of index.iterate(parentCategory)) {
+          console.log(cursor.value);
+          list.push(cursor.value)
+        }
+        await tx.done;
+        const subCats = list.map((c: ICategory) => ({
+          ...c,
+          questions: [],
+          isExpanded: false
+        }))
+        return subCats;
+      }
+      catch (error: any) {
+        console.log(error)
+        dispatch({ type: ActionTypes.SET_ERROR, payload: { error } });
+      }
+
       // const url = `/api/categories/${wsId}-${parentCategory}`
       // const res = await axios.get(url)
       // const { status, data } = res;
@@ -103,8 +125,12 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
       const index = tx.store.index('parentCategory_idx');
       const list: ICategory[] = [];
       for await (const cursor of index.iterate(parentCategory)) {
-        console.log(cursor.value);
-        list.push(cursor.value)
+        const category: ICategory = cursor.value;
+        console.log(category);
+        const index = tx.store.index('parentCategory_idx');
+        const arr = await index.getAllKeys(category.id);
+        category.hasSubCategories = arr.length > 0;
+        list.push(category)
       }
       await tx.done;
       const subCategories = list.map((c: ICategory) => ({
@@ -115,8 +141,9 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
       }))
       dispatch({ type: ActionTypes.SET_SUB_CATEGORIES, payload: { subCategories } });
     }
-    catch (err) {
-      console.log(err)
+    catch (error: any) {
+      console.log(error)
+      dispatch({ type: ActionTypes.SET_ERROR, payload: { error } });
     }
     //console.log('FETCHING --->>> getSubCategories', level, parentCategory)
     //dispatch({ type: ActionTypes.SET_LOADING })
@@ -143,7 +170,7 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
       console.log('Category successfully created')
       dispatch({ type: ActionTypes.SET_ADDED_CATEGORY, payload: { category: { ...category, questions: [] } } });
       dispatch({ type: ActionTypes.CLOSE_CATEGORY_FORM })
-      }
+    }
     catch (error: any) {
       console.log('error', error);
       dispatch({ type: ActionTypes.SET_ERROR, payload: { error } });
@@ -166,7 +193,8 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
       dispatch({ type: ActionTypes.SET_ERROR, payload: { error: new Error("db is null") } });
       return;
     }
-    const category = await dbp.get("Groups", id);
+    const category: ICategory = await dbp.get("Groups", id);
+
     dispatch({
       type, payload: {
         category: {
@@ -201,7 +229,7 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
     try {
       const category = await dbp!.get('Groups', id);
       const obj: ICategory = {
-        ...category, 
+        ...category,
         title: c.title,
         modified: c.modified
       }
@@ -227,7 +255,7 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
       console.log('error', error);
       dispatch({ type: ActionTypes.SET_ERROR, payload: { error } });
     }
-    
+
   };
 
   /////////////
@@ -275,6 +303,20 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
 
   const createQuestion = useCallback(async (question: IQuestion, fromModal: boolean): Promise<any> => {
     try {
+      dispatch({ type: ActionTypes.SET_LOADING }) // TODO treba li ovo 
+      try {
+        const id = await dbp!.add('Questions', question);
+        const q: IQuestion = await dbp!.get("Questions", id);
+        question.id = id.toString();
+        console.log('Question successfully created')
+        // TODO check setting inViewing, inEditing, inAdding to false
+        dispatch({ type: ActionTypes.SET_ADDED_QUESTION, payload: { question } }); // first put id to question
+        dispatch({ type: ActionTypes.SET_QUESTION, payload: { question } });
+      }
+      catch (error: any) {
+        console.log('error', error);
+        dispatch({ type: ActionTypes.SET_ERROR, payload: { error } });
+      }
       // const url = '/api/questions/create-question'
       // const res = await axios.post(url, question)
       // const { status, data } = res;
@@ -321,8 +363,10 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
   const getQuestion = async (id: string, type: ActionTypes.VIEW_QUESTION | ActionTypes.EDIT_QUESTION) => {
     // const url = `/api/questions/get-question/${id}`;
     try {
-      const question = await dbp!.get("Questions", id);
+      const question: IQuestion = await dbp!.get("Questions", parseInt(id));
+      const category: ICategory = await dbp!.get("Groups", question.parentCategory)
       question.id = id;
+      question.categoryTitle = category.title;
       dispatch({ type, payload: { question } });
     }
     catch (error: any) {

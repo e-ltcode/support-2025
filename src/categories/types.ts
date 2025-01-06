@@ -64,6 +64,7 @@ export interface ICategory extends IRecord {
 	numOfQuestions: number;
 	hasMore?: boolean;
 	isExpanded?: boolean;
+	hasSubCategories?: boolean
 }
 
 export interface ICategoryInfo {
@@ -177,6 +178,7 @@ export enum ActionTypes {
 	// questions
 	LOAD_CATEGORY_QUESTIONS = 'LOAD_CATEGORY_QUESTIONS',
 	ADD_QUESTION = 'ADD_QUESTION',
+	SET_ADDED_QUESTION = 'SET_ADDED_QUESTION',
 	VIEW_QUESTION = 'VIEW_QUESTION',
 	EDIT_QUESTION = 'EDIT_QUESTION',
 
@@ -262,6 +264,10 @@ export type CategoriesPayload = {
 	[ActionTypes.ADD_QUESTION]: {
 		categoryInfo: ICategoryInfo;
 	}
+
+	[ActionTypes.SET_ADDED_QUESTION]: {
+		question: IQuestion
+	};
 
 	[ActionTypes.VIEW_QUESTION]: {
 		question: IQuestion;

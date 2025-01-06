@@ -15,9 +15,10 @@ import CategoryList from "categories/components/CategoryList";
 import AddCategory from "categories/components/AddCategory";
 import EditCategory from "categories/components/EditCategory";
 import ViewCategory from "categories/components/ViewCategory";
+import QuestionList from './questions/QuestionList';
 
 const CategoryRow = ({ category }: { category: ICategory }) => {
-    const { id, title, level, inViewing, inEditing, inAdding, numOfQuestions, isExpanded } = category;
+    const { id, title, level, inViewing, inEditing, inAdding, numOfQuestions, isExpanded, hasSubCategories } = category;
 
     const { canEdit, isDarkMode, variant, bg } = useGlobalState();
 
@@ -25,7 +26,7 @@ const CategoryRow = ({ category }: { category: ICategory }) => {
     const dispatch = useCategoryDispatch();
 
     const alreadyAdding = state.mode === Mode.AddingCategory;
-    // const showQuestions = true; //questions && !questions.find(q => q.inAdding)
+    const showQuestions = true; //questions && !questions.find(q => q.inAdding)
     // const numOfQuestions = questions.length; // We don't have questions loaded
 
     const del = () => {
@@ -62,7 +63,7 @@ const CategoryRow = ({ category }: { category: ICategory }) => {
                 className="py-0 px-1"
                 onClick={() => expand(id!)}
                 title="Expand"
-                disabled={alreadyAdding}
+                disabled={alreadyAdding} // || !hasSubCategories}
             >
                 <FontAwesomeIcon icon={isExpanded ? faCaretDown : faCaretRight} size='lg' />
             </Button>
@@ -180,9 +181,9 @@ const CategoryRow = ({ category }: { category: ICategory }) => {
                     {isExpanded &&
                         <>
                             <CategoryList level={level + 1} parentCategory={id!.toString()} title={title} />
-                            {/* {showQuestions &&
+                            {showQuestions &&
                                 <QuestionList level={level + 1} parentCategory={id!.toString()} title={title} />
-                            } */}
+                            }
                         </>
                     }
 

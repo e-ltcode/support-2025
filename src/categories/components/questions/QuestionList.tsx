@@ -167,8 +167,9 @@ const QuestionList = ({ title, parentCategory, level }: IParentInfo) => {
   return (
     <div
       ref={rootRef}
+      className="ms-2"
       // className="max-h-[500px] max-w-[500px] overflow-auto bg-slate-100"
-      style={{ height: '300px', overflowY: 'auto' }}
+      style={{ maxHeight: '300px', overflowY: 'auto' }}
     >
       <List>
         {questions.map((question: IQuestion) => {

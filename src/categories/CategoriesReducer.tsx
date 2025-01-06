@@ -273,7 +273,7 @@ const reducer = (state: ICategoriesState, action: CategoriesActions) => {
       return {
         ...state,
         categories: state.categories.map(c => c.id === category.id
-          ? { ...category, inEditing: true, isExpanded: c.isExpanded }
+          ? { ...category, inEditing: true, isExpanded: false } //c.isExpanded }
           : { ...c, inEditing: false }
         ),
         mode: Mode.EditingCategory,
@@ -319,7 +319,7 @@ const reducer = (state: ICategoriesState, action: CategoriesActions) => {
           ? { ...c, inViewing: c.inViewing, inEditing: c.inEditing, isExpanded: expanding }
           : c
         ),
-        mode: expanding ? state.mode : Mode.NULL,  // TODO  close form only if inside of colapsed node
+        mode: expanding ? Mode.NULL : state.mode,// expanding ? state.mode : Mode.NULL,  // TODO  close form only if inside of colapsed node
         currentCategoryExpanded: expanding ? id : state.currentCategoryExpanded
       };
     }
@@ -341,6 +341,30 @@ const reducer = (state: ICategoriesState, action: CategoriesActions) => {
           ? { ...c, questions: [question, ...c.questions], inAdding: true }
           : { ...c, inAdding: false }),
         mode: Mode.AddingQuestion
+      };
+    }
+
+    case ActionTypes.SET_ADDED_QUESTION: {
+      const { question } = action.payload;
+      const { parentCategory, id } = question;
+      const inAdding = state.mode === Mode.AddingQuestion;
+      const categories = state.categories.map(c => c.id === parentCategory
+        ? {
+          ...c,
+          questions: inAdding
+            ? c.questions.map(q => q.inAdding ? {...question, id, inAdding: false} : q)
+            : c.questions,
+          inViewing: false,
+          inEditing: false,
+          inAdding: false
+        }
+        : c
+      );
+      return {
+        ...state,
+        categories,
+        mode: Mode.NULL,
+        loading: false
       };
     }
 
