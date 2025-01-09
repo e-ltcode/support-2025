@@ -37,10 +37,10 @@ export const initialState: ICategoriesState = {
   currentCategoryExpanded: '',
   lastCategoryExpanded: null,
   categoryId_questionId_done: null,
-  parentCategories: {
+  parentNodes: {
     categoryId: null,
     questionId: null,
-    categoryIds: null
+    parentNodesIds: null
   },
   loading: false,
   questionLoading: false
@@ -68,11 +68,11 @@ if ('localStorage' in window) {
       initialStateFromLocalStorage = undefined;
     }
     else {
-      const { currentCategoryExpanded, parentCategories } = initialStateFromLocalStorage!;
+      const { currentCategoryExpanded, parentNodes } = initialStateFromLocalStorage!;
       initialStateFromLocalStorage = {
         ...initialStateFromLocalStorage!,
         lastCategoryExpanded: currentCategoryExpanded,
-        parentCategories
+        parentNodes
       }
       console.log('categories initialState FromLocalStorage', { initialStateFromLocalStorage });
     }
@@ -125,13 +125,13 @@ const reducer = (state: ICategoriesState, action: CategoriesActions) => {
       }
 
     case ActionTypes.SET_PARENT_CATEGORIES: {
-      const { parentCategories } = action.payload;
-      console.log("SET_PARENT_CATEGORIES", parentCategories)
+      const { parentNodes } = action.payload;
+      console.log("SET_PARENT_CATEGORIES", parentNodes)
       return {
         ...state,
-        parentCategories,
+        parentNodes,
         lastCategoryExpanded: null,
-        categoryId_questionId_done: `${parentCategories.categoryId}_${parentCategories.questionId}`,
+        categoryId_questionId_done: `${parentNodes.categoryId}_${parentNodes.questionId}`,
       };
     }
 

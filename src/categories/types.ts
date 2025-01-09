@@ -45,6 +45,7 @@ export interface IFromUserAssignedAnswer {
 export interface IQuestion extends IRecord {
 	id?: number,
 	title: string,
+	words?: string[],
 	level: number,
 	parentCategory: string,
 	categoryTitle?: string,
@@ -79,7 +80,8 @@ export interface IParentInfo {
 	level: number,
 	title?: string, // to easier follow getting the list of sub-categories
 	inAdding?: boolean,
-	startCursor?: number
+	startCursor?: number,
+	includeQuestionId?: number
 }
 
 export interface ICatInfo {
@@ -94,7 +96,7 @@ export interface ICategoriesState {
 	currentCategoryExpanded: string,
 	lastCategoryExpanded: string | null;
 	categoryId_questionId_done: string | null;
-	parentCategories: IParentCategories;
+	parentNodes: IParentCategories;
 	loading: boolean,
 	questionLoading: boolean,
 	error?: Error;
@@ -152,7 +154,7 @@ export interface IQuestionFormProps {
 export interface IParentCategories {
 	categoryId: string | null;
 	questionId: string | null;
-	categoryIds: string[] | null;
+	parentNodesIds: string[] | null;
 }
 
 
@@ -205,7 +207,7 @@ export type CategoriesPayload = {
 
 
 	[ActionTypes.SET_PARENT_CATEGORIES]: {
-		parentCategories: IParentCategories
+		parentNodes: IParentCategories
 	};
 
 	[ActionTypes.SET_SUB_CATEGORIES]: {

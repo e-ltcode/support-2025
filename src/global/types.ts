@@ -163,4 +163,17 @@ export interface IUser extends IRecord {
 	confirmed: boolean
 }
 
+export interface IQuestionData {
+	title: string;
+	source: number;
+	status: number;
+}
+
+export interface ICategoryData {
+	id: string,
+	title: string,
+	categories?: ICategoryData[],
+	questions?: IQuestionData[]
+}
+
 export type GlobalActions = ActionMap<GlobalPayload>[keyof ActionMap<GlobalPayload>];

@@ -2,49 +2,104 @@
   {
     "id": "EXT",
     "title": "Chrome Extensions",
-    "level": 1
-  },
-  {
-    "id": "CHROME",
-    "title": "Chrome",
-    "parentCategory": "EXT",
-    "level": 2,
-    "questions": [
-      {"title": "Does Chrome support Manifest 3 Extensions?", "source": 0, "status": 0  }
+    "categories": [
+      {
+        "id": "CHROME",
+        "title": "Chrome",
+        "questions": [
+          {
+            "title": "Does Chrome support Manifest 3 Extensions?",
+            "source": 0,
+            "status": 0
+          }
+        ]
+      },
+      {
+        "id": "EDGE",
+        "title": "Edge",
+        "categories": [
+          {
+            "id": "EDGE2",
+            "title": "Edge2",
+            "questions": [
+              {
+                "title": "Does Microsoft Edge support extensions?",
+                "source": 0,
+                "status": 0
+              },
+              {
+                "title": "What file type are Microsoft Edge extensions?",
+                "source": 0,
+                "status": 0
+              },
+              {
+                "title": "Where is Edge extension data stored?",
+                "source": 0,
+                "status": 0
+              },
+              {
+                "title": "Is Microsoft Edge extension safe?",
+                "source": 0,
+                "status": 0
+              }
+            ]
+          },
+          {
+            "id": "EDGE3",
+            "title": "Edge3",
+            "questions": [
+              {
+                "title": "Can you install Extensions in Safari for Mac?",
+                "source": 0,
+                "status": 0
+              },
+              {
+                "title": "How do I install Chrome Extensions on Safari?",
+                "source": 0,
+                "status": 0
+              },
+              {
+                "title": "Does you fuck regurarly on safari?",
+                "source": 0,
+                "status": 0
+              },
+              {
+                "title": "Where is the Safari Extensions folder?",
+                "source": 0,
+                "status": 0
+              },
+              {
+                "title": "Does safari fuck?",
+                "source": 0,
+                "status": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "SAFARI",
+        "title": "Safari",
+        "level": 2,
+        "questions": [
+          {
+            "title": "FIKTIVNO?",
+            "source": 0,
+            "status": 0
+          }
+        ]
+      }
     ]
-
-  },
-  {
-    "id": "EDGE",
-    "title": "Edge",
-    "parentCategory": "EXT",
-    "level": 2,
-    "questions": [
-      {"title": "Does Microsoft Edge support extensions?", "source": 0, "status": 0  },
-      {"title": "What file type are Microsoft Edge extensions?", "source": 0, "status": 0  },
-      {"title": "Where is Edge extension data stored?", "source": 0, "status": 0  },
-      {"title": "Is Microsoft Edge extension safe?", "source": 0, "status": 0  },
-      
-      {"title": "Can you install Extensions in Safari for Mac?", "source": 0, "status": 0  },
-      {"title": "How do I install Chrome Extensions on Safari?", "source": 0, "status": 0  },
-      {"title": "Does you fuck regurarly on safari?", "source": 0, "status": 0  },
-      {"title": "Where is the Safari Extensions folder?", "source": 0, "status": 0  },
-      {"title": "Does safari fuck?", "source": 0, "status": 0  }
-    ]
-  },
-  {
-    "id": "SAFARI",
-    "title": "Safari",
-    "parentCategory": "EXT",
-    "level": 2,
-    "questions": [{"title": "FIKTIVNO?", "source": 0, "status": 0  }]
   },
   {
     "id": "FEAT",
     "title": "Features",
-    "level": 1,
     "questions": [
-      {"title": "Does you fuck often?", "source": 0, "status": 0  }
+      {
+        "title": "Does you fuck often?",
+        "source": 0,
+        "status": 0
+      }
     ]
   },
   {

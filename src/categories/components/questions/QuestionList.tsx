@@ -125,15 +125,16 @@ const QuestionList = ({ title, parentCategory, level }: IParentInfo) => {
   const { canEdit } = useGlobalState();
 
   const { state, loadCategoryQuestions, editQuestion, viewQuestion } = useCategoryContext();
-  const { parentCategories, categories, questionLoading, error } = state;
-  const { categoryId, questionId } = parentCategories!;
+  const { parentNodes, categories, questionLoading, error } = state;
+  const { categoryId, questionId } = parentNodes!;
 
   const category = categories.find(c => c.id === parentCategory)!
   const { questions, numOfQuestions, hasMore } = category;
 
   async function loadMore() {
     try {
-      await loadCategoryQuestions({ parentCategory, startCursor: questions.length, level: 0 });
+      const includeQuestionId = parentNodes.questionId ? parseInt(parentNodes.questionId) : undefined;
+      await loadCategoryQuestions({ parentCategory, startCursor: questions.length, level: 0, includeQuestionId});
     }
     catch (error_) {
     }

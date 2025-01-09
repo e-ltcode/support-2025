@@ -18,7 +18,7 @@ import ViewCategory from "categories/components/ViewCategory";
 import QuestionList from './questions/QuestionList';
 
 const CategoryRow = ({ category }: { category: ICategory }) => {
-    const { id, title, level, inViewing, inEditing, inAdding, numOfQuestions, isExpanded, hasSubCategories } = category;
+    const { id, title, level, inViewing, inEditing, inAdding, questions,numOfQuestions, isExpanded, hasSubCategories } = category;
 
     const { canEdit, isDarkMode, variant, bg } = useGlobalState();
 
@@ -26,7 +26,7 @@ const CategoryRow = ({ category }: { category: ICategory }) => {
     const dispatch = useCategoryDispatch();
 
     const alreadyAdding = state.mode === Mode.AddingCategory;
-    const showQuestions = true; //questions && !questions.find(q => q.inAdding)
+    const showQuestions = questions && !questions.find(q => q.inAdding) //&& questions.length > 0
     // const numOfQuestions = questions.length; // We don't have questions loaded
 
     const del = () => {

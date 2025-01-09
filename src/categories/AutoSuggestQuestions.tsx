@@ -5,10 +5,11 @@ import AutosuggestHighlightParse from "autosuggest-highlight/parse";
 import { isMobile } from 'react-device-detect'
 
 import './AutoSuggestQuestions.css'
-import { IDBPDatabase } from 'idb';
+import { IDBPCursorWithValue, IDBPCursorWithValueIteratorValue, IDBPDatabase } from 'idb';
+import { IQuestion } from './types';
 
 interface IQuestionShort {
-	id: string;
+	id: number;
 	parentCategory: string;
 	title: string;
 }
@@ -26,7 +27,7 @@ interface IQuestionRow {
 	categoryTitle: string,
 	parentCategoryUp: string,
 	categoryParentTitle: string, // TODO ???
-	id: string,
+	id: number,
 	parentCategory: string,
 	title: string
 }
@@ -55,7 +56,7 @@ export class AutoSuggestQuestions extends React.Component<{
 	dbp: IDBPDatabase,
 	wsId: string,
 	tekst: string | undefined,
-	onSelectQuestion: (categoryId: string, questionId: string) => void
+	onSelectQuestion: (categoryId: string, questionId: number) => void
 }, any
 > {
 	// region Fields
@@ -227,54 +228,65 @@ export class AutoSuggestQuestions extends React.Component<{
 		if (!this.dbp || value.length < 2)
 			return;
 
-		//const search = encodeURIComponent(value.trim().replaceAll('?', ''));
-		const search = value.trim().toLowerCase().replaceAll('?', '');
+		const tx = this.dbp!.transaction(['Groups', 'Questions'], 'readwrite');
+		const index = tx.objectStore('Questions').index('words_idx');
+		const questionRows: IQuestionRow[] = [];
+		//const mapParentCategoryTitle = new Map<string, string>();
+
 		try {
-			const tx = this.dbp!.transaction(['Groups', 'Questions'], 'readwrite');
-			const groupsStore = tx.objectStore('Groups')
-			// const index = tx.store.index('title_idx');
-			const questionRows: IQuestionRow[] = [];
-			for await (const cursor of tx.objectStore('Questions').iterate()) {
-				const q = { ...cursor.value, id: cursor.key }
-				if (q.title.toLowerCase().includes(search)) {
-					let category = await groupsStore.get(q.parentCategory);
-					const categoryTitle = category.title;
-					const parentCategoryUp = '';
+			//const search = encodeURIComponent(value.trim().replaceAll('?', ''));
+			const searchWords: string[] = value.trim().toLowerCase().replaceAll('?', '').split(' ');
+			let i = 0;
+			//searchWords.forEach(async word => {
+			while (i < searchWords.length) {
+				// let cursor: IDBPCursorWithValue<unknown, string[], "Questions", "words_idx", "readwrite">|null = 
+				// 		await index.openCursor(word);
+				// while (cursor) {
+				// 	console.log(cursor.key, cursor.value);
+				for await (const cursor of index.iterate(searchWords[i])) {
+					const q: IQuestion = { ...cursor!.value, id: parseInt(cursor!.primaryKey.toString()) }
 					const row: IQuestionRow = {
+						id: q.id!,
 						categoryId: q.parentCategory,
-						categoryTitle,
+						categoryTitle: '',
 						categoryParentTitle: '',
-						parentCategoryUp,
-						id: q.id,
+						parentCategoryUp: '',
 						title: q.title,
 						parentCategory: q.parentCategory
 					}
-					questionRows.push(row)
+					if (!questionRows.find(({ id }) => id === q.id))
+						questionRows.push(row);
+					//cursor = await cursor.continue();
 				}
-				console.log(q);
-				//questions.push({ ...cursor.value, id: cursor.key })
-				/*
-				const z = {
-					"_id": "645250c80081ac3894275619",
-					"parentCategoryUp": "",
-					"categoryParentTitle": "Featuressss",
-					"categoryTitle": "Taxes",
-					"questions": [
-						{
-							"_id": "645250c80081ac3894275625",
-							"title": "Does Chrome support Manifest 3 Extensions?\n",
-							"parentCategory": "645250c80081ac3894275619"
-						}
-					]
-				}
-				*/
+				i++;
 			}
+		}
+		catch (error: any) {
+			console.debug(error)
+		};
+
+		if (questionRows.length === 0)
+			return;
+
+		try {
+			const groupsStore = tx.objectStore('Groups')
+			const mapParentCategoryTitle = new Map<string, string>();
+			questionRows.forEach(async (row) => {
+				if (!mapParentCategoryTitle.has(row.parentCategory)) {
+					const category = await groupsStore.get(row.parentCategory);
+					mapParentCategoryTitle.set(category.id, category.title)
+				}
+			})
 
 			const map = new Map<string, IQuestionRow[]>();
-			questionRows.forEach((row) => {
-				map.has(row.categoryId)
-					? map.get(row.categoryId)!.push(row)
-					: map.set(row.categoryId, [row])
+			questionRows.forEach(async (row) => {
+				row.categoryTitle = mapParentCategoryTitle.get(row.categoryId)!;
+				if (!map.has(row.categoryId)) {
+					map.set(row.categoryId, [row]);
+				}
+				else {
+					map.get(row.categoryId)!.push(row);
+				}
 			});
 			console.log('map', map)
 
@@ -301,7 +313,7 @@ export class AutoSuggestQuestions extends React.Component<{
 						category = await groupsStore.get(category.parentCategory);
 						categoryParentTitle += '/' + category.title;
 					}
-		
+
 					if (questionRowShort.categoryId === '') {
 						questionRowShort.categoryId = categoryId;
 						questionRowShort.categoryTitle = categoryTitle;
@@ -319,23 +331,42 @@ export class AutoSuggestQuestions extends React.Component<{
 		catch (error: any) {
 			console.log(error)
 		};
-		// axios
-		// 	.get(`/api/questions/get-questions/${this.wsId}/${search}`)
-		// 	.then(({ data }) => {
-		// 		console.log('samo stampaj sta dolazi:', { data })
-		// 		this.setState({
-		// 			suggestions: data,
-		// 			noSuggestions: data.length === 0
-		// 		})
 
-		// 		this.setState({ suggestions: data })
-		// 		//dispatch({ type, payload: { question } });
-		// 	})
-		// 	.catch((error) => {
-		// 		console.log(error);
-		// 		//dispatch({ type: ActionTypes.SET_ERROR, payload: error });
-		// 	});
+		//questions.push({ ...cursor.value, id: cursor.key })
+		/*
+		const z = {
+			"_id": "645250c80081ac3894275619",
+			"parentCategoryUp": "",
+			"categoryParentTitle": "Featuressss",
+			"categoryTitle": "Taxes",
+			"questions": [
+				{
+					"_id": "645250c80081ac3894275625",
+					"title": "Does Chrome support Manifest 3 Extensions?\n",
+					"parentCategory": "645250c80081ac3894275619"
+				}
+			]
+		}
+		*/
 	}
+
+	// axios
+	// 	.get(`/api/questions/get-questions/${this.wsId}/${search}`)
+	// 	.then(({ data }) => {
+	// 		console.log('samo stampaj sta dolazi:', { data })
+	// 		this.setState({
+	// 			suggestions: data,
+	// 			noSuggestions: data.length === 0
+	// 		})
+
+	// 		this.setState({ suggestions: data })
+	// 		//dispatch({ type, payload: { question } });
+	// 	})
+	// 	.catch((error) => {
+	// 		console.log(error);
+	// 		//dispatch({ type: ActionTypes.SET_ERROR, payload: error });
+	// 	});
+
 
 	private anyWord = (valueWordRegex: RegExp[], questionWords: string[]): boolean => {
 		for (let valWordRegex of valueWordRegex)

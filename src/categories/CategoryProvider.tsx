@@ -23,8 +23,8 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
   const { wsId } = globalState.authUser;
 
   const [state, dispatch] = useReducer(CategoriesReducer, initialCategoriesState);
-  const { parentCategories } = state;
-  const { categoryIds } = parentCategories!;
+  const { parentNodes } = state;
+  const { parentNodesIds } = parentNodes!;
 
   const reloadCategoryNode = useCallback(async (categoryId: string, questionId: string | null): Promise<any> => {
     try {
@@ -41,10 +41,10 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
       }
       dispatch({
         type: ActionTypes.SET_PARENT_CATEGORIES, payload: {
-          parentCategories: {
+          parentNodes: {
             categoryId,
             questionId,
-            categoryIds: ids.map(c => c.id)
+            parentNodesIds: ids.map(c => c.id)
           }
         }
       })
@@ -55,10 +55,10 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
       //   console.log('!!! get-parent-categories', { cId: categoryId.toString(), data })
       //   dispatch({
       //     type: ActionTypes.SET_PARENT_CATEGORIES, payload: {
-      //       parentCategories: {
+      //       parentNodes: {
       //         categoryId,
       //         questionId,
-      //         categoryIds: data.map((c: { _id: string, title: string }) => c._id)
+      //         parentNodesIds: data.map((c: { _id: string, title: string }) => c._id)
       //       }
       //     }
       //   })
@@ -137,7 +137,7 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
         ...c,
         questions: [],
         hasMore: true,
-        isExpanded: categoryIds ? categoryIds.includes(c.id) : false
+        isExpanded: parentNodesIds ? parentNodesIds.includes(c.id) : false
       }))
       dispatch({ type: ActionTypes.SET_SUB_CATEGORIES, payload: { subCategories } });
     }
@@ -153,7 +153,7 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
     //     const subCategories = data.map((c: ICategory) => ({
     //       ...c,
     //       questions: [],
-    //       isExpanded: categoryIds ? categoryIds.includes(c._id!.toString()) : false
+    //       isExpanded: parentNodesIds ? parentNodesIds.includes(c._id!.toString()) : false
     //     }))
     //     dispatch({ type: ActionTypes.SET_SUB_CATEGORIES, payload: { subCategories } });
     //   })
@@ -161,7 +161,7 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
     //     console.log(error);
     //     dispatch({ type: ActionTypes.SET_ERROR, payload: error });
     //   });
-  }, [wsId, categoryIds]);
+  }, [wsId, parentNodesIds]);
 
   const createCategory = useCallback(async (category: ICategory) => {
     dispatch({ type: ActionTypes.SET_LOADING }) // TODO treba li ovo 
@@ -262,11 +262,13 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
   //
 
   const pageSize = 12;
-  const loadCategoryQuestions = useCallback(async ({ parentCategory, startCursor }: IParentInfo): Promise<any> => {
+  const loadCategoryQuestions = useCallback(async ({ parentCategory, startCursor, includeQuestionId }: IParentInfo)
+          : Promise<any> => {
     const questions: IQuestion[] = [];
     try {
       dispatch({ type: ActionTypes.SET_CATEGORY_QUESTIONS_LOADING, payload: { questionLoading: true } }) // id: parentCategory,
       let n = 0;
+      let included = false; 
       let hasMore = false;
       let advanced = false;
       console.time();
@@ -280,7 +282,10 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
         else {
           console.log(cursor.value.title);
           questions.push({ ...cursor.value, id: cursor.primaryKey })
-          if (++n === pageSize) {
+          n++;
+          if (includeQuestionId && cursor.primaryKey === includeQuestionId)
+            included = true;
+          if (n >= pageSize && (includeQuestionId ? included : true)) {
             hasMore = true;
             break;
           }
@@ -301,7 +306,6 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
 
 
   const createQuestion = useCallback(async (question: IQuestion, fromModal: boolean): Promise<any> => {
-    try {
       dispatch({ type: ActionTypes.SET_LOADING }) // TODO treba li ovo 
       try {
         const id = await dbp!.add('Questions', question);
@@ -309,51 +313,15 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
         console.log('Question successfully created')
         // TODO check setting inViewing, inEditing, inAdding to false
         dispatch({ type: ActionTypes.SET_QUESTION, payload: { question } });
+        return question;
       }
       catch (error: any) {
         console.log('error', error);
+        if (fromModal)
+          return { message: 'Something is wrong' };
         dispatch({ type: ActionTypes.SET_ERROR, payload: { error } });
+        return {};
       }
-      // const url = '/api/questions/create-question'
-      // const res = await axios.post(url, question)
-      // const { status, data } = res;
-      // if (status === 200) {
-      //   console.log("Question successfully created");
-      //   // TODO check setting inViewing, inEditing, inAdding to false
-      //   dispatch({ type: ActionTypes.SET_QUESTION, payload: { question: data } });
-      //   return data;
-      // }
-      // else {
-      //   console.log('Status is not 200', status)
-      //   if (fromModal)
-      //     return { message: 'Status is not 200, ' + status };
-
-      //   dispatch({
-      //     type: ActionTypes.SET_ERROR,
-      //     payload: {
-      //       error: new Error('Status is not 200 status:' + status)
-      //     }
-      //   })
-      //   return {};
-      // }
-    }
-    catch (err: any | Error) {
-      // if (axios.isError(err)) {
-      //   if (fromModal)
-      //     return { message: err.response?.data };
-
-      //   dispatch({
-      //     type: ActionTypes.SET_ERROR,
-      //     payload: {
-      //       error: new Error(axios.isError(err) ? err.response?.data : err)
-      //     }
-      //   })
-      //}
-      //else {
-      console.log(err);
-      //}
-      return {}
-    }
   }, []);
 
 

@@ -3,13 +3,13 @@ import React, { createContext, useContext, useReducer, Dispatch, useCallback } f
 import { IGlobalContext, ILoginUser, ROLES, GlobalActionTypes } from 'global/types'
 import { globalReducer, initialGlobalState } from "global/globalReducer";
 
-import { IUser } from "global/types";
+import { IUser, ICategoryData, IQuestionData } from "global/types";
 import { ICategory, IQuestion } from "categories/types";
 import { IDBPDatabase, openDB } from 'idb'
 
 //////////////////
 // Initial data
-import data from 'question-groups.json';
+import categoryData from 'question-groups.json';
 
 const GlobalContext = createContext<IGlobalContext>({} as any);
 const GlobalDispatchContext = createContext<Dispatch<any>>(() => null);
@@ -159,34 +159,29 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
     // }
   }, [globalState.authUser.wsId]);
 
+  // const sleep = (ms: number | undefined) => new Promise(r => setTimeout(r, ms));
 
-  const sleep = (ms: number | undefined) => new Promise(r => setTimeout(r, ms));
+  const addCategory = async (categoryData: ICategoryData) : Promise<void> => {
+    Promise.resolve();
+  }
 
   const addInitialData = async (dbp: IDBPDatabase): Promise<void> => {
     new Promise<void>(async (resolve) => {
       // Open a read/write DB transaction, ready for adding the data
       const tx = dbp.transaction(['Groups', 'Questions'], 'readwrite');
       try {
-        data.forEach(async g => {
-          const { id, level, parentCategory, title } = g;
-          let questions = [];
-          if (id !== 'SAFARI') {
-            questions = g.questions ?? [];
-          }
-          else {
-            const q = {
-              title: '',
-              source: 0,
-              status: 0,
-            }
-            for (var i = 999; i > 100; i--) {
-              questions!.push({ ...q, title: 'Zagor' + i });
-            }
-          }
+        let i = 0;
+        const data: ICategoryData[] = categoryData;
+        while (i < data.length) {
+          addCategory(data[i])
+
+          const g = data[i];
+          const level = 1
+          const { id, title, categories, questions } = g;
           const group: ICategory = {
             wsId: '',
             id,
-            parentCategory: parentCategory ?? 'null',
+            parentCategory: 'null',
             title,
             level,
             questions: [],
@@ -201,22 +196,123 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
           }
           await dbp.add('Groups', group);
           console.log('group added', group);
+          // categories
+          if (categories) {
+            const parentCategory = group.id;
+            let j = 0;
+            const parentCategories = categories;
+            while(j < parentCategories.length) {
+              let g = parentCategories[j];
+              const { id, title, categories, questions } = g;
+              const group: ICategory = {
+                wsId: '',
+                id,
+                parentCategory,
+                title,
+                level: level + 1,
+                questions: [],
+                numOfQuestions: 0, //questions?.length || 0,
+                created: {
+                  date: new Date(),
+                  by: {
+                    userId: '',
+                    userName: 'ADMIN'
+                  }
+                },
+              }
+              await dbp.add('Groups', group);
+              console.log('group added', group);
+              // categories
+              if (categories) {
+                const parentCategory = group.id;
+                let j = 0;
+                const parentCategories = categories;
+                while(j < parentCategories.length) {
+                  let g = parentCategories[j];
+                  const { id, title, categories, questions } = g;
+                  const group: ICategory = {
+                    wsId: '',
+                    id,
+                    parentCategory,
+                    title,
+                    level: level + 1,
+                    questions: [],
+                    numOfQuestions: 0, //questions?.length || 0,
+                    created: {
+                      date: new Date(),
+                      by: {
+                        userId: '',
+                        userName: 'ADMIN'
+                      }
+                    },
+                  }
+                  await dbp.add('Groups', group);
+                  console.log('group added', group);
+                  // questions
+                  if (questions) {
+                    let i = 0;
+                    while(i < questions.length) {
+                      const qData = questions[i]
+                      const question: IQuestion = {
+                        parentCategory,
+                        title: qData.title,
+                        words: qData.title.toLowerCase().replaceAll('?', '').split(' '),
+                        source: 0,
+                        status: 0,
+                        questionAnswers: [],
+                        level: 2,
+                        wsId: ""
+                      }
+                      await dbp.add('Questions', question);
+                      i++;
+                    }
+                  }
+                  j++;
+                }
+              }              
+              // questions
+              if (questions) {
+                let i = 0;
+                while(i < questions.length) {
+                  const qData = questions[i]
+                  const question: IQuestion = {
+                    parentCategory,
+                    title: qData.title,
+                    words: qData.title.toLowerCase().replaceAll('?', '').split(' '),
+                    source: 0,
+                    status: 0,
+                    questionAnswers: [],
+                    level: 2,
+                    wsId: ""
+                  }
+                  await dbp.add('Questions', question);
+                  i++;
+                }
+              }
+              j++;
+            }
+          }
+          // questions
           if (questions) {
-            questions.forEach(async q => {
+            let i = 0;
+            while(i < questions.length) {
+              const qData = questions[i]
               const question: IQuestion = {
                 parentCategory: group.id,
-                title: q.title,
+                title: qData.title,
+                words: qData.title.toLowerCase().replaceAll('?', '').split(' '),
                 source: 0,
                 status: 0,
                 questionAnswers: [],
                 level: 2,
                 wsId: ""
               }
-              await sleep(100)
               await dbp.add('Questions', question);
-            })
+              i++;
+            }
           }
-        })
+          i++;
+        }
         console.log('trans complete')
         // dispatch({ type: GlobalActionTypes.SET_DBP, payload: { dbp } })
         resolve();
@@ -244,7 +340,7 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
 
           // Questions
           const questionsStore = db.createObjectStore('Questions', { autoIncrement: true });
-          //questionsStore.createIndex('title_idx', 'title, ', { unique: true });
+          questionsStore.createIndex('words_idx', 'words', { multiEntry: true, unique: false });
           questionsStore.createIndex('parentCategory_title_idx', ['parentCategory', 'title'], { unique: true });
           questionsStore.createIndex('parentCategory_idx', 'parentCategory', { unique: false });
           // IDBKeyRange
@@ -300,3 +396,18 @@ export const useGlobalState = () => {
   const { globalState } = useGlobalContext()
   return globalState;
 }
+
+
+// if (id === 'SAFARI') {
+//   const q = {
+//     title: '',
+//     source: 0,
+//     status: 0,
+//   }
+//   for (var i = 999; i > 100; i--) {
+//     questions!.push({ ...q, title: 'Zagor' + i });
+//   }
+// }
+// else {
+//   questions = g.questions ?? [];
+// }

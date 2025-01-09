@@ -30,6 +30,9 @@ const EditQuestion = ({ inLine }: { inLine: boolean }) => {
         }
     };
 
+    if (!question)
+        return null;
+
     return (
         <QuestionForm
             question={question!}

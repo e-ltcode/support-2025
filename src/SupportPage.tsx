@@ -32,7 +32,7 @@ const SupportPage: React.FC = () => {
 	// if (!isAuthenticated)
 	//     return <div>loading...</div>;
 
-	const onSelectQuestion = async (categoryId: string, questionId: string) => {
+	const onSelectQuestion = async (categoryId: string, questionId: number) => {
 		navigate(`/categories/${categoryId.toString()}_${questionId.toString()}`)
 	}
 
