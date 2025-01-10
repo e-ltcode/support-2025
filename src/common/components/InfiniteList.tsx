@@ -1,28 +1,53 @@
-import { IQuestion } from 'categories/types';
-import { useState } from 'react';
+import React, { forwardRef } from "react";
 
-const ARRAY_SIZE = 20;
-const RESPONSE_TIME_IN_MS = 1000;
+export type ListProps = {
+  direction?: 'vertical' | 'horizontal';
+  children: React.ReactNode;
+};
 
-// export interface IQuestion {
-//   key: number;
-//   value: string;
-// }
+export type ListItemProps = {
+  children: React.ReactNode;
+};
 
+export function List({ direction, ...rest }: ListProps) {
+  return (
+    <ul
+      className={`p-0 ${direction === 'horizontal' ? 'flex' : 'block'} list-group list-group-darkr`}
+      {...rest}
+    />
+  );
+}
+
+export const ListItem = forwardRef<React.ComponentRef<'li'>, ListItemProps>(
+  function ListItem(props, ref) {
+    return <li ref={ref} className="m-0 border bg-slate-200 p-0" {...props} />;
+  },
+);
+
+export function Loading() {
+  return (
+    <div className="animate-pulse bg-slate-600 p-2 text-white">Loading...</div>
+  );
+}
+
+/*
 interface Response {
   hasNextPage: boolean;
   data: IQuestion[];
 }
+
+const ARRAY_SIZE = 20;
+const RESPONSE_TIME_IN_MS = 1000;
 
 function loadItems(startCursor = 0): Promise<Response> {
   return new Promise((resolve) => {
     let newArray: IQuestion[] = [];
 
     setTimeout(() => {
-      for (let i = startCursor; i < startCursor + ARRAY_SIZE; i++) {
+      for (let id = startCursor; id < startCursor + ARRAY_SIZE; id++) {
         const newItem = {
-          id: i,
-          title: `This is item ${i.toString()}`,
+          id,
+          title: `This is item ${id.toString()}`,
           wsId: '',
           level: 0,
           parentCategory: 'SAFARI',
@@ -38,6 +63,7 @@ function loadItems(startCursor = 0): Promise<Response> {
   });
 }
 
+
 export function useLoadQuestions() {
   const [loading, setLoading] = useState(false);
   const [questions, setQuestions] = useState<IQuestion[]>([]);
@@ -47,9 +73,7 @@ export function useLoadQuestions() {
   async function loadMore() {
     setLoading(true);
     try {
-      const { data, hasNextPage: newHasNextPage } = await loadItems(
-        questions.length,
-      );
+      const { data, hasNextPage: newHasNextPage } = await loadItems(questions.length);
       setQuestions((current) => [...current, ...data]);
       setHasNextPage(newHasNextPage);
     }
@@ -65,3 +89,4 @@ export function useLoadQuestions() {
 
   return { loading, questions, hasNextPage, error, loadMore };
 }
+*/

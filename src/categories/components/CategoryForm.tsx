@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Form, CloseButton } from "react-bootstrap";
@@ -20,8 +20,9 @@ const CategoryForm = ({ inLine, mode, category, submitForm, children }: ICategor
   if (!document.getElementById('div-details')) {
 
   }
-  const showQuestions = questions && !questions.find(q => q.inAdding);
-  /* We have, at two places:
+  const showQuestions = !questions.find(q => q.inAdding);
+  /* 
+  We have, at two places:
     <EditCategory inLine={true} />
     <EditCategory inLine={false} />
     so we execute loadCategoryQuestions() twice in QuestionList, but OK

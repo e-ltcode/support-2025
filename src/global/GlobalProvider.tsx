@@ -9,7 +9,7 @@ import { IDBPDatabase, IDBPTransaction, openDB } from 'idb'
 
 //////////////////
 // Initial data
-import categoryData from 'question-groups.json';
+import categoryData from './categories.json';
 
 const GlobalContext = createContext<IGlobalContext>({} as any);
 const GlobalDispatchContext = createContext<Dispatch<any>>(() => null);
@@ -181,10 +181,11 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
       }
     }
 
-    const group: ICategory = {
+    const cat: ICategory = {
       wsId: '',
       id,
       parentCategory,
+      hasSubCategories: categories ? categories.length > 0 : false,
       title,
       level,
       questions: [],
@@ -197,15 +198,15 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
         }
       },
     }
-    await dbp.add('Groups', group);
-    console.log('group added', group);
+    await dbp.add('Categories', cat);
+    console.log('category added', cat);
     
     if (questions) {
       let i = 0;
       while (i < questions.length) {
         const qData = questions[i]
         const question: IQuestion = {
-          parentCategory: group.id,
+          parentCategory: cat.id,
           title: qData.title,
           words: qData.title.toLowerCase().replaceAll('?', '').split(' '),
           source: 0,
@@ -220,7 +221,7 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
     }
 
     if (categories) {
-      const parentCategory = group.id;
+      const parentCategory = cat.id;
       let j = 0;
       const parentCategories = categories;
       while (j < parentCategories.length) {
@@ -238,7 +239,7 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
         const level = 1;
         let i = 0;
         const data: ICategoryData[] = categoryData;
-        const tx = dbp.transaction(['Groups', 'Questions'], 'readwrite');
+        const tx = dbp.transaction(['Categories', 'Questions'], 'readwrite');
         while (i < data.length) {
           addCategory(dbp, data[i], 'null', level);
           i++;
@@ -262,8 +263,8 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
         upgrade(db, oldVersion, newVersion, transaction, event) {
           //console.error('Error loading database.');
 
-          // Question Groups
-          const store = db.createObjectStore('Groups', { keyPath: 'id' });
+          // Categories
+          const store = db.createObjectStore('Categories', { keyPath: 'id' });
           store.createIndex('title_idx', 'title', { unique: true });
           // store.createIndex('created_idx', 'created.date', { unique: false });
           store.createIndex('parentCategory_idx', 'parentCategory', { unique: false });

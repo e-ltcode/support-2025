@@ -25,6 +25,7 @@ export const initialCategory: ICategory = {
   title: '',
   level: 0,
   parentCategory: 'null',
+  hasSubCategories: false,
   questions: [],
   numOfQuestions: 0,
   hasMore: false,
@@ -85,6 +86,7 @@ export const initialCategoriesState: ICategoriesState = initialStateFromLocalSto
 
 export const CategoriesReducer: Reducer<ICategoriesState, CategoriesActions> = (state, action) => {
   const newState = reducer(state, action);
+  console.log('reducer', action, newState.categories[2])
   const aTypesToStore = [
     ActionTypes.SET_EXPANDED
   ];
@@ -227,6 +229,32 @@ const reducer = (state: ICategoriesState, action: CategoriesActions) => {
       }
     }
 
+    case ActionTypes.VIEW_CATEGORY: {
+      const { category } = action.payload;
+      return {
+        ...state,
+        categories: state.categories.map(c => c.id === category.id
+          ? { ...category, questions: c.questions, inViewing: true, isExpanded: c.isExpanded } // category.questions are inside of object
+          : { ...c, inViewing: false }
+        ),
+        mode: Mode.ViewingCategory,
+        loading: false
+      };
+    }
+
+    case ActionTypes.EDIT_CATEGORY: {
+      const { category } = action.payload;
+      return {
+        ...state,
+        categories: state.categories.map(c => c.id === category.id
+          ? { ...category, questions: c.questions, inEditing: true, isExpanded: false } //c.isExpanded }
+          : { ...c, inEditing: false }
+        ),
+        mode: Mode.EditingCategory,
+        loading: false
+      };
+    }
+
     case ActionTypes.LOAD_CATEGORY_QUESTIONS: {
       const { parentCategory, questions, hasMore } = action.payload; // category doesn't contain inViewing, inEditing, inAdding 
       const category = state.categories.find(c => c.id === parentCategory);
@@ -252,33 +280,6 @@ const reducer = (state: ICategoriesState, action: CategoriesActions) => {
         // keep mode
         questionLoading: false
       }
-    }
-
-
-    case ActionTypes.VIEW_CATEGORY: {
-      const { category } = action.payload;
-      return {
-        ...state,
-        categories: state.categories.map(c => c.id === category.id
-          ? { ...category, inViewing: true, isExpanded: c.isExpanded } // category.questions are inside of object
-          : { ...c, inViewing: false }
-        ),
-        mode: Mode.ViewingCategory,
-        loading: false
-      };
-    }
-
-    case ActionTypes.EDIT_CATEGORY: {
-      const { category } = action.payload;
-      return {
-        ...state,
-        categories: state.categories.map(c => c.id === category.id
-          ? { ...category, inEditing: true, isExpanded: false } //c.isExpanded }
-          : { ...c, inEditing: false }
-        ),
-        mode: Mode.EditingCategory,
-        loading: false
-      };
     }
 
     case ActionTypes.DELETE: {

@@ -18,24 +18,24 @@ import ViewCategory from "categories/components/ViewCategory";
 import QuestionList from './questions/QuestionList';
 
 const CategoryRow = ({ category }: { category: ICategory }) => {
-    const { id, title, level, inViewing, inEditing, inAdding, questions,numOfQuestions, isExpanded, hasSubCategories } = category;
+    const { id, title, level, inViewing, inEditing, inAdding, hasSubCategories, questions, numOfQuestions, isExpanded } = category;
 
     const { canEdit, isDarkMode, variant, bg } = useGlobalState();
 
-    const { state, viewCategory, editCategory, deleteCategory } = useCategoryContext();
+    const { state, viewCategory, editCategory, deleteCategory, expandCategory } = useCategoryContext();
     const dispatch = useCategoryDispatch();
 
     const alreadyAdding = state.mode === Mode.AddingCategory;
-    const showQuestions = questions && !questions.find(q => q.inAdding) //&& questions.length > 0
-    // const numOfQuestions = questions.length; // We don't have questions loaded
+    const showQuestions = numOfQuestions > 0 && !questions.find(q => q.inAdding); // We don't have questions loaded
 
     const del = () => {
-        deleteCategory(id!);
+        deleteCategory(id);
     };
 
     const expand = (id: string) => {
         //const collapse = isExpanded;
-        dispatch({ type: ActionTypes.SET_EXPANDED, payload: { id, expanding: !isExpanded } });
+        //dispatch({ type: ActionTypes.SET_EXPANDED, payload: { id, expanding: !isExpanded } });
+        expandCategory(category, !isExpanded);
         // if (collapse)
         //     dispatch({ type: ActionTypes.CLEAN_SUB_TREE, payload: { id } })
     }
@@ -63,7 +63,7 @@ const CategoryRow = ({ category }: { category: ICategory }) => {
                 className="py-0 px-1"
                 onClick={() => expand(id!)}
                 title="Expand"
-                disabled={alreadyAdding} // || !hasSubCategories}
+                disabled={alreadyAdding || (!hasSubCategories && numOfQuestions === 0)}
             >
                 <FontAwesomeIcon icon={isExpanded ? faCaretDown : faCaretRight} size='lg' />
             </Button>

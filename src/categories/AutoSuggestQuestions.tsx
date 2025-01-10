@@ -220,7 +220,7 @@ export class AutoSuggestQuestions extends React.Component<{
 
 
 	// getParentTitle = async (id: string): Promise<any> => {
-	// 	let category = await this.dbp.get('Groups', id);
+	// 	let category = await this.dbp.get('Categories', id);
 	// 	return { parentCategoryTitle: category.title, parentCategoryUp: '' };
 	// }
 
@@ -228,7 +228,7 @@ export class AutoSuggestQuestions extends React.Component<{
 		if (!this.dbp || value.length < 2)
 			return;
 
-		const tx = this.dbp!.transaction(['Groups', 'Questions'], 'readwrite');
+		const tx = this.dbp!.transaction(['Categories', 'Questions'], 'readwrite');
 		const index = tx.objectStore('Questions').index('words_idx');
 		const questionRows: IQuestionRow[] = [];
 		//const mapParentCategoryTitle = new Map<string, string>();
@@ -269,11 +269,11 @@ export class AutoSuggestQuestions extends React.Component<{
 			return;
 
 		try {
-			const groupsStore = tx.objectStore('Groups')
+			const categoriesStore = tx.objectStore('Categories')
 			const mapParentCategoryTitle = new Map<string, string>();
 			questionRows.forEach(async (row) => {
 				if (!mapParentCategoryTitle.has(row.parentCategory)) {
-					const category = await groupsStore.get(row.parentCategory);
+					const category = await categoriesStore.get(row.parentCategory);
 					mapParentCategoryTitle.set(category.id, category.title)
 				}
 			})
@@ -308,9 +308,9 @@ export class AutoSuggestQuestions extends React.Component<{
 					const { id, title, categoryId, categoryTitle, parentCategory, parentCategoryUp } = row;
 					let categoryParentTitle = '';
 
-					let category = await groupsStore.get(categoryId);
+					let category = await categoriesStore.get(categoryId);
 					while (category.parentCategory !== 'null') {
-						category = await groupsStore.get(category.parentCategory);
+						category = await categoriesStore.get(category.parentCategory);
 						categoryParentTitle += '/' + category.title;
 					}
 

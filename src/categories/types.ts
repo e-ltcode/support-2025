@@ -66,7 +66,7 @@ export interface ICategory extends IRecord {
 	numOfQuestions: number;
 	hasMore?: boolean;
 	isExpanded?: boolean;
-	hasSubCategories?: boolean
+	hasSubCategories: boolean
 }
 
 export interface ICategoryInfo {
@@ -120,6 +120,7 @@ export interface ICategoriesContext {
 	editCategory: (id: string) => void,
 	updateCategory: (category: ICategory) => void,
 	deleteCategory: (id: string) => void,
+	expandCategory: (category: ICategory, expand: boolean) => void,
 	//////////////
 	// questions
 	//getCategoryQuestions: ({ parentCategory, level, inAdding }: IParentInfo) => void,

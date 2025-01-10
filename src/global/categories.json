@@ -7,11 +7,7 @@
         "id": "CHROME",
         "title": "Chrome",
         "questions": [
-          {
-            "title": "Does Chrome support Manifest 3 Extensions?",
-            "source": 0,
-            "status": 0
-          }
+          
         ]
       },
       {
