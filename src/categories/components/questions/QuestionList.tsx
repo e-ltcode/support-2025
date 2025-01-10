@@ -46,7 +46,7 @@ function List({ direction, ...rest }: ListProps) {
     // <ListGroup as="ul" variant='dark' className={'block mb-0 ms-2'}>
     // </ListGroup>
     <ul
-      className={`p-0 ${direction === 'horizontal' ? 'flex' : 'block'} list-group list-group-dark`}
+      className={`p-0 ${direction === 'horizontal' ? 'flex' : 'block'} list-group list-group-darkr`}
       {...rest}
     />
   );
@@ -168,11 +168,14 @@ const QuestionList = ({ title, parentCategory, level }: IParentInfo) => {
   return (
     <div
       ref={rootRef}
-      className="ms-2"
+      className="ms-2 border"
       // className="max-h-[500px] max-w-[500px] overflow-auto bg-slate-100"
       style={{ maxHeight: '300px', overflowY: 'auto' }}
     >
       <List>
+        {!questions && 
+          <div>No questions</div>
+        }
         {questions.map((question: IQuestion) => {
           return <ListItem key={question.id}>
             <QuestionRow

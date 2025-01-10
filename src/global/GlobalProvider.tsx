@@ -5,7 +5,7 @@ import { globalReducer, initialGlobalState } from "global/globalReducer";
 
 import { IUser, ICategoryData, IQuestionData } from "global/types";
 import { ICategory, IQuestion } from "categories/types";
-import { IDBPDatabase, openDB } from 'idb'
+import { IDBPDatabase, IDBPTransaction, openDB } from 'idb'
 
 //////////////////
 // Initial data
@@ -161,167 +161,97 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
 
   // const sleep = (ms: number | undefined) => new Promise(r => setTimeout(r, ms));
 
-  const addCategory = async (categoryData: ICategoryData) : Promise<void> => {
+  const addCategory = async (
+    dbp: IDBPDatabase,
+    //tx: IDBPTransaction<unknown, string[], "readwrite">, 
+    categoryData: ICategoryData,
+    parentCategory: string,
+    level: number)
+    : Promise<void> => {
+    const { id, title, categories, questions } = categoryData;
+
+    if (id === 'SAFARI') {
+      const q = {
+        title: '',
+        source: 0,
+        status: 0,
+      }
+      for (var i = 999; i > 100; i--) {
+        questions!.push({ ...q, title: 'Zagor_' + i });
+      }
+    }
+
+    const group: ICategory = {
+      wsId: '',
+      id,
+      parentCategory,
+      title,
+      level,
+      questions: [],
+      numOfQuestions: questions?.length || 0,
+      created: {
+        date: new Date(),
+        by: {
+          userId: '',
+          userName: 'ADMIN'
+        }
+      },
+    }
+    await dbp.add('Groups', group);
+    console.log('group added', group);
+    
+    if (questions) {
+      let i = 0;
+      while (i < questions.length) {
+        const qData = questions[i]
+        const question: IQuestion = {
+          parentCategory: group.id,
+          title: qData.title,
+          words: qData.title.toLowerCase().replaceAll('?', '').split(' '),
+          source: 0,
+          status: 0,
+          questionAnswers: [],
+          level: 2,
+          wsId: ""
+        }
+        await dbp.add('Questions', question);
+        i++;
+      }
+    }
+
+    if (categories) {
+      const parentCategory = group.id;
+      let j = 0;
+      const parentCategories = categories;
+      while (j < parentCategories.length) {
+        addCategory(dbp, parentCategories[j], parentCategory, level + 1);
+        j++;
+      }
+    }
     Promise.resolve();
   }
 
   const addInitialData = async (dbp: IDBPDatabase): Promise<void> => {
     new Promise<void>(async (resolve) => {
       // Open a read/write DB transaction, ready for adding the data
-      const tx = dbp.transaction(['Groups', 'Questions'], 'readwrite');
       try {
+        const level = 1;
         let i = 0;
         const data: ICategoryData[] = categoryData;
+        const tx = dbp.transaction(['Groups', 'Questions'], 'readwrite');
         while (i < data.length) {
-          addCategory(data[i])
-
-          const g = data[i];
-          const level = 1
-          const { id, title, categories, questions } = g;
-          const group: ICategory = {
-            wsId: '',
-            id,
-            parentCategory: 'null',
-            title,
-            level,
-            questions: [],
-            numOfQuestions: questions?.length || 0,
-            created: {
-              date: new Date(),
-              by: {
-                userId: '',
-                userName: 'ADMIN'
-              }
-            },
-          }
-          await dbp.add('Groups', group);
-          console.log('group added', group);
-          // categories
-          if (categories) {
-            const parentCategory = group.id;
-            let j = 0;
-            const parentCategories = categories;
-            while(j < parentCategories.length) {
-              let g = parentCategories[j];
-              const { id, title, categories, questions } = g;
-              const group: ICategory = {
-                wsId: '',
-                id,
-                parentCategory,
-                title,
-                level: level + 1,
-                questions: [],
-                numOfQuestions: 0, //questions?.length || 0,
-                created: {
-                  date: new Date(),
-                  by: {
-                    userId: '',
-                    userName: 'ADMIN'
-                  }
-                },
-              }
-              await dbp.add('Groups', group);
-              console.log('group added', group);
-              // categories
-              if (categories) {
-                const parentCategory = group.id;
-                let j = 0;
-                const parentCategories = categories;
-                while(j < parentCategories.length) {
-                  let g = parentCategories[j];
-                  const { id, title, categories, questions } = g;
-                  const group: ICategory = {
-                    wsId: '',
-                    id,
-                    parentCategory,
-                    title,
-                    level: level + 1,
-                    questions: [],
-                    numOfQuestions: 0, //questions?.length || 0,
-                    created: {
-                      date: new Date(),
-                      by: {
-                        userId: '',
-                        userName: 'ADMIN'
-                      }
-                    },
-                  }
-                  await dbp.add('Groups', group);
-                  console.log('group added', group);
-                  // questions
-                  if (questions) {
-                    let i = 0;
-                    while(i < questions.length) {
-                      const qData = questions[i]
-                      const question: IQuestion = {
-                        parentCategory,
-                        title: qData.title,
-                        words: qData.title.toLowerCase().replaceAll('?', '').split(' '),
-                        source: 0,
-                        status: 0,
-                        questionAnswers: [],
-                        level: 2,
-                        wsId: ""
-                      }
-                      await dbp.add('Questions', question);
-                      i++;
-                    }
-                  }
-                  j++;
-                }
-              }              
-              // questions
-              if (questions) {
-                let i = 0;
-                while(i < questions.length) {
-                  const qData = questions[i]
-                  const question: IQuestion = {
-                    parentCategory,
-                    title: qData.title,
-                    words: qData.title.toLowerCase().replaceAll('?', '').split(' '),
-                    source: 0,
-                    status: 0,
-                    questionAnswers: [],
-                    level: 2,
-                    wsId: ""
-                  }
-                  await dbp.add('Questions', question);
-                  i++;
-                }
-              }
-              j++;
-            }
-          }
-          // questions
-          if (questions) {
-            let i = 0;
-            while(i < questions.length) {
-              const qData = questions[i]
-              const question: IQuestion = {
-                parentCategory: group.id,
-                title: qData.title,
-                words: qData.title.toLowerCase().replaceAll('?', '').split(' '),
-                source: 0,
-                status: 0,
-                questionAnswers: [],
-                level: 2,
-                wsId: ""
-              }
-              await dbp.add('Questions', question);
-              i++;
-            }
-          }
+          addCategory(dbp, data[i], 'null', level);
           i++;
         }
         console.log('trans complete')
         // dispatch({ type: GlobalActionTypes.SET_DBP, payload: { dbp } })
+        await tx.done;
         resolve();
-
-      } catch (err) {
+      }
+      catch (err) {
         console.log('error', err);
       }
 
-      await tx.done;
     })
   }
 
@@ -396,18 +326,3 @@ export const useGlobalState = () => {
   const { globalState } = useGlobalContext()
   return globalState;
 }
-
-
-// if (id === 'SAFARI') {
-//   const q = {
-//     title: '',
-//     source: 0,
-//     status: 0,
-//   }
-//   for (var i = 999; i > 100; i--) {
-//     questions!.push({ ...q, title: 'Zagor' + i });
-//   }
-// }
-// else {
-//   questions = g.questions ?? [];
-// }
