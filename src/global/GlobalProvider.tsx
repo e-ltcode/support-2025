@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useReducer, Dispatch, useCallback } from "react";
 
-import { IGlobalContext, ILoginUser, ROLES, GlobalActionTypes } from 'global/types'
+import { IGlobalContext, ILoginUser, ROLES, GlobalActionTypes, IGroupData } from 'global/types'
 import { globalReducer, initialGlobalState } from "global/globalReducer";
 
 import { IUser, ICategoryData, IQuestionData } from "global/types";
@@ -9,7 +9,9 @@ import { IDBPDatabase, IDBPTransaction, openDB } from 'idb'
 
 //////////////////
 // Initial data
-import categoryData from './categories.json';
+import categoryData from './categories-questions.json';
+import groupData from './groups-answers.json';
+import { IAnswer, IGroup } from "groups/types";
 
 const GlobalContext = createContext<IGlobalContext>({} as any);
 const GlobalDispatchContext = createContext<Dispatch<any>>(() => null);
@@ -161,6 +163,76 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
 
   // const sleep = (ms: number | undefined) => new Promise(r => setTimeout(r, ms));
 
+  const addGroup = async (
+    dbp: IDBPDatabase,
+    //tx: IDBPTransaction<unknown, string[], "readwrite">, 
+    groupData: IGroupData,
+    parentGroup: string,
+    level: number)
+    : Promise<void> => {
+    const { id, title, groups, answers } = groupData;
+
+    // if (id === 'SAFARI') {
+    //   const q = {
+    //     title: '',
+    //     source: 0,
+    //     status: 0,
+    //   }
+    //   for (var i = 999; i > 100; i--) {
+    //     questions!.push({ ...q, title: 'Zagor_' + i });
+    //   }
+    // }
+
+    const g: IGroup = {
+      wsId: '',
+      id,
+      parentGroup,
+      hasSubGroups: groups ? groups.length > 0 : false,
+      title,
+      level,
+      answers: [],
+      numOfAnswers: answers?.length || 0,
+      created: {
+        date: new Date(),
+        by: {
+          userId: '',
+          userName: 'ADMIN'
+        }
+      },
+    }
+    await dbp.add('Groups', g);
+    console.log('group added', g);
+    
+    if (answers) {
+      let i = 0;
+      while (i < answers.length) {
+        const qData = answers[i]
+        const answer: IAnswer = {
+          parentGroup: g.id,
+          title: qData.title,
+          words: qData.title.toLowerCase().replaceAll('?', '').split(' '),
+          source: 0,
+          status: 0,
+          level: 2,
+          wsId: ""
+        }
+        await dbp.add('Answers', answer);
+        i++;
+      }
+    }
+
+    if (groups) {
+      const parentGroup = g.id;
+      let j = 0;
+      const parentGroups = groups;
+      while (j < parentGroups.length) {
+        addGroup(dbp, parentGroups[j], parentGroup, level + 1);
+        j++;
+      }
+    }
+    Promise.resolve();
+  }
+
   const addCategory = async (
     dbp: IDBPDatabase,
     //tx: IDBPTransaction<unknown, string[], "readwrite">, 
@@ -234,9 +306,9 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
 
   const addInitialData = async (dbp: IDBPDatabase): Promise<void> => {
     new Promise<void>(async (resolve) => {
-      // Open a read/write DB transaction, ready for adding the data
+      // Categries -> Questions
       try {
-        const level = 1;
+        let level = 1;
         let i = 0;
         const data: ICategoryData[] = categoryData;
         const tx = dbp.transaction(['Categories', 'Questions'], 'readwrite');
@@ -244,7 +316,26 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
           addCategory(dbp, data[i], 'null', level);
           i++;
         }
-        console.log('trans complete')
+        console.log('trans categories complete')
+        // dispatch({ type: GlobalActionTypes.SET_DBP, payload: { dbp } })
+        await tx.done;
+        // resolve();
+      }
+      catch (err) {
+        console.log('error', err);
+      }
+
+      // Groups -> Answers
+      try {
+        let level = 1;
+        let i = 0;
+        const data: IGroupData[] = groupData;
+        const tx = dbp.transaction(['Groups', 'Answers'], 'readwrite');
+        while (i < data.length) {
+          addGroup(dbp, data[i], 'null', level);
+          i++;
+        }
+        console.log('trans groups complete')
         // dispatch({ type: GlobalActionTypes.SET_DBP, payload: { dbp } })
         await tx.done;
         resolve();
@@ -252,7 +343,6 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
       catch (err) {
         console.log('error', err);
       }
-
     })
   }
 
@@ -266,7 +356,6 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
           // Categories
           const store = db.createObjectStore('Categories', { keyPath: 'id' });
           store.createIndex('title_idx', 'title', { unique: true });
-          // store.createIndex('created_idx', 'created.date', { unique: false });
           store.createIndex('parentCategory_idx', 'parentCategory', { unique: false });
 
           // Questions
@@ -274,7 +363,18 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
           questionsStore.createIndex('words_idx', 'words', { multiEntry: true, unique: false });
           questionsStore.createIndex('parentCategory_title_idx', ['parentCategory', 'title'], { unique: true });
           questionsStore.createIndex('parentCategory_idx', 'parentCategory', { unique: false });
-          // IDBKeyRange
+
+          // Groups
+          const groupStore = db.createObjectStore('Groups', { keyPath: 'id' });
+          groupStore.createIndex('title_idx', 'title', { unique: true });
+          groupStore.createIndex('parentGroup_idx', 'parentGroup', { unique: false });
+
+          // Answers
+          const answerStore = db.createObjectStore('Answers', { autoIncrement: true });
+          answerStore.createIndex('words_idx', 'words', { multiEntry: true, unique: false });
+          answerStore.createIndex('parentGroup_title_idx', ['parentGroup', 'title'], { unique: true });
+          answerStore.createIndex('parentGroup_idx', 'parentGroup', { unique: false });
+
           initializeData = true;
         },
         terminated() {

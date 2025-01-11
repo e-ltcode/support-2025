@@ -8,6 +8,7 @@ import { useGlobalContext, useGlobalDispatch, useGlobalState } from 'global/Glob
 import './App.css';
 
 import Categories from "categories/Categories"
+import Answers from "groups/Groups"
 import About from 'About';
 import Health from 'Health';
 import SupportPage from './SupportPage';
@@ -91,6 +92,7 @@ function App() {
                 <Route path="/supporter/:source/:tekst" element={<SupportPage />} />
                 <Route path="/supporter/:source/:tekst/:email" element={<SupportPage />} />
                 <Route path="/categories/:categoryId_questionId" element={<Categories />} />
+                <Route path="/answers" element={<Answers />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/health" element={<Health />} />
               </Routes>

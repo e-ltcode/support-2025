@@ -1,0 +1,88 @@
+[
+  {
+    "id": "GENERAL",
+    "title": "General",
+    "groups": [
+      {
+        "id": "A",
+        "title": "Aaaaaaaaaa",
+        "answers": [
+          {
+          "title": "On most Windows 10 installations, this path resolves to C:\\Users\\<Current-user>\\AppData\\Local\\Microsoft\\Edge\\Profile.",
+          "source": 0,
+          "status": 0
+        }
+      ]
+      },
+      {
+        "id": "B",
+        "title": "Bbbbbbbbbb",
+        "groups": [
+          {
+            "id": "X",
+            "title": "Xxxxx",
+            "answers": [
+              {
+                "title": "Jump through the window",
+                "source": 0,
+                "status": 0
+              }
+            ]
+          },
+          {
+            "id": "Y",
+            "title": "Yyyyyy",
+            "answers": [
+              {
+                "title": "Arghhh",
+                "source": 0,
+                "status": 0
+              },
+              {
+                "title": "Uraaaaaaaaa",
+                "source": 0,
+                "status": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "NAKO",
+        "title": "Nako"
+      }
+    ]
+  },
+  {
+    "id": "TAXES",
+    "title": "Taxes",
+    "answers": [
+      {
+        "title": "In Microsoft Edge, select Extensions, located to the right of your browser address bar. Note: If you don't see Extensions to the right of your browser address bar, select Settings and more > Extensions. Select Open Microsoft Edge Add-ons. Find the extension you'd like to add and select Get.",
+        "source": 0,
+        "status": 0
+      },
+      { 
+        "title": "We apply 20% for all the goods",
+        "source": 0,
+        "status": 0
+      }
+    ]
+  },
+  {
+    "id": "TECHNICAL",
+    "title": "Technical"
+  },
+  {
+    "id": "BUGS",
+    "title": "Bugs"
+  },
+  {
+    "id": "FEATURES",
+    "title": "Features"
+  },
+  {
+    "id": "OTHER",
+    "title": "Other"
+  }
+]

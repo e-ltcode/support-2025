@@ -127,8 +127,8 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
       for await (const cursor of index.iterate(parentCategory)) {
         const category: ICategory = cursor.value;
         console.log(category);
-        const index = tx.store.index('parentCategory_idx');
-        const arr = await index.getAllKeys(category.id);
+        //const index = tx.store.index('parentCategory_idx');
+        // const arr = await index.getAllKeys(category.id);
         // category.hasSubCategories = arr.length > 0;
         list.push(category);
       }

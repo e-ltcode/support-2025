@@ -163,6 +163,8 @@ export interface IUser extends IRecord {
 	confirmed: boolean
 }
 
+////////////////////////
+// Category -> questions
 export interface IQuestionData {
 	title: string;
 	source: number;
@@ -175,5 +177,21 @@ export interface ICategoryData {
 	categories?: ICategoryData[],
 	questions?: IQuestionData[]
 }
+
+////////////////////
+// Group -> answers
+export interface IAnswerData {
+	title: string;
+	source: number;
+	status: number;
+}
+
+export interface IGroupData {
+	id: string,
+	title: string,
+	groups?: IGroupData[],
+	answers?: IAnswerData[]
+}
+
 
 export type GlobalActions = ActionMap<GlobalPayload>[keyof ActionMap<GlobalPayload>];
