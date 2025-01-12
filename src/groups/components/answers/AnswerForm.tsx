@@ -1,5 +1,4 @@
-import React from 'react';
-import { useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Form, CloseButton } from "react-bootstrap";
@@ -188,14 +187,6 @@ const AnswerForm = ({ mode, answer, submitForm, children, showCloseButton, close
 
         {(viewing || editing) &&
           <>
-            {/* <AnswerAnswers
-              answerId={id!}
-              answerTitle={title}
-              answerAnswers={answerAnswers}
-              isDisabled={isDisabled}
-            /> */}
-            Answer Answers
-
             <CreatedModifiedForm
               created={answer.created}
               createdBy={answer.createdBy}

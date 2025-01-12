@@ -56,6 +56,15 @@ const AddAnswer = ({ answer, inLine, closeModal, showCloseButton, setError }: IP
 
     return (
         <>
+         {/* <AnswerForm
+            initialValues={formValues}
+            mode={FormMode.adding}
+            submitAnswer={submitAnswer}
+            closeModal={closeModal}
+        >
+            Create Answer
+        </AnswerForm > */}
+        
             <AnswerForm
                 answer={formValues}
                 showCloseButton={showCloseButton}

@@ -85,7 +85,7 @@ export interface IParentInfo {
 export interface ICatInfo {
 	parentGroup: string,
 	level: number,
-	setParentGroup : (group: IGroup) => void;
+	setParentGroup: (group: IGroup) => void;
 }
 
 export interface IGroupsState {
@@ -107,6 +107,8 @@ export interface ICatsState {
 	cats: IGroup[], // drop down groups
 	error?: Error;
 }
+
+
 
 export interface IGroupsContext {
 	state: IGroupsState,
@@ -138,6 +140,7 @@ export interface IGroupFormProps {
 	children: string
 }
 
+
 export interface IAnswerFormProps {
 	answer: IAnswer;
 	mode: FormMode;
@@ -146,6 +149,9 @@ export interface IAnswerFormProps {
 	showCloseButton: boolean;
 	children: string
 }
+
+
+
 
 export interface IParentGroups {
 	groupId: string | null;

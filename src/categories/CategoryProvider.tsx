@@ -7,7 +7,7 @@ import {
 } from 'categories/types';
 import { initialCategoriesState, CategoriesReducer } from 'categories/CategoriesReducer';
 import { IDateAndBy } from 'global/types';
-import { IAnswer } from 'kinds/types';
+import { IAnswer } from 'groups/types';
 
 const CategoriesContext = createContext<ICategoriesContext>({} as any);
 const CategoryDispatchContext = createContext<Dispatch<any>>(() => null);
@@ -346,6 +346,15 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
       const category: ICategory = await dbp!.get("Categories", question.parentCategory)
       question.id = id;
       question.categoryTitle = category.title;
+
+      const { fromUserAssignedAnswer } = question;
+      question.questionAnswers.forEach(questionAnswer => {
+        const user = fromUserAssignedAnswer!.find((fromUser: IFromUserAssignedAnswer) => 
+          fromUser.id === questionAnswer.assigned.by.userId);
+        questionAnswer.user.createdBy = user ? user.createdBy : 'unknown'
+      })
+      delete question.fromUserAssignedAnswer;
+
       dispatch({ type, payload: { question } });
     }
     catch (error: any) {
@@ -441,7 +450,22 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
     // }
   }, []);
 
-  const assignQuestionAnswer = useCallback(async (questionId: IDBValidKey, answerId: IDBValidKey, assigned: IDateAndBy): Promise<any> => {
+  const assignQuestionAnswer = useCallback(async (questionId: number, answerId: number, assigned: IDateAndBy): Promise<any> => {
+    try {
+    const question = await dbp!.get('Questions', questionId);
+      const obj: IQuestion = {
+        ...question,
+        questionAnswers: [...question.questionAnswers, { answerId, user: { id: 'Pera', createdBy: 'date string'}, assigned }]
+      }
+      await dbp!.put('Questions', obj, questionId);
+      console.log("Question Answer successfully assigned");
+      dispatch({ type: ActionTypes.SET_QUESTION, payload: { question: obj } });
+      return obj;
+    }
+    catch (error: any) {
+      console.log('error', error);
+      dispatch({ type: ActionTypes.SET_ERROR, payload: { error } });
+    }
     // try {
     //   const url = `/api/questions/assign-question-answer/${questionId}`;
     //   const res = await axios.put(url, { answerId, assigned })

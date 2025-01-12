@@ -249,7 +249,7 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
         status: 0,
       }
       for (var i = 999; i > 100; i--) {
-        questions!.push({ ...q, title: 'Zagor_' + i });
+        questions!.push({ ...q, title: 'This is demo question related to test of infinite scroll, when Group has a few hundreds of questions _ ' + i });
       }
     }
 

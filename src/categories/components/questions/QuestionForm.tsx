@@ -14,6 +14,7 @@ import CatList from 'categories/components/SelectCategory/CatList'
 
 import { useCategoryDispatch } from "categories/CategoryProvider";
 import Dropdown from 'react-bootstrap/Dropdown';
+import QuestionAnswers from './QuestionAnswers';
 
 const QuestionForm = ({ mode, question, submitForm, children, showCloseButton, closeModal }: IQuestionFormProps) => {
 
@@ -188,12 +189,12 @@ const QuestionForm = ({ mode, question, submitForm, children, showCloseButton, c
 
         {(viewing || editing) &&
           <>
-            {/* <QuestionAnswers
+            <QuestionAnswers
               questionId={id!}
               questionTitle={title}
               questionAnswers={questionAnswers}
               isDisabled={isDisabled}
-            /> */}
+            />
             Question Answers
 
             <CreatedModifiedForm

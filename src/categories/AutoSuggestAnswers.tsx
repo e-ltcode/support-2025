@@ -6,7 +6,7 @@ import { isMobile } from 'react-device-detect'
 
 import './AutoSuggestAnswers.css'
 import { IDBPCursorWithValue, IDBPCursorWithValueIteratorValue, IDBPDatabase } from 'idb';
-import { IAnswer } from './types';
+import { IAnswer } from 'groups/types';
 
 interface IAnswerShort {
 	id: number;
@@ -56,7 +56,8 @@ export class AutoSuggestAnswers extends React.Component<{
 	dbp: IDBPDatabase,
 	wsId: string,
 	tekst: string | undefined,
-	onSelectAnswer: (groupId: string, answerId: number) => void
+	alreadyAssigned: string,
+	onSelectQuestionAnswer: (groupId: string, answerId: number) => void
 }, any
 > {
 	// region Fields
@@ -70,6 +71,7 @@ export class AutoSuggestAnswers extends React.Component<{
 		super(props);
 		this.state = {
 			value: props.tekst || '',
+			alreadyAssigned: props.alreadyAssigned,
 			suggestions: this.getSuggestions(''),
 			noSuggestions: false,
 			highlighted: ''
@@ -133,7 +135,7 @@ export class AutoSuggestAnswers extends React.Component<{
 	protected onSuggestionSelected(event: React.FormEvent<any>, data: Autosuggest.SuggestionSelectedEventData<IAnswerShort>): void {
 		const answer: IAnswerShort = data.suggestion;
 		// alert(`Selected answer is ${answer.answerId} (${answer.text}).`);
-		this.props.onSelectAnswer(answer.parentGroup, answer.id);
+		this.props.onSelectQuestionAnswer(answer.parentGroup, answer.id);
 	}
 
 	/*

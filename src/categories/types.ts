@@ -1,5 +1,5 @@
 import { ActionMap, IDateAndBy, IRecord } from 'global/types';
-import { IAnswer } from 'kinds/types';
+import { IAnswer } from 'groups/types';
 
 export const Mode = {
 	UNDEFINED: undefined,
@@ -22,23 +22,32 @@ export enum FormMode {
 	editing
 }
 
+// export interface IQuestionAnswer {
+// 	categoryId: string;
+// 	questionId: number;
+// 	id: number,
+// 	answer: {
+// 		id: number,
+// 		title: string
+// 	},
+// 	user: {
+// 		id?: number,
+// 		createdBy: string
+// 	}
+// 	assigned: IDateAndBy
+// }
+
 export interface IQuestionAnswer {
-	categoryId: IDBValidKey;
-	questionId: IDBValidKey;
-	_id: IDBValidKey,
-	answer: {
-		_id: IDBValidKey,
-		title: string
-	},
+	answerId: number,
 	user: {
-		_id?: IDBValidKey,
+		id: string,
 		createdBy: string
 	}
 	assigned: IDateAndBy
 }
 
 export interface IFromUserAssignedAnswer {
-	_id: IDBValidKey,
+	id: string,
 	createdBy: string
 }
 
@@ -129,8 +138,8 @@ export interface ICategoriesContext {
 	viewQuestion: (id: number) => void;
 	editQuestion: (id: number) => void;
 	updateQuestion: (question: IQuestion) => Promise<any>;
-	assignQuestionAnswer: (questionId: string, answerId: string, assigned: IDateAndBy) => Promise<any>;
-	unAssignQuestionAnswer: (questionId: string, answerId: string) => Promise<any>;
+	assignQuestionAnswer: (questionId: number, answerId: number, assigned: IDateAndBy) => Promise<any>;
+	unAssignQuestionAnswer: (questionId: number, answerId: number) => Promise<any>;
 	createAnswer: (answer: IAnswer) => Promise<any>;
 	deleteQuestion: (id: number, parentCategory: string) => void
 }
