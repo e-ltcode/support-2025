@@ -34,8 +34,7 @@ const LoginForm = ({ initialValues, invitationId } : {initialValues: ILoginUser,
     enableReinitialize: true,
     initialValues,
     validationSchema: Yup.object().shape({
-      wsName: Yup.string().required("Required"),
-      userName: Yup.string().required("Required"),
+      nickName: Yup.string().required("Required"),
       password: Yup.string()
         .required("Password is a required field")
         .min(8, "Password must be at least 8 characters"),
@@ -71,46 +70,25 @@ const LoginForm = ({ initialValues, invitationId } : {initialValues: ILoginUser,
         <span>Sign in</span>
       )}
 
-        <Form.Group controlId="wsName">
-          { isInvitation && <Form.Label><span>to join Workspace:</span></Form.Label> }
-          <Form.Control
-            as="input"
-            name="wsName"
-            onChange={formik.handleChange}
-            //onBlur={formik.handleBlur}
-            // onBlur={(e: React.FocusEvent<HTMLTextAreaElement>): void => {
-            //   if (isEdit && formik.initialValues.wsName !== formik.values.wsName)
-            //     formik.submitForm();
-            // }}
-            value={formik.values.wsName}
-            placeholder={'Workspace name'}
-          />
-          <Form.Text className="text-danger">
-            {formik.touched.wsName && formik.errors.wsName ? (
-              <div className="text-danger">{formik.errors.wsName}</div>
-            ) : null}
-          </Form.Text>
-        </Form.Group>
-
-        <Form.Group controlId="userName">
+        <Form.Group controlId="nickName">
           {/* <Form.Label>Title</Form.Label> */}
           <Form.Control
             as="input"
-            name="userName"
+            name="nickName"
             ref={nameRef}
             onChange={formik.handleChange}
             //onBlur={formik.handleBlur}
             // onBlur={(e: React.FocusEvent<HTMLTextAreaElement>): void => {
-            //   if (isEdit && formik.initialValues.userName !== formik.values.userName)
+            //   if (isEdit && formik.initialValues.nickName !== formik.values.nickName)
             //     formik.submitForm();
             // }}
-            value={formik.values.userName}
+            value={formik.values.nickName}
             style={{ width: '100%' }}
-            placeholder={'Username'}
+            placeholder={'nickName'}
           />
           <Form.Text className="text-danger">
-            {formik.touched.userName && formik.errors.userName ? (
-              <div className="text-danger">{formik.errors.userName}</div>
+            {formik.touched.nickName && formik.errors.nickName ? (
+              <div className="text-danger">{formik.errors.nickName}</div>
             ) : null}
           </Form.Text>
         </Form.Group>

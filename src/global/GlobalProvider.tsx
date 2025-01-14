@@ -1,17 +1,25 @@
 import React, { createContext, useContext, useReducer, Dispatch, useCallback } from "react";
 
-import { IGlobalContext, ILoginUser, ROLES, GlobalActionTypes, IGroupData } from 'global/types'
+import {
+  IGlobalContext, ILoginUser, ROLES, GlobalActionTypes,
+  ICategoryData, IQuestionData,
+  IGroupData, IAnswerData,
+  IRoleData, IUserData
+} from 'global/types'
+
 import { globalReducer, initialGlobalState } from "global/globalReducer";
 
-import { IUser, ICategoryData, IQuestionData } from "global/types";
 import { ICategory, IQuestion } from "categories/types";
-import { IDBPDatabase, IDBPTransaction, openDB } from 'idb'
+import { IGroup, IAnswer } from "groups/types";
+import { IRole, IUser } from 'roles/types';
+
+import { IDBPDatabase, openDB } from 'idb' // IDBPTransaction
 
 //////////////////
 // Initial data
 import categoryData from './categories-questions.json';
 import groupData from './groups-answers.json';
-import { IAnswer, IGroup } from "groups/types";
+import roleData from './roles-users.json';
 
 const GlobalContext = createContext<IGlobalContext>({} as any);
 const GlobalDispatchContext = createContext<Dispatch<any>>(() => null);
@@ -45,22 +53,21 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
   }, []);
 
   const registerUser = useCallback(async (loginUser: ILoginUser) => {
-    const user: IUser = {
-      id: '',
-      wsId: loginUser.wsId,
-      userName: loginUser.userName,
-      password: loginUser.password,
-      level: 0,
-      parentGroup: null,
-      role: ROLES.VIEWER,
-      email: loginUser.email!,
-      color: 'blue',
-      confirmed: false
-    }
-    const url = `/api/users/register-user`;
+
     try {
       console.log("registerUser", { loginUser })
-      const user: IUser = { ...loginUser, id: '', parentGroup: 'null', role: ROLES.ADMIN, color: 'blue', level: 0, confirmed: true, userId: '123' };
+      const user: IUser = {
+        nickName: loginUser.nickName,
+        wsId: loginUser.wsId,
+        name: loginUser.name??'',
+        password: loginUser.password,
+        level: 0,
+        parentRole: loginUser.role === ROLES.OWNER ? 'OWNER' : 'VIEWER', // initialy, user is registered as WIEWER
+        role: loginUser.role!,
+        email: loginUser.email??'a@b.com',
+        color: 'blue',
+        confirmed: false
+      }
       dispatch({ type: GlobalActionTypes.AUTHENTICATE, payload: { user, wsName: '' } });
       return user;
       // const res = await axios.post(url, { ...user, wsName: loginUser.wsName });
@@ -101,7 +108,16 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
 
     console.log("signInUser", { loginUser })
 
-    const user: IUser = { ...loginUser, id: loginUser.userId!, parentGroup: 'null', color: 'blue', level: 0, role: ROLES.ADMIN, confirmed: true }
+    const user: IUser = {
+      ...loginUser,
+      nickName: loginUser.nickName!,
+      name: loginUser.name ?? '',
+      parentRole: 'null',
+      color: 'blue',
+      level: 0,
+      role: ROLES.VIEWER,
+      confirmed: true
+    }
     dispatch({ type: GlobalActionTypes.AUTHENTICATE, payload: { user, wsName: '' } })
     return true;
     // try {
@@ -163,6 +179,68 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
 
   // const sleep = (ms: number | undefined) => new Promise(r => setTimeout(r, ms));
 
+  const addRole = async (
+    dbp: IDBPDatabase,
+    //tx: IDBPTransaction<unknown, string[], "readwrite">, 
+    roleData: IRoleData,
+    parentRole: string,
+    level: number)
+    : Promise<void> => {
+    const { title, roles, users } = roleData;
+
+    const r: IRole = {
+      wsId: '',
+      title,
+      parentRole,
+      hasSubRoles: roles ? roles.length > 0 : false,
+      //title: title,
+      level,
+      users: [],
+      numOfUsers: users?.length || 0,
+      created: {
+        date: new Date(),
+        by: {
+          nickName: 'Boss'
+        }
+      },
+    }
+    await dbp.add('Roles', r);
+    console.log('group added', r);
+
+    if (users) {
+      let i = 0;
+      while (i < users.length) {
+        const u: IUserData = users[i]
+        const user: IUser = {
+          nickName: u.nickName,
+          parentRole: r.title,
+          role: r.title as ROLES,
+          name: u.name,
+          words: u.name.toLowerCase().replaceAll('?', '').split(' '),
+          password: u.password,
+          email: u.email,
+          color: u.color,
+          level: 2,
+          wsId: "",
+          confirmed: true
+        }
+        await dbp.add('Users', user);
+        i++;
+      }
+    }
+
+    if (roles) {
+      const parentGroup = r.title;
+      let j = 0;
+      const parentRoles = roles;
+      while (j < parentRoles.length) {
+        addRole(dbp, parentRoles[j], parentRole, level + 1);
+        j++;
+      }
+    }
+    Promise.resolve();
+  }
+
   const addGroup = async (
     dbp: IDBPDatabase,
     //tx: IDBPTransaction<unknown, string[], "readwrite">, 
@@ -171,18 +249,6 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
     level: number)
     : Promise<void> => {
     const { id, title, groups, answers } = groupData;
-
-    // if (id === 'SAFARI') {
-    //   const q = {
-    //     title: '',
-    //     source: 0,
-    //     status: 0,
-    //   }
-    //   for (var i = 999; i > 100; i--) {
-    //     questions!.push({ ...q, title: 'Zagor_' + i });
-    //   }
-    // }
-
     const g: IGroup = {
       wsId: '',
       id,
@@ -195,22 +261,21 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
       created: {
         date: new Date(),
         by: {
-          userId: '',
-          userName: 'ADMIN'
+          nickName: 'Boss'
         }
       },
     }
     await dbp.add('Groups', g);
     console.log('group added', g);
-    
+
     if (answers) {
       let i = 0;
       while (i < answers.length) {
-        const qData = answers[i]
+        const a: IAnswerData = answers[i];
         const answer: IAnswer = {
           parentGroup: g.id,
-          title: qData.title,
-          words: qData.title.toLowerCase().replaceAll('?', '').split(' '),
+          title: a.title,
+          words: a.title.toLowerCase().replaceAll('?', '').split(' '),
           source: 0,
           status: 0,
           level: 2,
@@ -265,22 +330,21 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
       created: {
         date: new Date(),
         by: {
-          userId: '',
-          userName: 'ADMIN'
+          nickName: 'Boss'
         }
       },
     }
     await dbp.add('Categories', cat);
     console.log('category added', cat);
-    
+
     if (questions) {
       let i = 0;
       while (i < questions.length) {
-        const qData = questions[i]
+        const q: IQuestionData = questions[i];
         const question: IQuestion = {
           parentCategory: cat.id,
-          title: qData.title,
-          words: qData.title.toLowerCase().replaceAll('?', '').split(' '),
+          title: q.title,
+          words: q.title.toLowerCase().replaceAll('?', '').split(' '),
           source: 0,
           status: 0,
           questionAnswers: [],
@@ -343,7 +407,28 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
       catch (err) {
         console.log('error', err);
       }
+
+      // Roles -> Users
+      try {
+        let level = 1;
+        let i = 0;
+        const data: IRoleData[] = roleData;
+        const tx = dbp.transaction(['Groups', 'Answers'], 'readwrite');
+        while (i < data.length) {
+          addRole(dbp, data[i], 'null', level);
+          i++;
+        }
+        console.log('trans groups complete')
+        // dispatch({ type: GlobalActionTypes.SET_DBP, payload: { dbp } })
+        await tx.done;
+        resolve();
+      }
+      catch (err) {
+        console.log('error', err);
+      }
     })
+
+
   }
 
   const OpenDB = useCallback(async (): Promise<any> => {
@@ -374,6 +459,17 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
           answerStore.createIndex('words_idx', 'words', { multiEntry: true, unique: false });
           answerStore.createIndex('parentGroup_title_idx', ['parentGroup', 'title'], { unique: true });
           answerStore.createIndex('parentGroup_idx', 'parentGroup', { unique: false });
+
+          // Roles
+          const roleStore = db.createObjectStore('Roles', { keyPath: 'title' });
+          roleStore.createIndex('title_idx', 'title', { unique: true });
+          roleStore.createIndex('parentRole_idx', 'parentRole', { unique: false });
+
+          // Answers
+          const userStore = db.createObjectStore('Users', { keyPath: 'nickName' });
+          userStore.createIndex('words_idx', 'words', { multiEntry: true, unique: false });
+          userStore.createIndex('parentRole_nickName_idx', ['parentRole', 'nickName'], { unique: true });
+          userStore.createIndex('parentRole_idx', 'parentRole', { unique: false });
 
           initializeData = true;
         },

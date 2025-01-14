@@ -188,7 +188,6 @@ export enum ActionTypes {
 
 	SET_ANSWER = 'SET_ANSWER',
 	SET_ANSWER_AFTER_ASSIGN_ANSWER = 'SET_ANSWER_AFTER_ASSIGN_ANSWER',
-	SET_ANSWER_ANSWERS = 'SET_ANSWER_ANSWERS',
 	DELETE_ANSWER = 'DELETE_ANSWER',
 
 	CLOSE_ANSWER_FORM = 'CLOSE_ANSWER_FORM',
@@ -283,10 +282,6 @@ export type GroupsPayload = {
 
 	[ActionTypes.SET_ANSWER_AFTER_ASSIGN_ANSWER]: {
 		answer: IAnswer
-	};
-
-	[ActionTypes.SET_ANSWER_ANSWERS]: {
-		answers: IAnswerAnswer[];
 	};
 
 	[ActionTypes.DELETE_ANSWER]: {

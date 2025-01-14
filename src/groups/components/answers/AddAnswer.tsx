@@ -16,7 +16,7 @@ interface IProps {
 const AddAnswer = ({ answer, inLine, closeModal, showCloseButton, setError }: IProps) => {
     const globalState = useGlobalState();
     const { authUser } = globalState;
-    const { userId, wsId } = authUser;
+    const { nickName, wsId } = authUser;
    
     const dispatch = useGroupDispatch();
     const { state, createAnswer, reloadGroupNode } = useGroupContext();
@@ -37,7 +37,7 @@ const AddAnswer = ({ answer, inLine, closeModal, showCloseButton, setError }: IP
             created: {
                 date: new Date(),
                 by: {
-                    userId
+                    nickName
                 }
             }
         }

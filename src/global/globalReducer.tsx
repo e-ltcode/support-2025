@@ -5,13 +5,13 @@ import { IGlobalState, GlobalActionTypes, GlobalActions, ROLES, IAuthUser } from
 const initialAuthUser: IAuthUser = {
     wsId: '',
     wsName: '',
-    userId: '',
-    userName: '',
+    nickName: '',
+    name: '',
     password: '',
     email: '',
     color: 'blue',
     role: ROLES.VIEWER,
-    registrationConfirmed: false,
+    registrationConfirmed: false
 }
 
 const initGlobalState: IGlobalState = {
@@ -31,6 +31,9 @@ const initGlobalState: IGlobalState = {
 let globalStateFromLocalStorage: IGlobalState | undefined;
 
 const hasMissingProps = (): boolean => {
+
+    return false;
+
     let b = false;
     const keys = Object.keys(globalStateFromLocalStorage!)
     Object.keys(initGlobalState).forEach((prop: string) => {
@@ -120,10 +123,10 @@ const reducer: Reducer<IGlobalState, GlobalActions> = (state, action) => {
                 authUser: {
                     wsId: user.wsId,
                     wsName,
-                    userId: '', //user._id!,
-                    userName: user.userName!,
+                    nickName: user.nickName, //user._id!,
+                    name: user.name,
                     password: user.password!,
-                    role: user.role,
+                    role: user.parentRole as ROLES,
                     email: user.email,
                     color: 'blue',
                     registrationConfirmed: user.confirmed,
@@ -131,8 +134,8 @@ const reducer: Reducer<IGlobalState, GlobalActions> = (state, action) => {
                     registered: user.created ? user.created.date: new Date()
                     //visited: user.visited!.date
                 },
-                canEdit: user.role !== ROLES.VIEWER,
-                isOwner: user.role === ROLES.OWNER,
+                canEdit: user.parentRole !== ROLES.VIEWER,
+                isOwner: user.parentRole === ROLES.OWNER,
                 isAuthenticated: true,
                 everLoggedIn: true,
                 error: undefined
@@ -173,8 +176,6 @@ const reducer: Reducer<IGlobalState, GlobalActions> = (state, action) => {
 
         case GlobalActionTypes.DARK_MODE:
             return { ...state, isDarkMode: true, variant: 'dark', bg: 'dark' };
-       
-   
 
         case GlobalActionTypes.SET_KIND_OPTIONS: {
             const { kindOptions } = action.payload;

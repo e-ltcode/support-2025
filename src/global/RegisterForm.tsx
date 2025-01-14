@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Form, CloseButton } from "react-bootstrap";
-import { ILoginUser } from "global/types";
+import { ILoginUser, ROLES } from "global/types";
 //import emailjs from '@emailjs/browser'
 
 import './formik.css';
@@ -37,7 +37,6 @@ const RegisterForm = () => {
   const submitForm = async (loginUser: ILoginUser) => {
     loginUser.color = 'blue';
     loginUser.wsId = '';
-    loginUser.wsName = '';
     const user = await registerUser(loginUser);
     if (!user)
       return;
@@ -67,8 +66,8 @@ const RegisterForm = () => {
 
   const initialValues: ILoginUser = {
     wsId: '',
-    wsName: '',
-    userName: '',
+    name: '',
+    nickName: '',
     email: '',
     password: ''
   }
@@ -77,8 +76,8 @@ const RegisterForm = () => {
     enableReinitialize: true,
     initialValues,
     validationSchema: Yup.object().shape({
-      wsName: Yup.string().required("Required"),
-      userName: Yup.string().required("Required"),
+      name: Yup.string().required("Required"),
+      nickName: Yup.string().required("Required"),
       email: Yup.string()
         .required("Required")
         .email("You have enter an invalid email address"),
@@ -88,7 +87,10 @@ const RegisterForm = () => {
     }),
     onSubmit: values => {
       //alert(JSON.stringify(values, null, 2));
-      submitForm(values)
+      values.role = values.nickName === 'Boss'
+        ? ROLES.OWNER
+        : ROLES.VIEWER;
+      submitForm(values);
       //props.handleClose(false);
     }
   });
@@ -132,33 +134,11 @@ const RegisterForm = () => {
       <Form onSubmit={formik.handleSubmit}>
         <span>Register</span>
 
-        <Form.Group controlId="wsName">
+        <Form.Group controlId="name">
           {/* <Form.Label>Title</Form.Label> */}
           <Form.Control
             as="input"
-            name="wsName"
-            onChange={formik.handleChange}
-            //onBlur={formik.handleBlur}
-            // onBlur={(e: React.FocusEvent<HTMLTextAreaElement>): void => {
-            //   if (isEdit && formik.initialValues.title !== formik.values.title)
-            //     formik.submitForm();
-            // }}
-            value={formik.values.wsName}
-            style={{ width: '100%' }}
-            placeholder={'Workspace name'}
-          />
-          <Form.Text className="text-danger">
-            {formik.touched.userName && formik.errors.wsName ? (
-              <div className="text-danger">{formik.errors.wsName}</div>
-            ) : null}
-          </Form.Text>
-        </Form.Group>
-
-        <Form.Group controlId="title">
-          {/* <Form.Label>Title</Form.Label> */}
-          <Form.Control
-            as="input"
-            name="userName"
+            name="name"
             ref={nameRef}
             onChange={formik.handleChange}
             //onBlur={formik.handleBlur}
@@ -166,13 +146,36 @@ const RegisterForm = () => {
             //   if (isEdit && formik.initialValues.title !== formik.values.title)
             //     formik.submitForm();
             // }}
-            value={formik.values.userName}
+            value={formik.values.name}
             style={{ width: '100%' }}
-            placeholder={'Username'}
+            placeholder={'Name'}
           />
           <Form.Text className="text-danger">
-            {formik.touched.userName && formik.errors.userName ? (
-              <div className="text-danger">{formik.errors.userName}</div>
+            {formik.touched.name && formik.errors.name ? (
+              <div className="text-danger">{formik.errors.name}</div>
+            ) : null}
+          </Form.Text>
+        </Form.Group>
+
+        <Form.Group controlId="nickName">
+          {/* <Form.Label>nickName</Form.Label> */}
+          <Form.Control
+            as="input"
+            name="nickName"
+            ref={nameRef}
+            onChange={formik.handleChange}
+            //onBlur={formik.handleBlur}
+            // onBlur={(e: React.FocusEvent<HTMLTextAreaElement>): void => {
+            //   if (isEdit && formik.initialValues.title !== formik.values.title)
+            //     formik.submitForm();
+            // }}
+            value={formik.values.nickName}
+            style={{ width: '100%' }}
+            placeholder={'Nickname'}
+          />
+          <Form.Text className="text-danger">
+            {formik.touched.name && formik.errors.nickName ? (
+              <div className="text-danger">{formik.errors.nickName}</div>
             ) : null}
           </Form.Text>
         </Form.Group>

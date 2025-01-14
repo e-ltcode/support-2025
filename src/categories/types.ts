@@ -38,9 +38,12 @@ export enum FormMode {
 // }
 
 export interface IQuestionAnswer {
-	answerId: number,
+	answer: {
+		id: number,
+		title?: string
+	}
 	user: {
-		id: string,
+		nickName: string,
 		createdBy: string
 	}
 	assigned: IDateAndBy

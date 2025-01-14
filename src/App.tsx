@@ -15,18 +15,19 @@ import SupportPage from './SupportPage';
 import { ILoginUser } from 'global/types';
 import LoginForm from 'global/LoginForm';
 import RegisterForm from 'global/RegisterForm';
+import Roles from 'roles/Roles';
 
 function App() {
 
   const { signInUser, OpenDB } = useGlobalContext();
   const { authUser, isAuthenticated, everLoggedIn } = useGlobalState()
-  const { wsId, wsName, userName, password } = authUser;
+  const { wsId, wsName, nickName, password } = authUser;
 
   const formInitialValues = {
     wsName: '',
     wsId: '',
     who: '',
-    userName: '',
+    nickName: '',
     password: '',
     email: ''
   };
@@ -46,10 +47,14 @@ function App() {
       if (!isAuthenticated && !isAuthRoute) {
         if (everLoggedIn) {
           let signedIn = false;
-          if (userName !== '') {
-            console.log(`await signInUser(${ wsId}, ${wsName}, ${userName}, ${password} })`);
+          if (nickName !== '') {
+            console.log(`await signInUser(${ wsId}, ${wsName}, ${nickName}, ${password} })`);
             const loginUser = {
-              wsId, wsName, userName, password, email: '' 
+              wsId, 
+              wsName,
+              nickName,
+              password,
+              email: '' 
             }
             signedIn = await signInUser(loginUser);
             if (!signedIn) {
@@ -66,7 +71,7 @@ function App() {
       }
     })()
 
-    }, [signInUser, isAuthenticated, wsId, wsName, userName, password, everLoggedIn, locationPathname, navigate])
+    }, [signInUser, isAuthenticated, wsId, wsName, nickName, password, everLoggedIn, locationPathname, navigate])
 
     useEffect(() => {
       (async () => {
@@ -93,6 +98,7 @@ function App() {
                 <Route path="/supporter/:source/:tekst/:email" element={<SupportPage />} />
                 <Route path="/categories/:categoryId_questionId" element={<Categories />} />
                 <Route path="/answers" element={<Answers />} />
+                <Route path="/users" element={<Roles />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/health" element={<Health />} />
               </Routes>

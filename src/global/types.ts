@@ -1,12 +1,12 @@
 // Define the Global State
 import { IOption } from 'common/types';
 import { IDBPDatabase } from 'idb';
+import { IUser } from 'roles/types';
 
 export interface IDateAndBy {
 	date: Date,
 	by: {
-		userId: string,
-		userName?: string
+		nickName: string
 	}
 }
 
@@ -25,9 +25,9 @@ export interface IRecord {
 export interface IAuthUser {
 	wsId: string,
 	wsName: string,
-	userId: string, // fiktivni _id
 	color?: string,
-	userName: string,
+	nickName: string,
+	name: string;
 	password: string,
 	email: string,
 	role: ROLES,
@@ -36,11 +36,18 @@ export interface IAuthUser {
 	visited?: Date
 }
 
-export enum ROLES {
+// export const ROLES: Map<string, string> = new Map<string, string>([
+// 	['OWNER', 'OWNER'],
+// 	['ADMIN', 'ADMIN'],
+// 	['EDITOR', 'EDITOR'],
+// 	['VIEWER', 'VIEWER']
+// ])
+
+export enum  ROLES  {
 	OWNER = 'OWNER',
 	ADMIN = 'ADMIN',
 	EDITOR = 'EDITOR',
-	VIEWER = 'VIEWER',
+	VIEWER = 'VIEWER'
 }
 
 export interface IGlobalState {
@@ -80,19 +87,10 @@ export enum GlobalActionTypes {
 }
 
 export interface ILoginUser {
-	// wsId: string,
-	// wsName: string,
-	// who?: string,
-	// userId?: string,
-	// userName: string;
-	// email?: string;
-	// password: string;
-	// date?: Date;
 	wsId: string,
-	wsName: string, 
 	who?: string,
-	userId?: string,
-	userName: string,
+	nickName: string,
+	name?: string,
 	password: string,
 	email: string,
 	color?: string,
@@ -150,18 +148,7 @@ export type GlobalPayload = {
 	[GlobalActionTypes.SET_REGISTRATION_CONFIRMED]: undefined
 };
 
-export interface IUser extends IRecord {
-	id: string,
-	userId?: string,
-	userName: string,
-	password?: string,
-	email: string,
-	color: string,
-	level: number,
-	parentGroup: IDBValidKey | null,  // null is allowed because of registerUser, and will be set at Server
-	role: ROLES,
-	confirmed: boolean
-}
+
 
 ////////////////////////
 // Category -> questions
@@ -191,6 +178,22 @@ export interface IGroupData {
 	title: string,
 	groups?: IGroupData[],
 	answers?: IAnswerData[]
+}
+
+////////////////////
+// Role -> users
+export interface IUserData {
+	nickName: string;
+	name: string;
+	password: string;
+	email: string;
+	color: string;
+}
+
+export interface IRoleData {
+	title: string,
+	roles?: IRoleData[],
+	users?: IUserData[]
 }
 
 

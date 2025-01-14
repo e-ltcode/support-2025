@@ -38,7 +38,7 @@ const QuestionAnswers = ({ questionId, questionTitle, questionAnswers, isDisable
         const assigned: IDateAndBy = {
             date: new Date(),
             by: {
-                userId: globalState.authUser.userId
+                nickName: globalState.authUser.nickName
             }
         }
         // TODO in next version do not update MongoDB immediately, wait until users presses Save
@@ -67,7 +67,7 @@ const QuestionAnswers = ({ questionId, questionTitle, questionAnswers, isDisable
                             questionTitle={questionTitle}
                             questionAnswer={questionAnswer}
                             groupInAdding={false}
-                            key={questionAnswer.answerId.toString()}
+                            key={questionAnswer.answer.id.toString()}
                             isDisabled={isDisabled}
                             unAssignAnswer={unAssignAnswer}
                         />)
@@ -151,7 +151,11 @@ const QuestionAnswers = ({ questionId, questionTitle, questionAnswers, isDisable
                         dbp={dbp!}
                         wsId={wsId}
                         tekst={''}
-                        alreadyAssigned={questionAnswers.length === 0 ? 'empty' : questionAnswers.map((a: IQuestionAnswer) => a.answerId).join('-')}
+                        alreadyAssigned={
+                            questionAnswers.length === 0 
+                                ? 'empty'
+                                : questionAnswers.map((a: IQuestionAnswer) => a.answer.id).join('-')
+                        }
                         onSelectQuestionAnswer={onSelectQuestionAnswer}
                     />
                 </Modal.Body>

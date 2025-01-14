@@ -16,7 +16,7 @@ const EditCategory = ({ inLine }: { inLine: boolean }) => {
             modified: {
                 date: new Date(),
                 by: {
-                    userId: globalState.authUser.userId
+                    nickName: globalState.authUser.nickName
                 }
             }
         }

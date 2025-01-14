@@ -1,5 +1,5 @@
 import React, { forwardRef, useCallback, useEffect, useRef, useState } from "react";
-import { IParentInfo, IAnswer, IAnswerAnswer } from "groups/types";
+import { IParentInfo, IAnswer } from "groups/types";
 import { useGroupContext } from "groups/GroupProvider";
 import { useGlobalState } from "global/GlobalProvider";
 import useInfiniteScroll from "react-infinite-scroll-hook";

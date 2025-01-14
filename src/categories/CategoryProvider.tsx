@@ -347,13 +347,15 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
       question.id = id;
       question.categoryTitle = category.title;
 
-      const { fromUserAssignedAnswer } = question;
-      question.questionAnswers.forEach(questionAnswer => {
-        const user = fromUserAssignedAnswer!.find((fromUser: IFromUserAssignedAnswer) => 
-          fromUser.id === questionAnswer.assigned.by.userId);
-        questionAnswer.user.createdBy = user ? user.createdBy : 'unknown'
-      })
-      delete question.fromUserAssignedAnswer;
+      // const { fromUserAssignedAnswer } = question;
+      // if (fromUserAssignedAnswer) {
+      //   question.questionAnswers.forEach(questionAnswer => {
+      //     const user = fromUserAssignedAnswer!.find((fromUser: IFromUserAssignedAnswer) =>
+      //       fromUser.id === questionAnswer.assigned.by.userId);
+      //     questionAnswer.user.createdBy = user ? user.createdBy : 'unknown'
+      //   })
+      //   delete question.fromUserAssignedAnswer;
+      // }
 
       dispatch({ type, payload: { question } });
     }
@@ -452,10 +454,10 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
 
   const assignQuestionAnswer = useCallback(async (questionId: number, answerId: number, assigned: IDateAndBy): Promise<any> => {
     try {
-    const question = await dbp!.get('Questions', questionId);
+      const question = await dbp!.get('Questions', questionId);
       const obj: IQuestion = {
         ...question,
-        questionAnswers: [...question.questionAnswers, { answerId, user: { id: 'Pera', createdBy: 'date string'}, assigned }]
+        questionAnswers: [...question.questionAnswers, { answerId, user: { nickName: 'Pera', createdBy: 'date string' }, assigned }]
       }
       await dbp!.put('Questions', obj, questionId);
       console.log("Question Answer successfully assigned");

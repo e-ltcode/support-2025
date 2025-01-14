@@ -21,7 +21,15 @@ export function Navigation(props: INavigation) {
 
   const { globalState } = useGlobalContext();
   const { authUser, isAuthenticated, isDarkMode, variant, bg } = globalState;
-  const { userName, role } = authUser;
+  const { nickName, role } = authUser;
+  
+  let enumRole: ROLES = role === 'OWNER'
+        ? ROLES.OWNER
+        : role === 'ADMIN'
+          ? ROLES.ADMIN
+          : role === 'EDITOR'
+            ? ROLES.EDITOR
+            : ROLES.VIEWER
 
   const dispatch = useGlobalDispatch();
 
@@ -94,23 +102,18 @@ export function Navigation(props: INavigation) {
                   <FontAwesomeIcon icon={faQuestion} color='lightblue' />{' '}Questions
                 </NavLink>
               }
+              {isAuthenticated && <span>Kita</span>}
               {isAuthenticated &&
                 <NavLink to="/answers" className="nav-link">
                   <FontAwesomeIcon icon={faReply} color='lightblue' />{' '}Answers
                 </NavLink>
               }
 
-              {isAuthenticated && [ROLES.OWNER, ROLES.ADMIN].includes(role) &&
+              {isAuthenticated && (ROLES.OWNER == enumRole || ROLES.ADMIN == enumRole) &&
                 <NavLink to="/users" className="nav-link">
                   <FontAwesomeIcon icon={faUserFriends} color='lightblue' />{' '}Users
                 </NavLink>
               }
-
-              {/* {isAuthenticated && [ROLES.OWNER, ROLES.ADMIN].includes(role) &&
-                <NavLink to="/workspaces" className="nav-link">
-                  <FontAwesomeIcon icon={faUserFriends} color='lightblue' />{' '}Workspace
-                </NavLink>
-              } */}
 
               {!isAuthenticated &&
                 <NavLink to="/about" className="nav-link">
@@ -139,7 +142,7 @@ export function Navigation(props: INavigation) {
 
               {isAuthenticated &&
                 <NavDropdown
-                  title={<><FontAwesomeIcon icon={faUser} />{' '}{userName}</>}
+                  title={<><FontAwesomeIcon icon={faUser} />{' '}{nickName}</>}
                   id={`offcanvasNavbarDropdown-expand`}
                   menuVariant={variant}
                   align="end"
@@ -183,10 +186,6 @@ export function Navigation(props: INavigation) {
                       Import from zip file
                     </NavDropdown.Item>
                   </NavDropdown> */}
-
-                  <NavDropdown.Item as={Link} to="/workspaces" >
-                    Workspace
-                  </NavDropdown.Item>
 
                   <NavDropdown.Divider />
 

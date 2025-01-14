@@ -19,16 +19,15 @@ interface IProps {
 }
 const QuestionAnswerRow = ({ questionTitle, questionAnswer, isDisabled, unAssignAnswer }: IProps) => {
 
-    const { answerId, assigned, user } = questionAnswer;
-    //const { title } = answer; // answer is just with title
-    const title = '';
+    const { answer, assigned, user } = questionAnswer;
+    const { title } = answer;
     const emailFromClient = localStorage.getItem('emailFromClient');
 
     const rowTitle = `Created by: ${user.createdBy}, ${formatDate(new Date(assigned.date))}`
 
     const { authUser, canEdit, isDarkMode, variant, bg } = useGlobalState();
 
-    const { wsName, userName, email } = authUser;
+    const { wsName, nickName, email } = authUser;
 
 
     const { state } = useCategoryContext();
@@ -36,7 +35,7 @@ const QuestionAnswerRow = ({ questionTitle, questionAnswer, isDisabled, unAssign
     const alreadyAdding = false;
 
     const del = () => {
-        unAssignAnswer(answerId)
+        unAssignAnswer(answer.id)
     };
 
     const edit = (id: number) => {
@@ -51,6 +50,7 @@ const QuestionAnswerRow = ({ questionTitle, questionAnswer, isDisabled, unAssign
 
     const sendEMail = () => {
 
+        /*
         const values = {
             wsName,
             from_name: userName,
@@ -61,8 +61,9 @@ const QuestionAnswerRow = ({ questionTitle, questionAnswer, isDisabled, unAssign
             email_to: emailFromClient,
             contact_number: 0
         }
-
         values.contact_number = Math.random() * 100000 | 0;
+        */
+
         // emailjs.send('service_akla4ca', 'template_2nbaqbj', values, 'YeDIRPwve3mgTemkA')
         //     .then(function () {
         //         console.log('SUCCESS!');
@@ -96,7 +97,7 @@ const QuestionAnswerRow = ({ questionTitle, questionAnswer, isDisabled, unAssign
                 variant='link'
                 size="sm"
                 className="py-0 px-1 text-info"
-                onClick={() => emailFromClient ? setShowReply(true) : copyToClipboard(title)}
+                onClick={() => emailFromClient ? setShowReply(true) : copyToClipboard(title!)}
             >
                 <FontAwesomeIcon
                     icon={emailFromClient ? faEnvelope : faCopy}
@@ -109,7 +110,7 @@ const QuestionAnswerRow = ({ questionTitle, questionAnswer, isDisabled, unAssign
                 size="sm"
                 className="py-0 mx-1 text-decoration-none text-info text-wrap"
                 title={rowTitle}
-                onClick={() => onSelectAnswer(answerId)}
+                onClick={() => onSelectAnswer(answer.id)}
                 disabled={alreadyAdding}
             >
                 {title}

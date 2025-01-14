@@ -9,7 +9,7 @@ import { FormMode, IGroup } from "groups/types";
 
 const AddGroup = ({ group, inLine } : { group: IGroup, inLine: boolean}) => {
     const globalState = useGlobalState();
-    const { userId, wsId } = globalState.authUser;
+    const { nickName, wsId } = globalState.authUser;
     const { createGroup } = useGroupContext();
     const [formValues] = useState(group)
 
@@ -22,7 +22,7 @@ const AddGroup = ({ group, inLine } : { group: IGroup, inLine: boolean}) => {
             created: {
                 date: new Date(),
                 by: {
-                    userId
+                    nickName
                 }
             }
         }
