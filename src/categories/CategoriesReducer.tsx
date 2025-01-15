@@ -3,7 +3,6 @@ import { Mode, ActionTypes, ICategoriesState, ICategory, IQuestion, CategoriesAc
 
 export const initialQuestion: IQuestion = {
   id: 0, // real id will be given by DB
-  wsId: '',
   parentCategory: '',
   categoryTitle: '',
   title: '',
@@ -17,7 +16,6 @@ export const initialCategory: ICategory = {
   // temp _id for inAdding, to server as list key
   // it will be removed on submitForm
   // real _id will be given by the MongoDB 
-  wsId: '', 
   id: '',
   title: '',
   level: 0,

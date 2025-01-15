@@ -20,7 +20,6 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
 
   const globalState = useGlobalState();
   const { dbp } = globalState;
-  const { wsId } = globalState.authUser;
 
   const [state, dispatch] = useReducer(CategoriesReducer, initialCategoriesState);
   const { parentNodes } = state;
@@ -116,7 +115,7 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
     catch (err: any | Error) {
       console.log(err);
     }
-  }, [wsId]);
+  }, []);
 
   const getSubCategories = useCallback(async ({ parentCategory, level }: IParentInfo) => {
     //const url = `/api/categories/${wsId}-${parentCategory}`
@@ -160,7 +159,7 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
     //     console.log(error);
     //     dispatch({ type: ActionTypes.SET_ERROR, payload: error });
     //   });
-  }, [wsId, parentNodesIds]);
+  }, [parentNodesIds]);
 
   const createCategory = useCallback(async (category: ICategory) => {
     dispatch({ type: ActionTypes.SET_LOADING }) // TODO treba li ovo 

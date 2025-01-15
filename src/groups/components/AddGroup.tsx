@@ -9,7 +9,7 @@ import { FormMode, IGroup } from "groups/types";
 
 const AddGroup = ({ group, inLine } : { group: IGroup, inLine: boolean}) => {
     const globalState = useGlobalState();
-    const { nickName, wsId } = globalState.authUser;
+    const { nickName } = globalState.authUser;
     const { createGroup } = useGroupContext();
     const [formValues] = useState(group)
 
@@ -18,7 +18,6 @@ const AddGroup = ({ group, inLine } : { group: IGroup, inLine: boolean}) => {
         const object: IGroup = {
             ...groupObject,
             id: groupObject.title.split(' ')[0].toUpperCase(),
-            wsId, 
             created: {
                 date: new Date(),
                 by: {

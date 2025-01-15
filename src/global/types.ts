@@ -11,7 +11,6 @@ export interface IDateAndBy {
 }
 
 export interface IRecord {
-	wsId: string,
 	created?: IDateAndBy,
 	createdBy?: string,
 	modified?: IDateAndBy,
@@ -23,8 +22,6 @@ export interface IRecord {
 
 
 export interface IAuthUser {
-	wsId: string,
-	wsName: string,
 	color?: string,
 	nickName: string,
 	name: string;
@@ -51,26 +48,33 @@ export enum  ROLES  {
 }
 
 export interface IGlobalState {
-	isAuthenticated: boolean | null;
-	dbp: IDBPDatabase | null;
-	everLoggedIn: boolean;
-	authUser: IAuthUser;
-	canEdit: boolean,
-	isOwner: boolean,
-	isDarkMode: boolean;
-	variant: string,
-	bg: string,
+		isAuthenticated: boolean | null;
+		dbp: IDBPDatabase | null;
+		everLoggedIn: boolean;
+		authUser: IAuthUser;
+		canEdit: boolean,
+		isOwner: boolean,
+		isDarkMode: boolean;
+		variant: string,
+		bg: string,
 	loading: boolean;
 	error?: Error;
-	kindOptions: IOption<string>[],
+}
+
+export interface IGlobalStateFromLocalStorage {
+	nickName: string;
+	everLoggedIn: boolean;
+	isDarkMode: boolean;
+	variant: string;
+	bg: string;
 }
 
 export interface IGlobalContext {
 	globalState: IGlobalState;
-	registerUser: (loginUser: ILoginUser) => Promise<any>;
+	getUser: (nickName: string) => Promise<any>;
+	registerUser: (regUser: IRegisterUser, isOwner: boolean, dbp: IDBPDatabase|null) => Promise<any>;
 	signInUser: (loginUser: ILoginUser) => Promise<any>;
 	OpenDB: () => Promise<any>;
-	getKindOptions: () => void;
 	health: () => void;
 }
 
@@ -82,22 +86,26 @@ export enum GlobalActionTypes {
 	SET_ERROR = 'SET_ERROR',
 	DARK_MODE = "DARK_MODE",
 	LIGHT_MODE = "LIGHT_MODE",
-	SET_KIND_OPTIONS = 'SET_KIND_OPTIONS',
 	SET_REGISTRATION_CONFIRMED = 'SET_REGISTRATION_CONFIRMED'
 }
 
 export interface ILoginUser {
-	wsId: string,
+	nickName: string;
+	password?: string;
+	who?: string;
+}
+
+export interface IRegisterUser {
 	who?: string,
 	nickName: string,
-	name?: string,
+	name: string,
 	password: string,
 	email: string,
-	color?: string,
-	level?: number,
-	role?: ROLES,
-	confirmed?: boolean
+	color: string,
+	level: number,
+	confirmed: boolean
 }
+
 
 export interface IJoinToWorkspace {
 	invitationId: string,
@@ -123,8 +131,7 @@ export type GlobalPayload = {
 	};
 
 	[GlobalActionTypes.AUTHENTICATE]: {
-		user: IUser,
-		wsName: string
+		user: IUser
 	};
 
 	[GlobalActionTypes.UN_AUTHENTICATE]: undefined;
@@ -141,9 +148,6 @@ export type GlobalPayload = {
 
 	[GlobalActionTypes.DARK_MODE]: undefined;
 
-	[GlobalActionTypes.SET_KIND_OPTIONS]: {
-		kindOptions: IOption<string>[];
-	};
 
 	[GlobalActionTypes.SET_REGISTRATION_CONFIRMED]: undefined
 };

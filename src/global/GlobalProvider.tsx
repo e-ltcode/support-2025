@@ -4,7 +4,8 @@ import {
   IGlobalContext, ILoginUser, ROLES, GlobalActionTypes,
   ICategoryData, IQuestionData,
   IGroupData, IAnswerData,
-  IRoleData, IUserData
+  IRoleData, IUserData,
+  IRegisterUser
 } from 'global/types'
 
 import { globalReducer, initialGlobalState } from "global/globalReducer";
@@ -35,61 +36,57 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
   // so, don't use globalDispatch inside of inner Provider, like Categories Provider
   const [globalState, dispatch] = useReducer(globalReducer, initialGlobalState);
 
-  const health = useCallback(() => {
-    const url = `api/health`;
-    // axios
-    //   .post(url)
-    //   .then(({ status }) => {
-    //     if (status === 200) {
-    //       console.log('health successfull:', status)
-    //     }
-    //     else {
-    //       console.log('Status is not 200', status)
-    //     }
-    //   })
-    //   .catch((err: any | Error) => {
-    //     console.log(err);
-    //   });
-  }, []);
-
-  const registerUser = useCallback(async (loginUser: ILoginUser) => {
-
+  const getUser = async (nickName: string) => {
     try {
-      console.log("registerUser", { loginUser })
-      const user: IUser = {
-        nickName: loginUser.nickName,
-        wsId: loginUser.wsId,
-        name: loginUser.name??'',
-        password: loginUser.password,
-        level: 0,
-        parentRole: loginUser.role === ROLES.OWNER ? 'OWNER' : 'VIEWER', // initialy, user is registered as WIEWER
-        role: loginUser.role!,
-        email: loginUser.email??'a@b.com',
-        color: 'blue',
-        confirmed: false
-      }
-      dispatch({ type: GlobalActionTypes.AUTHENTICATE, payload: { user, wsName: '' } });
+      const { dbp } = globalState;
+      const user: IUser = await dbp!.get("Users", nickName);
       return user;
-      // const res = await axios.post(url, { ...user, wsName: loginUser.wsName });
-      // const { status, data } = res;
-      // if (status === 200) {
-      //   console.log('User successfully registered:', data)
-      //   dispatch({
-      //     type: GlobalActionTypes.AUTHENTICATE, payload: {
-      //       user: data.user,
-      //       wsName: data.wsName
-      //     }
-      //   })
-      //   return data.user;
-      // }
-      // else {
-      //   console.log('Status is not 200', status)
-      //   dispatch({
-      //     type: GlobalActionTypes.SET_ERROR, payload: {
-      //       error: new Error('Status is not 200 status: ' + status)
-      //     }
-      //   })
-      // }
+    }
+    catch (error: any) {
+      console.log(error);
+      return undefined;
+    }
+  }
+
+  // user can be register from RegisterForm, or as the owner during creation of Database
+  // const registerUser = useCallback(async (regUser: IRegisterUser, isOwner: boolean, dbp: IDBPDatabase|null ) => {
+  const registerUser = async (regUser: IRegisterUser, isOwner: boolean, dbp: IDBPDatabase | null) => {
+    try {
+      if (!dbp) {
+        dbp = globalState.dbp;
+      }
+      console.log("registerUser", { regUser });
+      const { nickName, name, password, email, color, confirmed } = regUser;
+      const user: IUser = {
+        nickName,
+        name,
+        words: name.toLowerCase().replaceAll('?', '').split(' '),
+        password,
+        level: 1,
+        parentRole: isOwner ? 'OWNER' : 'VIEWER',
+        role: isOwner ? ROLES.OWNER : ROLES.VIEWER,  // initialy, user is registered as WIEWER
+        email,
+        color,
+        confirmed: isOwner ? true : confirmed,
+        isDarkMode: true
+      }
+      if (!isOwner) {
+        await dbp!.add('Users', user);
+        const role = await dbp!.get('Roles', isOwner ? 'OWNER' : 'VIEWER');
+        const obj: IRole = {
+          ...role,
+          numOfUsers: role.numOfUsers + 1,
+          modified: {
+            date: new Date(),
+            by: {
+              nickName: globalState.authUser.nickName
+            }
+          }
+        }
+        await dbp!.put('Roles', obj);
+      }
+      dispatch({ type: GlobalActionTypes.AUTHENTICATE, payload: { user } });
+      return user;
     }
     catch (err: any) {
       console.log(err);
@@ -101,83 +98,42 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
       });
     }
     return null;
-  }, [dispatch]);
+  }
+  //}, [dispatch]);
 
 
-  const signInUser = useCallback(async (loginUser: ILoginUser): Promise<any> => {
-
-    console.log("signInUser", { loginUser })
-
-    const user: IUser = {
-      ...loginUser,
-      nickName: loginUser.nickName!,
-      name: loginUser.name ?? '',
-      parentRole: 'null',
-      color: 'blue',
-      level: 0,
-      role: ROLES.VIEWER,
-      confirmed: true
+  //const signInUser = useCallback(async (loginUser: ILoginUser): Promise<any> => {
+  const signInUser = async (loginUser: ILoginUser): Promise<any> => {
+    try {
+      console.log("signInUser", { loginUser })
+      const { nickName, password } = loginUser;
+      let user: IUser | undefined = await getUser(nickName);
+      if (!user) {
+        alert(`User ${nickName} doesn't exist in Database`)
+        return null;
+      }
+      else {
+        // auto signIn has no paswword 
+        if (password && password !== user.password) {
+          alert(`Pasword doesn't match with Password in Database`)
+          return null;
+        }
+      }
+      dispatch({ type: GlobalActionTypes.AUTHENTICATE, payload: { user: { ...user, confirmed: true } } })
+      return true;
     }
-    dispatch({ type: GlobalActionTypes.AUTHENTICATE, payload: { user, wsName: '' } })
-    return true;
-    // try {
-    //   const res = await axios.post(`/api/users/sign-in-user`, { ...loginUser, date: new Date() });
-    //   const { status, data } = res;
-    //   if (status === 200) {
-    //     console.log('User successfully logged in', data)
-    //     dispatch({ type: GlobalActionTypes.AUTHENTICATE, payload: { user: data, wsName: loginUser.wsName } })
-    //     return true;
-    //   }
-    //   else {
-    //     console.log('Status is not 200', status)
-    //     dispatch({
-    //       type: GlobalActionTypes.SET_ERROR, payload: {
-    //         error: new Error('Status is not 200 status: ' + status)
-    //       }
-    //     })
-    //   }
-    // }
-    // catch (err: any | Error) {
-    //   console.log(err);
-    //   dispatch({
-    //     type: GlobalActionTypes.SET_ERROR,
-    //     payload: {
-    //       error: new Error(axios.isError(err) ? err.response?.data : err)
-    //     }
-    //   });
-    //   return false;
-    // }
-  }, [dispatch]);
-
-
-  const getKindOptions = useCallback(async (): Promise<any> => {
-    // try {
-    //   const res = await axios.get(`/api/kinds/get-options/${globalState.authUser.wsId}`);
-    //   const { status, data } = res;
-    //   if (status === 200) {
-    //     data.unshift({ label: 'Select', value: '000000000000000000000000' })
-    //     dispatch({ type: GlobalActionTypes.SET_KIND_OPTIONS, payload: { kindOptions: data } });
-    //   }
-    //   else {
-    //     dispatch({
-    //       type: GlobalActionTypes.SET_ERROR,
-    //       payload: {
-    //         error: new Error('Status is not 200 status:' + status)
-    //       }
-    //     })
-    //   }
-    // }
-    // catch (err: any | Error) {
-    //   dispatch({
-    //     type: GlobalActionTypes.SET_ERROR,
-    //     payload: {
-    //       error: new Error(axios.isError(err) ? err.response?.data : err)
-    //     }
-    //   })
-    // }
-  }, [globalState.authUser.wsId]);
-
-  // const sleep = (ms: number | undefined) => new Promise(r => setTimeout(r, ms));
+    catch (err: any) {
+      console.log(err);
+      dispatch({
+        type: GlobalActionTypes.SET_ERROR,
+        payload: {
+          error: new Error(err)
+        }
+      });
+    }
+    return null;
+  }
+  //}, [dispatch]);
 
   const addRole = async (
     dbp: IDBPDatabase,
@@ -189,7 +145,6 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
     const { title, roles, users } = roleData;
 
     const r: IRole = {
-      wsId: '',
       title,
       parentRole,
       hasSubRoles: roles ? roles.length > 0 : false,
@@ -210,19 +165,20 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
     if (users) {
       let i = 0;
       while (i < users.length) {
-        const u: IUserData = users[i]
+        const u: IUserData = users[i];
+        const { nickName, name, password, email, color } = u;
         const user: IUser = {
-          nickName: u.nickName,
+          nickName,
           parentRole: r.title,
           role: r.title as ROLES,
-          name: u.name,
-          words: u.name.toLowerCase().replaceAll('?', '').split(' '),
-          password: u.password,
-          email: u.email,
-          color: u.color,
+          name,
+          words: name.toLowerCase().replaceAll('?', '').split(' '),
+          password,
+          email,
+          color,
           level: 2,
-          wsId: "",
-          confirmed: true
+          confirmed: false,
+          isDarkMode: true
         }
         await dbp.add('Users', user);
         i++;
@@ -250,7 +206,6 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
     : Promise<void> => {
     const { id, title, groups, answers } = groupData;
     const g: IGroup = {
-      wsId: '',
       id,
       parentGroup,
       hasSubGroups: groups ? groups.length > 0 : false,
@@ -278,8 +233,7 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
           words: a.title.toLowerCase().replaceAll('?', '').split(' '),
           source: 0,
           status: 0,
-          level: 2,
-          wsId: ""
+          level: 2
         }
         await dbp.add('Answers', answer);
         i++;
@@ -319,7 +273,6 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
     }
 
     const cat: ICategory = {
-      wsId: '',
       id,
       parentCategory,
       hasSubCategories: categories ? categories.length > 0 : false,
@@ -348,8 +301,7 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
           source: 0,
           status: 0,
           questionAnswers: [],
-          level: 2,
-          wsId: ""
+          level: 2
         }
         await dbp.add('Questions', question);
         i++;
@@ -369,66 +321,63 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
   }
 
   const addInitialData = async (dbp: IDBPDatabase): Promise<void> => {
-    new Promise<void>(async (resolve) => {
-      // Categries -> Questions
-      try {
-        let level = 1;
-        let i = 0;
-        const data: ICategoryData[] = categoryData;
-        const tx = dbp.transaction(['Categories', 'Questions'], 'readwrite');
-        while (i < data.length) {
-          addCategory(dbp, data[i], 'null', level);
-          i++;
-        }
-        console.log('trans categories complete')
-        // dispatch({ type: GlobalActionTypes.SET_DBP, payload: { dbp } })
-        await tx.done;
-        // resolve();
+    //new Promise<void>(async (resolve) => {
+    // Categries -> Questions
+    try {
+      let level = 1;
+      let i = 0;
+      const data: ICategoryData[] = categoryData;
+      const tx = dbp.transaction(['Categories', 'Questions'], 'readwrite');
+      while (i < data.length) {
+        await addCategory(dbp, data[i], 'null', level);
+        i++;
       }
-      catch (err) {
-        console.log('error', err);
-      }
+      console.log('trans categories complete')
+      // dispatch({ type: GlobalActionTypes.SET_DBP, payload: { dbp } })
+      await tx.done;
+    }
+    catch (err) {
+      console.log('error', err);
+    }
 
-      // Groups -> Answers
-      try {
-        let level = 1;
-        let i = 0;
-        const data: IGroupData[] = groupData;
-        const tx = dbp.transaction(['Groups', 'Answers'], 'readwrite');
-        while (i < data.length) {
-          addGroup(dbp, data[i], 'null', level);
-          i++;
-        }
-        console.log('trans groups complete')
-        // dispatch({ type: GlobalActionTypes.SET_DBP, payload: { dbp } })
-        await tx.done;
-        resolve();
+    // Groups -> Answers
+    try {
+      let level = 1;
+      let i = 0;
+      const data: IGroupData[] = groupData;
+      const tx = dbp.transaction(['Groups', 'Answers'], 'readwrite');
+      while (i < data.length) {
+        await addGroup(dbp, data[i], 'null', level);
+        i++;
       }
-      catch (err) {
-        console.log('error', err);
-      }
+      console.log('trans groups complete')
+      // dispatch({ type: GlobalActionTypes.SET_DBP, payload: { dbp } })
+      await tx.done;
+    }
+    catch (err) {
+      console.log('error', err);
+    }
 
-      // Roles -> Users
-      try {
-        let level = 1;
-        let i = 0;
-        const data: IRoleData[] = roleData;
-        const tx = dbp.transaction(['Groups', 'Answers'], 'readwrite');
-        while (i < data.length) {
-          addRole(dbp, data[i], 'null', level);
-          i++;
-        }
-        console.log('trans groups complete')
-        // dispatch({ type: GlobalActionTypes.SET_DBP, payload: { dbp } })
-        await tx.done;
-        resolve();
+    // Roles -> Users
+    try {
+      let level = 1;
+      let i = 0;
+      const data: IRoleData[] = roleData;
+      const tx = dbp.transaction(['Roles', 'Users'], 'readwrite');
+      while (i < data.length) {
+        await addRole(dbp, data[i], 'null', level);
+        i++;
       }
-      catch (err) {
-        console.log('error', err);
-      }
-    })
-
-
+      console.log('trans groups complete')
+      // dispatch({ type: GlobalActionTypes.SET_DBP, payload: { dbp } })
+      await tx.done;
+      // resolve
+      //resolve();
+    }
+    catch (err) {
+      console.log('error', err);
+    }
+    //})
   }
 
   const OpenDB = useCallback(async (): Promise<any> => {
@@ -465,8 +414,9 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
           roleStore.createIndex('title_idx', 'title', { unique: true });
           roleStore.createIndex('parentRole_idx', 'parentRole', { unique: false });
 
-          // Answers
+          // Users
           const userStore = db.createObjectStore('Users', { keyPath: 'nickName' });
+          groupStore.createIndex('nickName_idx', 'nickName', { unique: true });
           userStore.createIndex('words_idx', 'words', { multiEntry: true, unique: false });
           userStore.createIndex('parentRole_nickName_idx', ['parentRole', 'nickName'], { unique: true });
           userStore.createIndex('parentRole_idx', 'parentRole', { unique: false });
@@ -480,12 +430,19 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
       // Add initial data
       if (initializeData) {
         await addInitialData(dbp);
+        const userData: IUserData = roleData[0].users![0];
+        const { nickName, name, password, email } = userData;
+        const regUser: IRegisterUser = { ...userData, level: 1, confirmed: false }
+        await registerUser(regUser, true, dbp);
       }
+      await dispatch({ type: GlobalActionTypes.SET_DBP, payload: { dbp } });
+      // else {
+      //   signInUser({nickName: 'Boss', password: 'Boss12345'})
+      // }
       // This event handles the event whereby a new version of the database needs to be created
       // Either one has not been created before, or a new version number has been submitted via the
       // window.indexedDB.open line above
       //it is only implemented in recent browsers
-      dispatch({ type: GlobalActionTypes.SET_DBP, payload: { dbp } })
       return true;
     }
     catch (err: any) {
@@ -498,11 +455,29 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
       });
       return false;
     }
-  }, [dispatch]);
+  }, []);
+
+  const health = () => {
+    const url = `api/health`;
+    // axios
+    //   .post(url)
+    //   .then(({ status }) => {
+    //     if (status === 200) {
+    //       console.log('health successfull:', status)
+    //     }
+    //     else {
+    //       console.log('Status is not 200', status)
+    //     }
+    //   })
+    //   .catch((err: any | Error) => {
+    //     console.log(err);
+    //   });
+  };
+
 
   return (
     <GlobalContext.Provider value={{
-      globalState, health, registerUser, signInUser, OpenDB, getKindOptions
+      globalState, OpenDB, registerUser, signInUser, getUser, health
     }}>
       <GlobalDispatchContext.Provider value={dispatch}>
         {children}

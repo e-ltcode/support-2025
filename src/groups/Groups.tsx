@@ -30,7 +30,7 @@ const Providered = ({ groupId_answerId }: IProps) => {
     const [showAddAnswer, setShowAddAnswer] = useState(false);
     const handleClose = () => setShowAddAnswer(false);
 
-    const [newAnswer, setNewAnswer] = useState({ ...initialAnswer, wsId: authUser.wsId });
+    const [newAnswer, setNewAnswer] = useState({ ...initialAnswer });
     const [createAnswerError, setCreateAnswerError] = useState("");
 
     const dispatch = useGroupDispatch();

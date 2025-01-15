@@ -30,7 +30,7 @@ const Providered = ({ roleId_userId }: IProps) => {
     const [showAddUser, setShowAddUser] = useState(false);
     const handleClose = () => setShowAddUser(false);
 
-    const [newUser, setNewUser] = useState({ ...initialUser, wsId: authUser.wsId });
+    const [newUser, setNewUser] = useState({ ...initialUser });
     const [createUserError, setCreateUserError] = useState("");
 
     const dispatch = useRoleDispatch();

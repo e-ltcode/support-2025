@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Form, CloseButton } from "react-bootstrap";
-import { ILoginUser, ROLES } from "global/types";
+import { IRegisterUser, ROLES } from "global/types";
 //import emailjs from '@emailjs/browser'
 
 import './formik.css';
@@ -34,10 +34,9 @@ const RegisterForm = () => {
 
   const [showMessage, setShowMessage] = useState(false);
 
-  const submitForm = async (loginUser: ILoginUser) => {
-    loginUser.color = 'blue';
-    loginUser.wsId = '';
-    const user = await registerUser(loginUser);
+  const submitForm = async (regUser: IRegisterUser) => {
+    regUser.color = 'blue';
+    const user = await registerUser(regUser, false, null);
     if (!user)
       return;
 
@@ -64,12 +63,14 @@ const RegisterForm = () => {
     // });
   }
 
-  const initialValues: ILoginUser = {
-    wsId: '',
+  const initialValues: IRegisterUser = {
     name: '',
     nickName: '',
+    password: '',
     email: '',
-    password: ''
+    color: 'navy',
+    level: 1,
+    confirmed: false
   }
 
   const formik = useFormik({
@@ -87,9 +88,6 @@ const RegisterForm = () => {
     }),
     onSubmit: values => {
       //alert(JSON.stringify(values, null, 2));
-      values.role = values.nickName === 'Boss'
-        ? ROLES.OWNER
-        : ROLES.VIEWER;
       submitForm(values);
       //props.handleClose(false);
     }
@@ -162,7 +160,6 @@ const RegisterForm = () => {
           <Form.Control
             as="input"
             name="nickName"
-            ref={nameRef}
             onChange={formik.handleChange}
             //onBlur={formik.handleBlur}
             // onBlur={(e: React.FocusEvent<HTMLTextAreaElement>): void => {
@@ -174,7 +171,7 @@ const RegisterForm = () => {
             placeholder={'Nickname'}
           />
           <Form.Text className="text-danger">
-            {formik.touched.name && formik.errors.nickName ? (
+            {formik.touched.nickName && formik.errors.nickName ? (
               <div className="text-danger">{formik.errors.nickName}</div>
             ) : null}
           </Form.Text>
@@ -193,7 +190,7 @@ const RegisterForm = () => {
             // }}
             value={formik.values.email}
             style={{ width: '100%' }}
-            placeholder={'name@example.com'}
+            placeholder={'nickName@gmail.com'}
           />
           <Form.Text className="text-danger">
             {formik.touched.email && formik.errors.email ? (

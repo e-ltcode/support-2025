@@ -27,7 +27,7 @@ const QuestionAnswerRow = ({ questionTitle, questionAnswer, isDisabled, unAssign
 
     const { authUser, canEdit, isDarkMode, variant, bg } = useGlobalState();
 
-    const { wsName, nickName, email } = authUser;
+    const { nickName, email } = authUser;
 
 
     const { state } = useCategoryContext();

@@ -15,7 +15,7 @@ interface IProps {
 // const Add = ({ kind, answer, inLine } : { kind: IKind, answer: IAnswer, inLine: boolean}) => {
 const AddAnswer = ({ answer, closeModal, onAnswerCreated }: IProps) => {
     const globalState = useGlobalState();
-    const { nickName, wsId } = globalState.authUser;
+    const { nickName } = globalState.authUser;
 
     const { createAnswer } = useCategoryContext();
     const [formValues] = useState(answer)
@@ -24,7 +24,6 @@ const AddAnswer = ({ answer, closeModal, onAnswerCreated }: IProps) => {
         delete answerObject.id;
         const object: IAnswer = {
             ...answerObject,
-            wsId,
             //_id: undefined,
             created: {
                 date: new Date(),

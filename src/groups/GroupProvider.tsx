@@ -19,7 +19,6 @@ export const GroupProvider: React.FC<Props> = ({ children }) => {
 
   const globalState = useGlobalState();
   const { dbp } = globalState;
-  const { wsId } = globalState.authUser;
 
   const [state, dispatch] = useReducer(GroupsReducer, initialGroupsState);
   const { parentNodes } = state;
@@ -115,7 +114,7 @@ export const GroupProvider: React.FC<Props> = ({ children }) => {
     catch (err: any | Error) {
       console.log(err);
     }
-  }, [wsId]);
+  }, []);
 
   const getSubGroups = useCallback(async ({ parentGroup, level }: IParentInfo) => {
     //const url = `/api/groups/${wsId}-${parentGroup}`
@@ -159,7 +158,7 @@ export const GroupProvider: React.FC<Props> = ({ children }) => {
     //     console.log(error);
     //     dispatch({ type: ActionTypes.SET_ERROR, payload: error });
     //   });
-  }, [wsId, parentNodesIds]);
+  }, [parentNodesIds]);
 
   const createGroup = useCallback(async (group: IGroup) => {
     dispatch({ type: ActionTypes.SET_LOADING }) // TODO treba li ovo 

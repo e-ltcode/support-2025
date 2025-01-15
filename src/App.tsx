@@ -12,20 +12,19 @@ import Answers from "groups/Groups"
 import About from 'About';
 import Health from 'Health';
 import SupportPage from './SupportPage';
-import { ILoginUser } from 'global/types';
+import { ILoginUser, IRegisterUser } from 'global/types';
 import LoginForm from 'global/LoginForm';
 import RegisterForm from 'global/RegisterForm';
 import Roles from 'roles/Roles';
+import { IUser } from 'roles/types';
 
 function App() {
 
-  const { signInUser, OpenDB } = useGlobalContext();
-  const { authUser, isAuthenticated, everLoggedIn } = useGlobalState()
-  const { wsId, wsName, nickName, password } = authUser;
+  const { getUser, registerUser, signInUser, OpenDB } = useGlobalContext();
+  const { dbp, authUser, isAuthenticated, everLoggedIn } = useGlobalState()
+  const { nickName, password, role } = authUser;
 
   const formInitialValues = {
-    wsName: '',
-    wsId: '',
     who: '',
     nickName: '',
     password: '',
@@ -35,6 +34,14 @@ function App() {
   let location = useLocation();
   const navigate = useNavigate();
 
+  useEffect(() => {
+    (async () => {
+      //if (isAuthenticated) {
+        await OpenDB();
+      //}
+    })()
+  }, [OpenDB]) // , isAuthenticated
+
   const locationPathname = location.pathname;
 
   useEffect(() => {
@@ -43,18 +50,14 @@ function App() {
         locationPathname.startsWith('/invitation') ||
         locationPathname.startsWith('/register') ||
         locationPathname.startsWith('/sign-in') ||
-        locationPathname.startsWith('/about');  // allow about without egistration
-      if (!isAuthenticated && !isAuthRoute) {
+        locationPathname.startsWith('/about');  // allow about without registration
+      if (!isAuthenticated && !isAuthRoute && dbp) {
         if (everLoggedIn) {
           let signedIn = false;
-          if (nickName !== '') {
-            console.log(`await signInUser(${ wsId}, ${wsName}, ${nickName}, ${password} })`);
+          if (/*dbp &&*/ nickName !== '') {
+            console.log(`await signInUser(${nickName}, ${password} })`);
             const loginUser = {
-              wsId, 
-              wsName,
-              nickName,
-              password,
-              email: '' 
+              nickName
             }
             signedIn = await signInUser(loginUser);
             if (!signedIn) {
@@ -63,24 +66,47 @@ function App() {
           }         
         }
         else {
+          // const regUser: IRegisterUser = { 
+          //   nickName
+          // }
+          // const user = await registerUser(regUser, true, null);
+          
+          // if (!user.confirmed) {
+          //   let user: IUser = await getUser('Boss');
+          //   const { nickName, name, password, wsId, email } = user;
+          //   const loginUser: ILoginUser = { nickName  }
+          //   user = await registerUser(loginUser, true);
+          //   if (!user) {
+          //     return null;
+          //   }
+          // }
+
+          // let user = await getUser('Boss');
+          // if (!user) {
+          //   alert('User Boss, as the OWNER, should be in database')
+          //   return;
+          // }
+          // if (!user.confirmed) {
+          //   let user: IUser = await getUser('Boss');
+          //   const { nickName, name, password, wsId, email } = user;
+          //   const loginUser: ILoginUser = { wsId, nickName, name, password, email }
+          //   user = await registerUser(loginUser);
+          //   if (!user) {
+          //     return null;
+          //   }
+          // }
+          /*
           const returnUrl = encodeURIComponent(locationPathname);
           console.log('PATH prije navigate(register)', locationPathname)
-          if (!locationPathname.includes('/register'))
-            navigate('/register/' + returnUrl, { replace: true })
+          if (!locationPathname.includes('/register')) {
+            navigate('/register/' + returnUrl, { replace: true });
+          }
+          */
         }
       }
     })()
 
-    }, [signInUser, isAuthenticated, wsId, wsName, nickName, password, everLoggedIn, locationPathname, navigate])
-
-    useEffect(() => {
-      (async () => {
-        if (isAuthenticated) {
-          await OpenDB();
-        }
-      })()
-    }, [OpenDB, isAuthenticated])
-
+    }, [dbp, signInUser, isAuthenticated, nickName, password, everLoggedIn, locationPathname, navigate])
 
     return (
       <Container fluid className="App">

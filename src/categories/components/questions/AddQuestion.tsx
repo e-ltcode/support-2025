@@ -16,7 +16,7 @@ interface IProps {
 const AddQuestion = ({ question, inLine, closeModal, showCloseButton, setError }: IProps) => {
     const globalState = useGlobalState();
     const { authUser } = globalState;
-    const { nickName, wsId } = authUser;
+    const { nickName } = authUser;
    
     const dispatch = useCategoryDispatch();
     const { state, createQuestion, reloadCategoryNode } = useCategoryContext();
@@ -32,7 +32,6 @@ const AddQuestion = ({ question, inLine, closeModal, showCloseButton, setError }
         delete obj.id;
         const object: IQuestion = {
             ...obj,
-            wsId,
             //id: undefined,
             created: {
                 date: new Date(),

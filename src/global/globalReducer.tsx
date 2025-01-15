@@ -1,10 +1,8 @@
 
 import { Reducer } from 'react'
-import { IGlobalState, GlobalActionTypes, GlobalActions, ROLES, IAuthUser } from "./types";
+import { IGlobalState, GlobalActionTypes, GlobalActions, ROLES, IAuthUser, IGlobalStateFromLocalStorage } from "./types";
 
 const initialAuthUser: IAuthUser = {
-    wsId: '',
-    wsName: '',
     nickName: '',
     name: '',
     password: '',
@@ -25,33 +23,29 @@ const initGlobalState: IGlobalState = {
     variant: 'dark',
     bg: 'dark',
     loading: false,
-    kindOptions: []
 }
 
-let globalStateFromLocalStorage: IGlobalState | undefined;
+let globalStateFromLocalStorage: IGlobalStateFromLocalStorage | undefined;
 
 const hasMissingProps = (): boolean => {
-
-    return false;
-
     let b = false;
-    const keys = Object.keys(globalStateFromLocalStorage!)
-    Object.keys(initGlobalState).forEach((prop: string) => {
-        if (!keys.includes(prop)) {
-            b = true;
-            console.log('missing prop:', prop)
-        }
-        else if (prop === 'authUser') {
-            const keys = Object.keys(globalStateFromLocalStorage!.authUser)
-            Object.keys(initGlobalState.authUser).forEach((prop: string) => {
-                if (!keys.includes(prop)) {
-                    b = true;
-                    //console.log('missing prop:', prop, ' try with SignOut')
-                    alert('missing prop: ' + prop + ' try with SignOut')
-                }
-            })
-        }
-    })
+    // const keys = Object.keys(globalStateFromLocalStorage!)
+    // Object.keys(initGlobalState).forEach((prop: string) => {
+    //     if (!keys.includes(prop)) {
+    //         b = true;
+    //         console.log('missing prop:', prop)
+    //     }
+    //     else if (prop === 'authUser') {
+    //         const keys = Object.keys(globalStateFromLocalStorage!.authUser)
+    //         Object.keys(initGlobalState.authUser).forEach((prop: string) => {
+    //             if (!keys.includes(prop)) {
+    //                 b = true;
+    //                 //console.log('missing prop:', prop, ' try with SignOut')
+    //                 alert('missing prop: ' + prop + ' try with SignOut')
+    //             }
+    //         })
+    //     }
+    // })
     return b;
 }
 
@@ -63,17 +57,25 @@ if ('localStorage' in window) {
         if (hasMissingProps()) {
             globalStateFromLocalStorage = undefined;
         }
+        /*
         else {
             const { authUser } = globalStateFromLocalStorage!;
             //authUser.userId = authUser.userId;
-            console.log('===>>>globalStateFromLocalStorage', globalStateFromLocalStorage );
+            console.log('===>>>globalStateFromLocalStorage', globalStateFromLocalStorage);
         }
+        */
     }
 }
 
-export const initialGlobalState: IGlobalState = globalStateFromLocalStorage
-    ? globalStateFromLocalStorage
-    : initGlobalState
+export const initialGlobalState: IGlobalState = initGlobalState;
+if (globalStateFromLocalStorage) {
+    const { everLoggedIn, nickName, isDarkMode, variant, bg } = globalStateFromLocalStorage;
+    initialGlobalState.everLoggedIn = everLoggedIn;
+    initialGlobalState.authUser.nickName = nickName;
+    initialGlobalState.isDarkMode = isDarkMode;
+    initialGlobalState.variant = variant;
+    initialGlobalState.bg = bg;
+}
 
 export const globalReducer: Reducer<IGlobalState, GlobalActions> = (state, action) => {
     const newState = reducer(state, action);
@@ -84,15 +86,16 @@ export const globalReducer: Reducer<IGlobalState, GlobalActions> = (state, actio
         GlobalActionTypes.UN_AUTHENTICATE
     ];
     if (aTypesToStore.includes(action.type)) {
-        localStorage.setItem('GLOBAL_STATE', JSON.stringify({
-            ...newState,
-            authUser: {
-                ...newState.authUser,
-                userId: '' // TODO dodaj pravi
-            },
-            isAuthenticated: false,
-            error: undefined
-        }));
+        const { authUser, everLoggedIn, isDarkMode, variant, bg } = newState;
+        const { nickName } = authUser;
+        const obj: IGlobalStateFromLocalStorage = {
+            nickName,
+            everLoggedIn,
+            isDarkMode,
+            variant,
+            bg
+        }
+        localStorage.setItem('GLOBAL_STATE', JSON.stringify(obj));
     }
     return newState;
 }
@@ -117,21 +120,20 @@ const reducer: Reducer<IGlobalState, GlobalActions> = (state, action) => {
         }
 
         case GlobalActionTypes.AUTHENTICATE: {
-            const { user, wsName } = action.payload;
+            const { user } = action.payload;
+            const { nickName, name, password, parentRole, email, confirmed } = user;
             return {
                 ...state,
                 authUser: {
-                    wsId: user.wsId,
-                    wsName,
-                    nickName: user.nickName, //user._id!,
-                    name: user.name,
-                    password: user.password!,
-                    role: user.parentRole as ROLES,
-                    email: user.email,
+                    nickName,
+                    name,
+                    password,
+                    role: parentRole as ROLES,
+                    email,
                     color: 'blue',
-                    registrationConfirmed: user.confirmed,
+                    registrationConfirmed: confirmed,
                     everLoggedIn: true,
-                    registered: user.created ? user.created.date: new Date()
+                    registered: user.created ? user.created.date : new Date()
                     //visited: user.visited!.date
                 },
                 canEdit: user.parentRole !== ROLES.VIEWER,
@@ -147,10 +149,7 @@ const reducer: Reducer<IGlobalState, GlobalActions> = (state, action) => {
             return {
                 ...state,
                 dbp,
-                loading: false,
-                isAuthenticated: true,  // obrisi ovo TODO
-                everLoggedIn: true,
-                canEdit: true
+                loading: false
             };
         }
 
@@ -166,8 +165,11 @@ const reducer: Reducer<IGlobalState, GlobalActions> = (state, action) => {
 
         case GlobalActionTypes.UN_AUTHENTICATE: {
             return {
-                ...initGlobalState,
-                everLoggedIn: state.everLoggedIn
+                ...state,
+                isAuthenticated: false,
+                everLoggedIn: false,
+                authUser: initialAuthUser,
+                isOwner: false
             };
         }
 
@@ -176,15 +178,6 @@ const reducer: Reducer<IGlobalState, GlobalActions> = (state, action) => {
 
         case GlobalActionTypes.DARK_MODE:
             return { ...state, isDarkMode: true, variant: 'dark', bg: 'dark' };
-
-        case GlobalActionTypes.SET_KIND_OPTIONS: {
-            const { kindOptions } = action.payload;
-            return {
-                ...state,
-                kindOptions,
-                loading: false
-            };
-        }
 
         default: {
             throw Error('Unknown action: ' + str);

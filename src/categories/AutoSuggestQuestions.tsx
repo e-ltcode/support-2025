@@ -54,7 +54,6 @@ const QuestionAutosuggestMulti = Autosuggest as { new(): Autosuggest<IQuestionSh
 
 export class AutoSuggestQuestions extends React.Component<{
 	dbp: IDBPDatabase,
-	wsId: string,
 	tekst: string | undefined,
 	onSelectQuestion: (categoryId: string, questionId: number) => void
 }, any
@@ -62,7 +61,6 @@ export class AutoSuggestQuestions extends React.Component<{
 	// region Fields
 	state: any;
 	isMob: boolean;
-	wsId: string;
 	dbp: IDBPDatabase;
 	//inputAutosuggest: React.RefObject<HTMLInputElement>;
 	// endregion region Constructor
@@ -77,7 +75,6 @@ export class AutoSuggestQuestions extends React.Component<{
 		//this.inputAutosuggest = createRef<HTMLInputElement>();
 		this.dbp = props.dbp;
 		this.isMob = isMobile;
-		this.wsId = props.wsId;
 	}
 
 	componentDidMount() {

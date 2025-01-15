@@ -22,8 +22,6 @@ const QuestionAnswers = ({ questionId, questionTitle, questionAnswers, isDisable
     const { globalState } = useGlobalContext();
     const { authUser, isDarkMode, variant, dbp } = globalState;
     
-    const { wsId } = authUser;
-
     const [showAdd, setShowAdd] = useState(false);
     const handleClose = () => setShowAdd(false);
 
@@ -149,7 +147,6 @@ const QuestionAnswers = ({ questionId, questionTitle, questionAnswers, isDisable
                     
                     <AutoSuggestAnswers
                         dbp={dbp!}
-                        wsId={wsId}
                         tekst={''}
                         alreadyAssigned={
                             questionAnswers.length === 0 

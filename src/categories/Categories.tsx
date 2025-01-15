@@ -30,7 +30,7 @@ const Providered = ({ categoryId_questionId }: IProps) => {
     const [showAddQuestion, setShowAddQuestion] = useState(false);
     const handleClose = () => setShowAddQuestion(false);
 
-    const [newQuestion, setNewQuestion] = useState({ ...initialQuestion, wsId: authUser.wsId });
+    const [newQuestion, setNewQuestion] = useState({ ...initialQuestion  });
     const [createQuestionError, setCreateQuestionError] = useState("");
 
     const dispatch = useCategoryDispatch();

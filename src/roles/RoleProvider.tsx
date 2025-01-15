@@ -17,7 +17,6 @@ export const RoleProvider: React.FC<Props> = ({ children }) => {
 
   const globalState = useGlobalState();
   const { dbp } = globalState;
-  const { wsId } = globalState.authUser;
 
   const [state, dispatch] = useReducer(RolesReducer, initialRolesState);
   const { parentNodes } = state;
@@ -113,7 +112,7 @@ export const RoleProvider: React.FC<Props> = ({ children }) => {
     catch (err: any | Error) {
       console.log(err);
     }
-  }, [wsId]);
+  }, []);
 
   const getSubRoles = useCallback(async ({ parentRole, level }: IParentInfo) => {
     //const url = `/api/roles/${wsId}-${parentRole}`
@@ -157,7 +156,7 @@ export const RoleProvider: React.FC<Props> = ({ children }) => {
     //     console.log(error);
     //     dispatch({ type: ActionTypes.SET_ERROR, payload: error });
     //   });
-  }, [wsId, parentNodesIds]);
+  }, [parentNodesIds]);
 
   const createRole = useCallback(async (role: IRole) => {
     dispatch({ type: ActionTypes.SET_LOADING }) // TODO treba li ovo 

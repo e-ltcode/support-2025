@@ -2,13 +2,7 @@
   {
     "title": "OWNER",
     "users": [
-      {
-        "nickName": "Boss",
-        "name": "Boss",
-        "password": "Boss12345",
-        "email": "boss@gmail.com",
-        "color": "red"
-      }
+      { "nickName": "Boss", "name": "Boss", "password": "Boss12345", "email": "boss@gmail.com", "color": "red" }
     ]
   },
   {

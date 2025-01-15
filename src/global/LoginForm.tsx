@@ -47,11 +47,11 @@ const LoginForm = ({ initialValues, invitationId } : {initialValues: ILoginUser,
 
   // eslint-disable-next-line no-self-compare
   // const nameRef = useRef<HTMLAreaElement | null>(null);
-  const nameRef = useRef<HTMLInputElement>(null);
+  const nickNameRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    nameRef.current!.focus();
-  }, [nameRef])
+    nickNameRef.current!.focus();
+  }, [nickNameRef])
 
   useEffect(() => {
     if (isAuthenticated)
@@ -75,7 +75,7 @@ const LoginForm = ({ initialValues, invitationId } : {initialValues: ILoginUser,
           <Form.Control
             as="input"
             name="nickName"
-            ref={nameRef}
+            ref={nickNameRef}
             onChange={formik.handleChange}
             //onBlur={formik.handleBlur}
             // onBlur={(e: React.FocusEvent<HTMLTextAreaElement>): void => {

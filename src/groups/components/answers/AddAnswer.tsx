@@ -16,7 +16,7 @@ interface IProps {
 const AddAnswer = ({ answer, inLine, closeModal, showCloseButton, setError }: IProps) => {
     const globalState = useGlobalState();
     const { authUser } = globalState;
-    const { nickName, wsId } = authUser;
+    const { nickName } = authUser;
    
     const dispatch = useGroupDispatch();
     const { state, createAnswer, reloadGroupNode } = useGroupContext();
@@ -32,7 +32,6 @@ const AddAnswer = ({ answer, inLine, closeModal, showCloseButton, setError }: IP
         delete obj.id;
         const object: IAnswer = {
             ...obj,
-            wsId,
             //id: undefined,
             created: {
                 date: new Date(),

@@ -37,7 +37,6 @@ const SupportPage: React.FC = () => {
 	}
 
 	const { dbp, canEdit, authUser, isDarkMode, variant, bg } = useGlobalState();
-	const { wsId } = authUser;
 
 	return (
 		<Container fluid>
@@ -47,7 +46,6 @@ const SupportPage: React.FC = () => {
 						<div className="w-75">
 							<AutoSuggestQuestions
 								dbp={dbp!}
-								wsId={wsId}
 								tekst={tekst}
 								onSelectQuestion={onSelectQuestion}
 							/>	

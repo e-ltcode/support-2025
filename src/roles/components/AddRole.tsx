@@ -9,7 +9,7 @@ import { FormMode, IRole } from "roles/types";
 
 const AddRole = ({ role, inLine } : { role: IRole, inLine: boolean}) => {
     const globalState = useGlobalState();
-    const { nickName, wsId } = globalState.authUser;
+    const { nickName } = globalState.authUser;
     const { createRole } = useRoleContext();
     const [formValues] = useState(role)
 
@@ -18,7 +18,6 @@ const AddRole = ({ role, inLine } : { role: IRole, inLine: boolean}) => {
         const object: IRole = {
             ...roleObject,
             title: roleObject.title.split(' ')[0].toUpperCase(),
-            wsId, 
             created: {
                 date: new Date(),
                 by: {

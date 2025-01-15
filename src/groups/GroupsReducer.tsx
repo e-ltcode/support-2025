@@ -6,7 +6,6 @@ export const initialAnswer: IAnswer = {
   // it will be removed on submitForm
   // real _id will be given by the MongoDB 
   id: 0, // real id will be given by DB
-  wsId: '',
   parentGroup: '',
   groupTitle: '',
   title: '',
@@ -19,7 +18,6 @@ export const initialGroup: IGroup = {
   // temp _id for inAdding, to server as list key
   // it will be removed on submitForm
   // real _id will be given by the MongoDB 
-  wsId: '', 
   id: '',
   title: '',
   level: 0,

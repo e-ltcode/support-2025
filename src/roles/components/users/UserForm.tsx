@@ -44,7 +44,8 @@ const UserForm = ({ mode, user, submitForm, children, showCloseButton, closeModa
 
   // eslint-disable-next-line no-self-compare
   // const nameRef = useRef<HTMLAreaElement | null>(null);
-  const nameRef = useRef<HTMLTextAreaElement>(null);
+  const nameRef = useRef<HTMLInputElement>(null);
+  
   useEffect(() => {
     nameRef.current!.focus();
   }, [nameRef])
@@ -117,10 +118,34 @@ const UserForm = ({ mode, user, submitForm, children, showCloseButton, closeModa
           </Form.Text>
         </Form.Group>
 
+        <Form.Group controlId="nickName">
+          <Form.Label>Nickname</Form.Label>
+          <Form.Control
+            as="input"
+            name="nickName"
+            onChange={formik.handleChange}
+            //onBlur={formik.handleBlur}
+            // onBlur={(e: React.FocusEvent<HTMLTextAreaElement>): void => {
+            //   if (isEdit && formik.initialValues.title !== formik.values.title)
+            //     formik.submitForm();
+            // }}
+            value={formik.values.nickName}
+            placeholder='Nickname'
+            className="text-primary w-50 text-center"
+            disabled={true}
+            readOnly={true}
+          />
+          <Form.Text className="text-danger">
+            {formik.touched.nickName && formik.errors.nickName ? (
+              <div className="text-danger">{formik.errors.nickName}</div>
+            ) : null}
+          </Form.Text>
+        </Form.Group>
+
         <Form.Group controlId="name">
           <Form.Label>Name</Form.Label>
           <Form.Control
-            as="textarea"
+            as="input"
             name="name"
             ref={nameRef}
             onChange={formik.handleChange}
@@ -130,9 +155,8 @@ const UserForm = ({ mode, user, submitForm, children, showCloseButton, closeModa
             //     formik.submitForm();
             // }}
             value={formik.values.name}
-            rows={3}
             placeholder='New User'
-            className="text-primary w-100"
+            className="text-primary w-50 text-center"
             disabled={isDisabled}
           />
           <Form.Text className="text-danger">

@@ -54,7 +54,6 @@ const AnswerAutosuggestMulti = Autosuggest as { new(): Autosuggest<IAnswerShort,
 
 export class AutoSuggestAnswers extends React.Component<{
 	dbp: IDBPDatabase,
-	wsId: string,
 	tekst: string | undefined,
 	alreadyAssigned: string,
 	onSelectQuestionAnswer: (groupId: string, answerId: number) => void
@@ -63,7 +62,6 @@ export class AutoSuggestAnswers extends React.Component<{
 	// region Fields
 	state: any;
 	isMob: boolean;
-	wsId: string;
 	dbp: IDBPDatabase;
 	//inputAutosuggest: React.RefObject<HTMLInputElement>;
 	// endregion region Constructor
@@ -79,7 +77,6 @@ export class AutoSuggestAnswers extends React.Component<{
 		//this.inputAutosuggest = createRef<HTMLInputElement>();
 		this.dbp = props.dbp;
 		this.isMob = isMobile;
-		this.wsId = props.wsId;
 	}
 
 	componentDidMount() {

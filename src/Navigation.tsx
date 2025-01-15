@@ -102,7 +102,6 @@ export function Navigation(props: INavigation) {
                   <FontAwesomeIcon icon={faQuestion} color='lightblue' />{' '}Questions
                 </NavLink>
               }
-              {isAuthenticated && <span>Kita</span>}
               {isAuthenticated &&
                 <NavLink to="/answers" className="nav-link">
                   <FontAwesomeIcon icon={faReply} color='lightblue' />{' '}Answers

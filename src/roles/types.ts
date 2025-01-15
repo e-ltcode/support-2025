@@ -22,17 +22,18 @@ export enum FormMode {
 }
 
 export interface IUser extends IRecord {
-	nickName: string,
-	name: string,
-	words?: string[],
-	password: string,
-	email: string,
-	color: string,
-	level: number,
-	parentRole: string,
-	role: ROLES,
-	roleTitle?: string,
-	confirmed: boolean
+	nickName: string;
+	name: string;
+	words?: string[];
+	password: string;
+	email: string;
+	color: string;
+	level: number;
+	parentRole: string;
+	role: ROLES;
+	roleTitle?: string;
+	isDarkMode: boolean;
+	confirmed: boolean;
 }
 
 export interface IRole extends IRecord {

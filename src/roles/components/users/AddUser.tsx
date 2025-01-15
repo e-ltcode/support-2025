@@ -16,7 +16,7 @@ interface IProps {
 const AddUser = ({ user, inLine, closeModal, showCloseButton, setError }: IProps) => {
     const globalState = useGlobalState();
     const { authUser } = globalState;
-    const { nickName, wsId } = authUser;
+    const { nickName } = authUser;
    
     const dispatch = useRoleDispatch();
     const { state, createUser, reloadRoleNode } = useRoleContext();
@@ -32,7 +32,6 @@ const AddUser = ({ user, inLine, closeModal, showCloseButton, setError }: IProps
         delete obj.id;
         const object: IUser = {
             ...obj,
-            wsId,
             //id: undefined,
             created: {
                 date: new Date(),

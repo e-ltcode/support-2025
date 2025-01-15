@@ -9,7 +9,7 @@ import { FormMode, ICategory } from "categories/types";
 
 const AddCategory = ({ category, inLine } : { category: ICategory, inLine: boolean}) => {
     const globalState = useGlobalState();
-    const { nickName, wsId } = globalState.authUser;
+    const { nickName } = globalState.authUser;
     const { createCategory } = useCategoryContext();
     const [formValues] = useState(category)
 
@@ -18,7 +18,6 @@ const AddCategory = ({ category, inLine } : { category: ICategory, inLine: boole
         const object: ICategory = {
             ...categoryObject,
             id: categoryObject.title.split(' ')[0].toUpperCase(),
-            wsId, 
             created: {
                 date: new Date(),
                 by: {
