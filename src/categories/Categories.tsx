@@ -30,7 +30,7 @@ const Providered = ({ categoryId_questionId }: IProps) => {
     const [showAddQuestion, setShowAddQuestion] = useState(false);
     const handleClose = () => setShowAddQuestion(false);
 
-    const [newQuestion, setNewQuestion] = useState({ ...initialQuestion  });
+    const [newQuestion, setNewQuestion] = useState({ ...initialQuestion });
     const [createQuestionError, setCreateQuestionError] = useState("");
 
     const dispatch = useCategoryDispatch();
@@ -128,13 +128,13 @@ const Providered = ({ categoryId_questionId }: IProps) => {
 };
 
 type Params = {
-    categoryId_questionId: string | undefined;
+    categoryId_questionId?: string;
 };
 
 const Categories = () => {
     let { categoryId_questionId } = useParams<Params>();
 
-    if (categoryId_questionId && categoryId_questionId === 'null')
+    if (categoryId_questionId && categoryId_questionId === 'categories')
         categoryId_questionId = undefined;
 
     if (categoryId_questionId) {

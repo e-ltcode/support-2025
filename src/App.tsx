@@ -37,7 +37,7 @@ function App() {
   useEffect(() => {
     (async () => {
       //if (isAuthenticated) {
-        await OpenDB();
+      await OpenDB();
       //}
     })()
   }, [OpenDB]) // , isAuthenticated
@@ -63,14 +63,14 @@ function App() {
             if (!signedIn) {
               navigate('/sign-in')
             }
-          }         
+          }
         }
         else {
           // const regUser: IRegisterUser = { 
           //   nickName
           // }
           // const user = await registerUser(regUser, true, null);
-          
+
           // if (!user.confirmed) {
           //   let user: IUser = await getUser('Boss');
           //   const { nickName, name, password, wsId, email } = user;
@@ -106,33 +106,33 @@ function App() {
       }
     })()
 
-    }, [dbp, signInUser, isAuthenticated, nickName, password, everLoggedIn, locationPathname, navigate])
+  }, [dbp, signInUser, isAuthenticated, nickName, password, everLoggedIn, locationPathname, navigate])
 
-    return (
-      <Container fluid className="App">
-        <header className="App-header">
-          <Navigation />
-        </header>
-        <Row>
-          <Col md={12}>
-            <div className="wrapper">
-              <Routes>
-                <Route path="/" element={(!isAuthenticated && !everLoggedIn) ? <About /> : <Categories />} />
-                <Route path="/register/:returnUrl" element={<RegisterForm />} />
-                <Route path="/sign-in" element={<LoginForm initialValues={formInitialValues} invitationId='' />} />
-                <Route path="/supporter/:source/:tekst" element={<SupportPage />} />
-                <Route path="/supporter/:source/:tekst/:email" element={<SupportPage />} />
-                <Route path="/categories/:categoryId_questionId" element={<Categories />} />
-                <Route path="/answers" element={<Answers />} />
-                <Route path="/users" element={<Roles />} />
-                <Route path="/about" element={<About />} />
-                <Route path="/health" element={<Health />} />
-              </Routes>
-            </div>
-          </Col>
-        </Row>
-      </Container>
-    );
-  }
+  return (
+    <Container fluid className="App">
+      <header className="App-header">
+        <Navigation />
+      </header>
+      <Row>
+        <Col md={12}>
+          <div className="wrapper">
+            <Routes>
+              <Route path="/:categoryId_questionId" element={(!isAuthenticated && !everLoggedIn) ? <About /> : <Categories />} />
+              <Route path="/register/:returnUrl" element={<RegisterForm />} />
+              <Route path="/sign-in" element={<LoginForm initialValues={formInitialValues} invitationId='' />} />
+              <Route path="/supporter/:source/:tekst" element={<SupportPage />} />
+              <Route path="/supporter/:source/:tekst/:email" element={<SupportPage />} />
+              <Route path="/categories/:categoryId_questionId" element={<Categories />} />
+              <Route path="/answers" element={<Answers />} />
+              <Route path="/users" element={<Roles />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/health" element={<Health />} />
+            </Routes>
+          </div>
+        </Col>
+      </Row>
+    </Container>
+  );
+}
 
 export default App;

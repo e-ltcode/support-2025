@@ -98,7 +98,7 @@ export function Navigation(props: INavigation) {
                 </NavLink>
               }
               {isAuthenticated &&
-                <NavLink to="/categories/null" className="nav-link">
+                <NavLink to="/categories" className="nav-link">
                   <FontAwesomeIcon icon={faQuestion} color='lightblue' />{' '}Questions
                 </NavLink>
               }
