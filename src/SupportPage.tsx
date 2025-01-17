@@ -33,7 +33,7 @@ const SupportPage: React.FC = () => {
 	//     return <div>loading...</div>;
 
 	const onSelectQuestion = async (categoryId: string, questionId: number) => {
-		navigate(`/categories/${categoryId.toString()}_${questionId.toString()}`)
+		navigate(`/support-2025/categories/${categoryId}_${questionId.toString()}`)
 	}
 
 	const { dbp, canEdit, authUser, isDarkMode, variant, bg } = useGlobalState();
@@ -64,7 +64,7 @@ const SupportPage: React.FC = () => {
 									source,
 									title: tekst
 								}))
-								navigate('/categories/add_question')
+								navigate('/2025/categories/add_question')
 							}}
 						>
 							<FontAwesomeIcon icon={faPlus} size="sm" />

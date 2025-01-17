@@ -15,6 +15,7 @@ import { IGroup, IAnswer } from "groups/types";
 import { IRole, IUser } from 'roles/types';
 
 import { IDBPDatabase, openDB } from 'idb' // IDBPTransaction
+import { escapeRegexCharacters } from 'common/utilities'
 
 //////////////////
 // Initial data
@@ -135,6 +136,8 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
   }
   //}, [dispatch]);
 
+
+
   const addRole = async (
     dbp: IDBPDatabase,
     //tx: IDBPTransaction<unknown, string[], "readwrite">, 
@@ -227,10 +230,15 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
       let i = 0;
       while (i < answers.length) {
         const a: IAnswerData = answers[i];
+        // TODO remove spec chars 
+        // const escapedValue = escapeRegexCharacters(a.title.trim());
+        // if (escapedValue === '') {
+        // }
+        const words: string[] = a.title.toLowerCase().replaceAll('?', '').split(' ').map((s:string) => s.trim());
         const answer: IAnswer = {
           parentGroup: g.id,
           title: a.title,
-          words: a.title.toLowerCase().replaceAll('?', '').split(' '),
+          words: words.filter(w => w.length > 1),
           source: 0,
           status: 0,
           level: 2
@@ -294,10 +302,12 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
       let i = 0;
       while (i < questions.length) {
         const q: IQuestionData = questions[i];
+        // TODO
+        const words = q.title.toLowerCase().replaceAll('?', '').split(' ').map((s:string) => s.trim());
         const question: IQuestion = {
           parentCategory: cat.id,
           title: q.title,
-          words: q.title.toLowerCase().replaceAll('?', '').split(' '),
+          words: words.filter( w => w.length > 1),
           source: 0,
           status: 0,
           questionAnswers: [],

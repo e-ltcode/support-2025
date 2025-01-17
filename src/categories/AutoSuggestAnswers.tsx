@@ -4,6 +4,8 @@ import AutosuggestHighlightMatch from "autosuggest-highlight/match";
 import AutosuggestHighlightParse from "autosuggest-highlight/parse";
 import { isMobile } from 'react-device-detect'
 
+import { escapeRegexCharacters } from 'common/utilities'
+
 import './AutoSuggestAnswers.css'
 import { IDBPCursorWithValue, IDBPCursorWithValueIteratorValue, IDBPDatabase } from 'idb';
 import { IAnswer } from 'groups/types';
@@ -43,9 +45,9 @@ interface IAnswerRowShort {
 
 // https://developer.mozilla.org/en/docs/Web/JavaScript/Guide/Regular_Expression
 // s#Using_Special_Characters
-function escapeRegexCharacters(str: string): string {
-	return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
+// export function escapeRegexCharacters(str: string): string {
+// 	return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+// }
 
 // autoFocus does the job
 //let inputAutosuggest = createRef<HTMLInputElement>();
@@ -79,12 +81,12 @@ export class AutoSuggestAnswers extends React.Component<{
 		this.isMob = isMobile;
 	}
 
-	componentDidMount() {
-		setTimeout(() => {
-			window.focus()
-			// inputAutosuggest!.current!.focus();
-		}, 500)
-	}
+	// componentDidMount() {
+	// 	setTimeout(() => {
+	// 		window.focus()
+	// 		// inputAutosuggest!.current!.focus();
+	// 	}, 500)
+	// }
 
 	// endregion region Rendering methods
 	render(): JSX.Element {
@@ -148,7 +150,7 @@ export class AutoSuggestAnswers extends React.Component<{
 		const matches = AutosuggestHighlightMatch(suggestion.title, params.query);
 		const parts = AutosuggestHighlightParse(suggestion.title, matches);
 		return (
-			<span>
+			<span style={{ textAlign: 'left'}}>
 				{parts.map((part, index) => {
 					const className = part.highlight ? 'react-autosuggest__suggestion-match' : undefined;
 					return (
@@ -194,8 +196,6 @@ export class AutoSuggestAnswers extends React.Component<{
 		);
 	}
 
-
-
 	// const Input = forwardRef<HTMLInputElement, Omit<InputProps, "ref">>(
 	// 	(props: Omit<InputProps, "ref">, ref): JSX.Element => (
 	// 	  <input {...props} ref={ref} />
@@ -234,9 +234,8 @@ export class AutoSuggestAnswers extends React.Component<{
 
 		try {
 			//const search = encodeURIComponent(value.trim().replaceAll('?', ''));
-			const searchWords: string[] = value.trim().toLowerCase().replaceAll('?', '').split(' ');
+			const searchWords = value.toLowerCase().replaceAll('?', '').split(' ').map((s:string) => s.trim());
 			let i = 0;
-			//searchWords.forEach(async word => {
 			while (i < searchWords.length) {
 				// let cursor: IDBPCursorWithValue<unknown, string[], "Answers", "words_idx", "readwrite">|null = 
 				// 		await index.openCursor(word);
@@ -270,15 +269,20 @@ export class AutoSuggestAnswers extends React.Component<{
 		try {
 			const groupsStore = tx.objectStore('Groups')
 			const mapParentGroupTitle = new Map<string, string>();
-			answerRows.forEach(async (row) => {
+			let i = 0; 
+			while (i < answerRows.length) {
+				const row = answerRows[i];
 				if (!mapParentGroupTitle.has(row.parentGroup)) {
 					const group = await groupsStore.get(row.parentGroup);
 					mapParentGroupTitle.set(group.id, group.title)
 				}
-			})
+				i++;
+			}
 
 			const map = new Map<string, IAnswerRow[]>();
-			answerRows.forEach(async (row) => {
+			i = 0;
+			while (i < answerRows.length) {
+				const row = answerRows[i];
 				row.groupTitle = mapParentGroupTitle.get(row.groupId)!;
 				if (!map.has(row.groupId)) {
 					map.set(row.groupId, [row]);
@@ -286,7 +290,8 @@ export class AutoSuggestAnswers extends React.Component<{
 				else {
 					map.get(row.groupId)!.push(row);
 				}
-			});
+				i++;
+			};
 			console.log('map', map)
 
 			let values = map.values();
@@ -302,7 +307,9 @@ export class AutoSuggestAnswers extends React.Component<{
 					parentGroupUp: '',
 					answers: []
 				};
-				rows.forEach(async row => {
+				i = 0;
+				while (i < rows.length) {
+					const row = rows[i];
 					console.log(row);
 					const { id, title, groupId, groupTitle, parentGroup, parentGroupUp } = row;
 					let groupParentTitle = '';
@@ -310,7 +317,7 @@ export class AutoSuggestAnswers extends React.Component<{
 					let group = await groupsStore.get(groupId);
 					while (group.parentGroup !== 'null') {
 						group = await groupsStore.get(group.parentGroup);
-						groupParentTitle += '/' + group.title;
+						groupParentTitle += ' / ' + group.title;
 					}
 
 					if (answerRowShort.groupId === '') {
@@ -320,7 +327,8 @@ export class AutoSuggestAnswers extends React.Component<{
 						answerRowShort.parentGroupUp = parentGroupUp;
 					}
 					answerRowShort.answers.push({ id, title, parentGroup } as IAnswerShort)
-				});
+					i++;
+				};
 				data.push(answerRowShort);
 			}
 			await tx.done;

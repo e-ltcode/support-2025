@@ -25,11 +25,12 @@ const RegisterForm = () => {
 
   let navigate = useNavigate();
   const closeForm = () => {
-    navigate('/register'); // '/register' will prevent: navigate('/register/' + returnUrl, { replace: true })
+    // navigate('/support-2025/register/fromNavigation'); // '/register' will prevent: navigate('/register/' + returnUrl, { replace: true })
+    navigate('/support-2025'); // '/register' will prevent: navigate('/register/' + returnUrl, { replace: true })
   }
 
   const goBack = () => {
-    navigate(returnUrl && returnUrl !== 'fromNavigation' ? returnUrl : '/')
+    navigate(returnUrl && returnUrl !== 'fromNavigation' ? returnUrl : '/support-2025')
   }
 
   const [showMessage, setShowMessage] = useState(false);

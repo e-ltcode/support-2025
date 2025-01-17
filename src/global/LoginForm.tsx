@@ -19,7 +19,7 @@ const LoginForm = ({ initialValues, invitationId } : {initialValues: ILoginUser,
   let navigate = useNavigate();
   
   const closeForm = () => {
-    navigate('/about'); // enable closing of the form
+    navigate('/support-2025'); // enable closing of the form
   }
 
   const submitForm = (loginUser: ILoginUser) => {
@@ -55,7 +55,7 @@ const LoginForm = ({ initialValues, invitationId } : {initialValues: ILoginUser,
 
   useEffect(() => {
     if (isAuthenticated)
-      navigate('/')
+      navigate('/support-2025')
   }, [isAuthenticated, navigate])
 
   const isInvitation = formik.values.who !== '';
@@ -71,7 +71,7 @@ const LoginForm = ({ initialValues, invitationId } : {initialValues: ILoginUser,
       )}
 
         <Form.Group controlId="nickName">
-          {/* <Form.Label>Title</Form.Label> */}
+          <Form.Label>Nickname</Form.Label>
           <Form.Control
             as="input"
             name="nickName"
@@ -84,7 +84,7 @@ const LoginForm = ({ initialValues, invitationId } : {initialValues: ILoginUser,
             // }}
             value={formik.values.nickName}
             style={{ width: '100%' }}
-            placeholder={'nickName'}
+            placeholder={'Nickname'}
           />
           <Form.Text className="text-danger">
             {formik.touched.nickName && formik.errors.nickName ? (
@@ -93,8 +93,19 @@ const LoginForm = ({ initialValues, invitationId } : {initialValues: ILoginUser,
           </Form.Text>
         </Form.Group>
 
+        {/* <div class="form-floating mb-3">
+  <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com">
+  <label for="floatingInput">Email address</label>
+</div>
+<div class="form-floating">
+  <input type="password" class="form-control" id="floatingPassword" placeholder="Password">
+  <label for="floatingPassword">Password</label>
+</div> */}
+
+
+
         <Form.Group controlId="password">
-          {/* <Form.Label>password</Form.Label> */}
+          <Form.Label>Password</Form.Label>
           <Form.Control
             as="input"
             name="password"

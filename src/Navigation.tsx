@@ -38,7 +38,7 @@ export function Navigation(props: INavigation) {
   const otkaciMe = () => {
     dispatch({ type: GlobalActionTypes.UN_AUTHENTICATE })
     localStorage.removeItem('CATEGORIES_STATE');
-    navigate('/about');
+    navigate('/support-2025/about');
   }
 
   useEffect(() => {
@@ -89,7 +89,7 @@ export function Navigation(props: INavigation) {
             >
               {isAuthenticated &&
                 // <NavLink to={`/supporter/0/${encodeURIComponent('Does Firefox support Manifest 3?')}/xyz`} className="nav-link"
-                <NavLink to={`/supporter/0/${encodeURIComponent('Does? microsoft')}/xyz`} className="nav-link"
+                <NavLink to={`/support-2025/supporter/0/${encodeURIComponent('Does? microsoft')}/xyz`} className="nav-link"
                   onClick={() => {
                     //closeQuestionForm();
                   }
@@ -98,24 +98,24 @@ export function Navigation(props: INavigation) {
                 </NavLink>
               }
               {isAuthenticated &&
-                <NavLink to="/categories" className="nav-link">
+                <NavLink to="/support-2025/categories" className="nav-link">
                   <FontAwesomeIcon icon={faQuestion} color='lightblue' />{' '}Questions
                 </NavLink>
               }
               {isAuthenticated &&
-                <NavLink to="/answers" className="nav-link">
+                <NavLink to="/support-2025/answers" className="nav-link">
                   <FontAwesomeIcon icon={faReply} color='lightblue' />{' '}Answers
                 </NavLink>
               }
 
               {isAuthenticated && (ROLES.OWNER == enumRole || ROLES.ADMIN == enumRole) &&
-                <NavLink to="/users" className="nav-link">
+                <NavLink to="/support-2025/users" className="nav-link">
                   <FontAwesomeIcon icon={faUserFriends} color='lightblue' />{' '}Users
                 </NavLink>
               }
 
               {!isAuthenticated &&
-                <NavLink to="/about" className="nav-link">
+                <NavLink to="/support-2025/about" className="nav-link">
                   About
                 </NavLink>
               }
@@ -128,13 +128,13 @@ export function Navigation(props: INavigation) {
               </NavDropdown> */}
 
               {!isAuthenticated &&
-                <NavLink to="/register/fromNavigation/" className="nav-link">
+                <NavLink to="/support-2025/register/fromNavigation/" className="nav-link">
                   Register
                 </NavLink>
               }
 
               {!isAuthenticated &&
-                <NavLink to="/sign-in" className="nav-link">
+                <NavLink to="/support-2025/sign-in" className="nav-link">
                   Sign In
                 </NavLink>
               }
@@ -188,11 +188,11 @@ export function Navigation(props: INavigation) {
 
                   <NavDropdown.Divider />
 
-                  <NavDropdown.Item as={Link} to="/health" >
+                  <NavDropdown.Item as={Link} to="/support-2025/health" >
                     Health
                   </NavDropdown.Item>
 
-                  <NavDropdown.Item as={Link} to="/about" >
+                  <NavDropdown.Item as={Link} to="/support-2025/about" >
                     About
                   </NavDropdown.Item>
 

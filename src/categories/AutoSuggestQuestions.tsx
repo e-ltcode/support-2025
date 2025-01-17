@@ -4,6 +4,7 @@ import AutosuggestHighlightMatch from "autosuggest-highlight/match";
 import AutosuggestHighlightParse from "autosuggest-highlight/parse";
 import { isMobile } from 'react-device-detect'
 
+import { escapeRegexCharacters } from 'common/utilities'
 import './AutoSuggestQuestions.css'
 import { IDBPCursorWithValue, IDBPCursorWithValueIteratorValue, IDBPDatabase } from 'idb';
 import { IQuestion } from './types';
@@ -43,9 +44,9 @@ interface IQuestionRowShort {
 
 // https://developer.mozilla.org/en/docs/Web/JavaScript/Guide/Regular_Expression
 // s#Using_Special_Characters
-function escapeRegexCharacters(str: string): string {
-	return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
+// function escapeRegexCharacters(str: string): string {
+// 	return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+// }
 
 // autoFocus does the job
 //let inputAutosuggest = createRef<HTMLInputElement>();
@@ -140,13 +141,14 @@ export class AutoSuggestQuestions extends React.Component<{
 	}
 	*/
 
+	// TODO bac ovo u external css   style={{ textAlign: 'left'}}
 	protected renderSuggestion(suggestion: IQuestionShort, params: Autosuggest.RenderSuggestionParams): JSX.Element {
 		// const className = params.isHighlighted ? "highlighted" : undefined;
 		//return <span className={className}>{suggestion.name}</span>;
 		const matches = AutosuggestHighlightMatch(suggestion.title, params.query);
 		const parts = AutosuggestHighlightParse(suggestion.title, matches);
 		return (
-			<span>
+			<span style={{ textAlign: 'left'}}>
 				{parts.map((part, index) => {
 					const className = part.highlight ? 'react-autosuggest__suggestion-match' : undefined;
 					return (
@@ -231,10 +233,10 @@ export class AutoSuggestQuestions extends React.Component<{
 		//const mapParentCategoryTitle = new Map<string, string>();
 
 		try {
+			console.time();
 			//const search = encodeURIComponent(value.trim().replaceAll('?', ''));
-			const searchWords: string[] = value.trim().toLowerCase().replaceAll('?', '').split(' ');
+			const searchWords = value.toLowerCase().replaceAll('?', '').split(' ').map((s:string) => s.trim());
 			let i = 0;
-			//searchWords.forEach(async word => {
 			while (i < searchWords.length) {
 				// let cursor: IDBPCursorWithValue<unknown, string[], "Questions", "words_idx", "readwrite">|null = 
 				// 		await index.openCursor(word);
@@ -268,15 +270,20 @@ export class AutoSuggestQuestions extends React.Component<{
 		try {
 			const categoriesStore = tx.objectStore('Categories')
 			const mapParentCategoryTitle = new Map<string, string>();
-			questionRows.forEach(async (row) => {
+			let i = 0;
+			while ( i < questionRows.length) {
+				const row = questionRows[i];
 				if (!mapParentCategoryTitle.has(row.parentCategory)) {
 					const category = await categoriesStore.get(row.parentCategory);
 					mapParentCategoryTitle.set(category.id, category.title)
 				}
-			})
+				i++;
+			}
 
 			const map = new Map<string, IQuestionRow[]>();
-			questionRows.forEach(async (row) => {
+			i = 0;
+			while (i < questionRows.length) {
+				const row = questionRows[i];
 				row.categoryTitle = mapParentCategoryTitle.get(row.categoryId)!;
 				if (!map.has(row.categoryId)) {
 					map.set(row.categoryId, [row]);
@@ -284,7 +291,8 @@ export class AutoSuggestQuestions extends React.Component<{
 				else {
 					map.get(row.categoryId)!.push(row);
 				}
-			});
+				i++
+			};
 			console.log('map', map)
 
 			let values = map.values();
@@ -300,7 +308,9 @@ export class AutoSuggestQuestions extends React.Component<{
 					parentCategoryUp: '',
 					questions: []
 				};
-				rows.forEach(async row => {
+				i = 0;
+				while (i < rows.length) {
+					const row = rows[i];
 					console.log(row);
 					const { id, title, categoryId, categoryTitle, parentCategory, parentCategoryUp } = row;
 					let categoryParentTitle = '';
@@ -308,7 +318,7 @@ export class AutoSuggestQuestions extends React.Component<{
 					let category = await categoriesStore.get(categoryId);
 					while (category.parentCategory !== 'null') {
 						category = await categoriesStore.get(category.parentCategory);
-						categoryParentTitle += '/' + category.title;
+						categoryParentTitle += ' / ' + category.title;
 					}
 
 					if (questionRowShort.categoryId === '') {
@@ -317,8 +327,9 @@ export class AutoSuggestQuestions extends React.Component<{
 						questionRowShort.categoryParentTitle = categoryParentTitle;
 						questionRowShort.parentCategoryUp = parentCategoryUp;
 					}
-					questionRowShort.questions.push({ id, title, parentCategory } as IQuestionShort)
-				});
+					questionRowShort.questions.push({ id, title, parentCategory } as IQuestionShort);
+					i++;
+				};
 				data.push(questionRowShort);
 			}
 			await tx.done;
@@ -329,41 +340,8 @@ export class AutoSuggestQuestions extends React.Component<{
 			console.log(error)
 		};
 
-		//questions.push({ ...cursor.value, id: cursor.key })
-		/*
-		const z = {
-			"_id": "645250c80081ac3894275619",
-			"parentCategoryUp": "",
-			"categoryParentTitle": "Featuressss",
-			"categoryTitle": "Taxes",
-			"questions": [
-				{
-					"_id": "645250c80081ac3894275625",
-					"title": "Does Chrome support Manifest 3 Extensions?\n",
-					"parentCategory": "645250c80081ac3894275619"
-				}
-			]
-		}
-		*/
+		console.timeEnd();
 	}
-
-	// axios
-	// 	.get(`/api/questions/get-questions/${this.wsId}/${search}`)
-	// 	.then(({ data }) => {
-	// 		console.log('samo stampaj sta dolazi:', { data })
-	// 		this.setState({
-	// 			suggestions: data,
-	// 			noSuggestions: data.length === 0
-	// 		})
-
-	// 		this.setState({ suggestions: data })
-	// 		//dispatch({ type, payload: { question } });
-	// 	})
-	// 	.catch((error) => {
-	// 		console.log(error);
-	// 		//dispatch({ type: ActionTypes.SET_ERROR, payload: error });
-	// 	});
-
 
 	private anyWord = (valueWordRegex: RegExp[], questionWords: string[]): boolean => {
 		for (let valWordRegex of valueWordRegex)

@@ -44,7 +44,7 @@ const QuestionList = ({ title, parentCategory, level }: IParentInfo) => {
 
   useEffect(() => {
     if (categoryId != null) {
-      if (categoryId === parentCategory!.toString() && questionId) {
+      if (categoryId === parentCategory! && questionId) {
         setTimeout(() => {
           if (canEdit)
             editQuestion(parseInt(questionId))
@@ -66,7 +66,7 @@ const QuestionList = ({ title, parentCategory, level }: IParentInfo) => {
     >
       <List>
         {questions.length === 0 &&
-          <div>No questions</div>
+          <label>No questions</label>
         }
         {questions.map((question: IQuestion) => {
           return <ListItem key={question.id}>

@@ -8,8 +8,12 @@ import { FormMode, ActionTypes, ICategoryFormProps, ICategory } from "categories
 
 import { useCategoryDispatch } from "categories/CategoryProvider";
 import QuestionList from "categories/components/questions/QuestionList";
+import { useGlobalContext } from "global/GlobalProvider";
 
 const CategoryForm = ({ inLine, mode, category, submitForm, children }: ICategoryFormProps) => {
+
+  const { globalState } = useGlobalContext();
+  const { isDarkMode, variant, bg } = globalState;
 
   const viewing = mode === FormMode.viewing;
   const editing = mode === FormMode.editing;
@@ -70,7 +74,7 @@ const CategoryForm = ({ inLine, mode, category, submitForm, children }: ICategor
 
   
   return (
-    <div className="form-wrapper p-2">
+    <div className="form-wrapper p-2" data-bs-theme={`${isDarkMode ?'dark':'light'}`}>
       <CloseButton onClick={closeForm} className="float-end" />
       <Form onSubmit={formik.handleSubmit}>
         <Form.Group controlId="title">
