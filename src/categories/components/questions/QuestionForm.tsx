@@ -88,8 +88,8 @@ const QuestionForm = ({ mode, question, submitForm, children, showCloseButton, c
       <Form onSubmit={formik.handleSubmit}>
 
         <Stack direction="horizontal" gap={0}>
-          <div className="p-2"><Form.Label>Category:</Form.Label></div>
-          <div className="p-2">
+          <div className="p-0"><Form.Label>Category:</Form.Label></div>
+          <div className="p-1">
             <Form.Group controlId="parentCategory" className="category-select form-select-sm">
             <Dropdown>
               <Dropdown.Toggle variant="light" id="dropdown-basic" className="px-2 py-0 text-primary" disabled={isDisabled}>
