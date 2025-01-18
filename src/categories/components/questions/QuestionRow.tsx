@@ -13,12 +13,12 @@ import { IQuestion } from 'categories/types'
 import AddQuestion from "categories/components/questions/AddQuestion";
 import EditQuestion from "categories/components/questions/EditQuestion";
 import ViewQuestion from "categories/components/questions/ViewQuestion";
-// import { IntersectionObserverHookRefCallback } from 'react-intersection-observer-hook';
-
+import Q from 'assets/Q.png';
+import A from 'assets/A.png';
 
 //const QuestionRow = ({ question, categoryInAdding }: { ref: React.ForwardedRef<HTMLLIElement>, question: IQuestion, categoryInAdding: boolean | undefined }) => {
 const QuestionRow = ({ question, categoryInAdding }: { question: IQuestion, categoryInAdding: boolean | undefined }) => {
-        const { id, parentCategory, level, title, inViewing, inEditing, inAdding, numOfAnswers } = question;
+        const { id, parentCategory, level, title, inViewing, inEditing, inAdding, numOfAssignedAnswers } = question;
 
     const { canEdit, isDarkMode, variant, bg } = useGlobalState();
 
@@ -53,26 +53,29 @@ const QuestionRow = ({ question, categoryInAdding }: { question: IQuestion, cate
                 size="sm"
                 className="py-0 px-1 text-secondary"
             >
-                <FontAwesomeIcon
+                <img width="22" height="18" src={Q} alt="Question" />
+                {/* <FontAwesomeIcon
                     icon={faQuestion}
                     size='sm'
-                />
+                /> */}
             </Button>
-
-            <Badge pill bg="secondary" className={`text-info ${numOfAnswers === 0 ? 'd-none' : 'd-inline'}`}>
-                {numOfAnswers}<FontAwesomeIcon icon={faReply} size='sm' />
-            </Badge>
 
             <Button
                 variant='link'
                 size="sm"
                 className={`py-0 mx-0 text-decoration-none text-secondary ${(inViewing || inEditing) ? 'fw-bold' : ''}`}
-                title={id!.toString()}
+                title={`id:${id!.toString()}`}
                 onClick={() => onSelectQuestion(id!)}
                 disabled={alreadyAdding}
             >
                 {title}
             </Button>
+
+            <Badge pill bg="secondary" className={`text-info ${numOfAssignedAnswers === 0 ? 'd-none' : 'd-inline'}`}>
+                {numOfAssignedAnswers}a
+                {/* <FontAwesomeIcon icon={faReply} size='sm' /> */}
+                {/* <img width="22" height="18" src={A} alt="Answer"></img> */}
+            </Badge>
 
             {/* {canEdit && !alreadyAdding && hoverProps.isHovered &&
                 <Button variant='link' size="sm" className="ms-1 py-0 px-1 text-secondary"

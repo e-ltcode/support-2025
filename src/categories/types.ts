@@ -37,7 +37,7 @@ export enum FormMode {
 // 	assigned: IDateAndBy
 // }
 
-export interface IQuestionAnswer {
+export interface IAssignedAnswer {
 	answer: {
 		id: number,
 		title: string
@@ -61,8 +61,8 @@ export interface IQuestion extends IRecord {
 	level: number,
 	parentCategory: string,
 	categoryTitle?: string,
-	questionAnswers: IQuestionAnswer[],
-	numOfAnswers?: number,
+	assignedAnswers: IAssignedAnswer[],
+	numOfAssignedAnswers: number,
 	source: number,
 	status: number,
 	fromUserAssignedAnswer?: IFromUserAssignedAnswer[]
@@ -99,7 +99,7 @@ export interface IParentInfo {
 export interface ICatInfo {
 	parentCategory: string,
 	level: number,
-	setParentCategory : (category: ICategory) => void;
+	setParentCategory: (category: ICategory) => void;
 }
 
 export interface ICategoriesState {
@@ -297,7 +297,7 @@ export type CategoriesPayload = {
 	};
 
 	[ActionTypes.SET_QUESTION_ANSWERS]: {
-		answers: IQuestionAnswer[];
+		answers: IAssignedAnswer[];
 	};
 
 	[ActionTypes.DELETE_QUESTION]: {

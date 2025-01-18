@@ -13,8 +13,7 @@ import { IAnswer } from 'groups/types'
 import AddAnswer from "groups/components/answers/AddAnswer";
 import EditAnswer from "groups/components/answers/EditAnswer";
 import ViewAnswer from "groups/components/answers/ViewAnswer";
-// import { IntersectionObserverHookRefCallback } from 'react-intersection-observer-hook';
-
+import A from 'assets/A.png';
 
 //const AnswerRow = ({ answer, groupInAdding }: { ref: React.ForwardedRef<HTMLLIElement>, answer: IAnswer, groupInAdding: boolean | undefined }) => {
 const AnswerRow = ({ answer, groupInAdding }: { answer: IAnswer, groupInAdding: boolean | undefined }) => {
@@ -53,21 +52,22 @@ const AnswerRow = ({ answer, groupInAdding }: { answer: IAnswer, groupInAdding: 
                 size="sm"
                 className="py-0 px-1 text-secondary"
             >
-                <FontAwesomeIcon
+                {/* <FontAwesomeIcon
                     icon={faThumbsUp}
                     size='sm'
-                />
+                /> */}
+                <img width="22" height="18" src={A} alt="Answer" />
             </Button>
 
-            <Badge pill bg="secondary" className={`text-info ${numOfAnswers === 0 ? 'd-none' : 'd-inline'}`}>
+            {/* <Badge pill bg="secondary" className={`text-info ${numOfAnswers === 0 ? 'd-none' : 'd-inline'}`}>
                 {numOfAnswers}<FontAwesomeIcon icon={faReply} size='sm' />
-            </Badge>
+            </Badge> */}
 
             <Button
                 variant='link'
                 size="sm"
                 className={`py-0 mx-0 text-decoration-none text-secondary ${(inViewing || inEditing) ? 'fw-bold' : ''}`}
-                title={id!.toString()}
+                title={`id:${id!.toString()}`}
                 onClick={() => onSelectAnswer(id!)}
                 disabled={alreadyAdding}
             >

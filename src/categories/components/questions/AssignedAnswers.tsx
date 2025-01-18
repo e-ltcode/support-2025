@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Button, ListGroup, Modal } from "react-bootstrap";
-import { IQuestionAnswer } from "categories/types";
+import { IAssignedAnswer } from "categories/types";
 import { useCategoryContext } from "categories/CategoryProvider";
 import { useGlobalContext } from "global/GlobalProvider";
 import QuestionAnswerRow from "./QuestionAnswerRow";
@@ -13,15 +13,15 @@ import { initialAnswer } from "groups/GroupsReducer";
 interface IProps {
     questionId: number,
     questionTitle: string,
-    questionAnswers: IQuestionAnswer[],
+    assignedAnswers: IAssignedAnswer[],
     isDisabled: boolean
 }
 
-const QuestionAnswers = ({ questionId, questionTitle, questionAnswers, isDisabled }: IProps) => {
+const AssignedAnswers = ({ questionId, questionTitle, assignedAnswers, isDisabled }: IProps) => {
 
     const { globalState } = useGlobalContext();
     const { authUser, isDarkMode, variant, dbp } = globalState;
-    
+
     const [showAdd, setShowAdd] = useState(false);
     const handleClose = () => setShowAdd(false);
 
@@ -60,12 +60,12 @@ const QuestionAnswers = ({ questionId, questionTitle, questionAnswers, isDisable
             <div>
                 <label className="text-info">Assigned Answers</label>
                 <ListGroup as="ul" variant={variant} className='my-1'>
-                    {questionAnswers.map((questionAnswer: IQuestionAnswer) =>
+                    {assignedAnswers.map((assignedAnswer: IAssignedAnswer) =>
                         <QuestionAnswerRow
                             questionTitle={questionTitle}
-                            questionAnswer={questionAnswer}
+                            questionAnswer={assignedAnswer}
                             groupInAdding={false}
-                            key={questionAnswer.answer.id.toString()}
+                            key={assignedAnswer.answer.id.toString()}
                             isDisabled={isDisabled}
                             unAssignAnswer={unAssignAnswer}
                         />)
@@ -144,14 +144,14 @@ const QuestionAnswers = ({ questionId, questionTitle, questionAnswers, isDisable
                     <Modal.Title>Assign the answer</Modal.Title>
                 </Modal.Header>
                 <Modal.Body style={{ height: '40vh', width: '50vw' }} className="question-answers">
-                    
+
                     <AutoSuggestAnswers
                         dbp={dbp!}
                         tekst={''}
                         alreadyAssigned={
-                            questionAnswers.length === 0 
+                            assignedAnswers.length === 0
                                 ? 'empty'
-                                : questionAnswers.map((a: IQuestionAnswer) => a.answer.id).join('-')
+                                : assignedAnswers.map((a: IAssignedAnswer) => a.answer.id).join('-')
                         }
                         onSelectQuestionAnswer={onSelectQuestionAnswer}
                     />
@@ -161,4 +161,4 @@ const QuestionAnswers = ({ questionId, questionTitle, questionAnswers, isDisable
     );
 };
 
-export default QuestionAnswers;
+export default AssignedAnswers;

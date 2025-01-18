@@ -5,14 +5,14 @@ import { ListGroup, Button, Modal } from "react-bootstrap";
 
 import { useGlobalState } from 'global/GlobalProvider'
 import { useHover } from 'common/components/useHover';
-import { IQuestionAnswer } from "categories/types";
+import { IAssignedAnswer } from "categories/types";
 import { useCategoryContext } from "categories/CategoryProvider";
 import { formatDate } from 'common/utilities'
 import React, { useState } from "react";
 
 interface IProps {
     questionTitle: string,
-    questionAnswer: IQuestionAnswer,
+    questionAnswer: IAssignedAnswer,
     groupInAdding: boolean | undefined,
     isDisabled: boolean,
     unAssignAnswer: (answerId: number) => void

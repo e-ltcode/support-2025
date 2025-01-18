@@ -234,7 +234,7 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
         // const escapedValue = escapeRegexCharacters(a.title.trim());
         // if (escapedValue === '') {
         // }
-        const words: string[] = a.title.toLowerCase().replaceAll('?', '').split(' ').map((s:string) => s.trim());
+        const words: string[] = a.title.toLowerCase().replaceAll('?', '').split(' ').map((s: string) => s.trim());
         const answer: IAnswer = {
           parentGroup: g.id,
           title: a.title,
@@ -303,14 +303,15 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
       while (i < questions.length) {
         const q: IQuestionData = questions[i];
         // TODO
-        const words = q.title.toLowerCase().replaceAll('?', '').split(' ').map((s:string) => s.trim());
+        const words = q.title.toLowerCase().replaceAll('?', '').split(' ').map((s: string) => s.trim());
         const question: IQuestion = {
           parentCategory: cat.id,
           title: q.title,
-          words: words.filter( w => w.length > 1),
+          words: words.filter(w => w.length > 1),
           source: 0,
           status: 0,
-          questionAnswers: [],
+          assignedAnswers: [],
+          numOfAssignedAnswers: 0,
           level: 2
         }
         await dbp.add('Questions', question);

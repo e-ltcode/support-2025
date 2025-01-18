@@ -3,7 +3,7 @@ import React, { createContext, useContext, useReducer, useCallback, Dispatch } f
 
 import {
   ActionTypes, ICategory, IQuestion, ICategoriesContext, IParentInfo, IFromUserAssignedAnswer,
-  IQuestionAnswer
+  IAssignedAnswer
 } from 'categories/types';
 import { initialCategoriesState, CategoriesReducer } from 'categories/CategoriesReducer';
 import { IDateAndBy } from 'global/types';
@@ -427,9 +427,9 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
 
   const assignQuestionAnswer = useCallback(async (questionId: number, answerId: number, assigned: IDateAndBy): Promise<any> => {
     try {
-      const question = await dbp!.get('Questions', questionId);
+      const question: IQuestion = await dbp!.get('Questions', questionId);
       const answer: IAnswer = await dbp!.get('Answers', answerId);
-      const newQuestionAnser: IQuestionAnswer = {
+      const newQuestionAnser: IAssignedAnswer = {
         answer: {
           id: answerId,
           title: answer.title
@@ -440,11 +440,16 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
         },
         assigned
       }
-      const obj: IQuestion = { ...question, questionAnswers: [...question.questionAnswers, newQuestionAnser] }
+      const assignedAnswers = [...question.assignedAnswers, newQuestionAnser];
+      const obj: IQuestion = {
+        ...question,
+        assignedAnswers,
+        numOfAssignedAnswers: assignedAnswers.length
+      }
       await dbp!.put('Questions', obj, questionId);
       console.log("Question Answer successfully assigned");
       // dispatch({ type: ActionTypes.SET_QUESTION, payload: { question: obj } });
-      dispatch({ type: ActionTypes.SET_QUESTION_AFTER_ASSIGN_ANSWER, payload: { question: { id: questionId, ...obj} } });
+      dispatch({ type: ActionTypes.SET_QUESTION_AFTER_ASSIGN_ANSWER, payload: { question: { id: questionId, ...obj } } });
       return obj;
     }
     catch (error: any) {
@@ -458,11 +463,16 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
     try {
       const question = await dbp!.get('Questions', questionId);
       // const answer: IAnswer = await dbp!.get('Answers', answerId);
-      
-      const obj: IQuestion = { ...question, questionAnswers: question.questionAnswers.filter((qa:IQuestionAnswer) => qa.answer.id !== answerId ) }
+
+      const assignedAnswers = question.questionAnswers.filter((qa: IAssignedAnswer) => qa.answer.id !== answerId);
+      const obj: IQuestion = {
+        ...question,        
+        assignedAnswers,
+        numOfAssignedAnswers: assignedAnswers.length
+      }
       await dbp!.put('Questions', obj, questionId);
       console.log("Question Answer successfully assigned");
-      dispatch({ type: ActionTypes.SET_QUESTION_AFTER_ASSIGN_ANSWER, payload: { question: { id: questionId, ...obj} } });
+      dispatch({ type: ActionTypes.SET_QUESTION_AFTER_ASSIGN_ANSWER, payload: { question: { id: questionId, ...obj } } });
       return obj;
     }
     catch (error: any) {

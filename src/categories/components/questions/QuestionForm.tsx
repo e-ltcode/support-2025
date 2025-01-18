@@ -14,7 +14,7 @@ import CatList from 'categories/components/SelectCategory/CatList'
 
 import { useCategoryDispatch } from "categories/CategoryProvider";
 import Dropdown from 'react-bootstrap/Dropdown';
-import QuestionAnswers from './QuestionAnswers';
+import AssignedAnswers from './AssignedAnswers';
 import { useGlobalContext } from 'global/GlobalProvider';
 
 const QuestionForm = ({ mode, question, submitForm, children, showCloseButton, closeModal }: IQuestionFormProps) => {
@@ -27,7 +27,7 @@ const QuestionForm = ({ mode, question, submitForm, children, showCloseButton, c
   const editing = mode === FormMode.editing;
   const adding = mode === FormMode.adding;
 
-  const { title, id, questionAnswers } = question;
+  const { title, id, assignedAnswers } = question;
 
   const dispatch = useCategoryDispatch();
 
@@ -91,47 +91,45 @@ const QuestionForm = ({ mode, question, submitForm, children, showCloseButton, c
           <div className="p-0"><Form.Label>Category:</Form.Label></div>
           <div className="p-1">
             <Form.Group controlId="parentCategory" className="category-select form-select-sm">
-            <Dropdown>
-              <Dropdown.Toggle variant="light" id="dropdown-basic" className="px-2 py-0 text-primary" disabled={isDisabled}>
-                {formik.values.categoryTitle}
-              </Dropdown.Toggle>
-              <Dropdown.Menu className="p-0">
-                <Dropdown.Item className="p-0 m-0 rounded-3">
-                  <CatList
-                    parentCategory='null'
-                    level={1}
-                    setParentCategory={setParentCategory}
-                  />
-                </Dropdown.Item>
-              </Dropdown.Menu>
-            </Dropdown>
+              <Dropdown>
+                <Dropdown.Toggle variant="light" id="dropdown-basic" className="px-2 py-0 text-primary" disabled={isDisabled}>
+                  {formik.values.categoryTitle}
+                </Dropdown.Toggle>
+                <Dropdown.Menu className="p-0">
+                  <Dropdown.Item className="p-0 m-0 rounded-3">
+                    <CatList
+                      parentCategory='null'
+                      level={1}
+                      setParentCategory={setParentCategory}
+                    />
+                  </Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
 
-            <Form.Control
-              as="input"
-              name="parentCategory"
-              onChange={formik.handleChange}
-              //onBlur={formik.handleBlur}
-              // onBlur={(e: React.FocusEvent<HTMLTextAreaElement>): void => {
-              //   if (isEdit && formik.initialValues.title !== formik.values.title)
-              //     formik.submitForm();
-              // }}
-              value={formik.values.parentCategory.toString()}
-              placeholder='Category'
-              className="text-primary w-100"
-              disabled={isDisabled}
-              hidden={true}
-            />
-            <Form.Text className="text-danger">
-              {formik.touched.parentCategory && formik.errors.parentCategory ? (
-                <div className="text-danger">{formik.errors.parentCategory ? 'required' : ''}</div>
-              ) : null}
-            </Form.Text>
-          </Form.Group>
+              <Form.Control
+                as="input"
+                name="parentCategory"
+                onChange={formik.handleChange}
+                //onBlur={formik.handleBlur}
+                // onBlur={(e: React.FocusEvent<HTMLTextAreaElement>): void => {
+                //   if (isEdit && formik.initialValues.title !== formik.values.title)
+                //     formik.submitForm();
+                // }}
+                value={formik.values.parentCategory.toString()}
+                placeholder='Category'
+                className="text-primary w-100"
+                disabled={isDisabled}
+                hidden={true}
+              />
+              <Form.Text className="text-danger">
+                {formik.touched.parentCategory && formik.errors.parentCategory ? (
+                  <div className="text-danger">{formik.errors.parentCategory ? 'required' : ''}</div>
+                ) : null}
+              </Form.Text>
+            </Form.Group>
 
           </div>
         </Stack>
-
-
 
         <Form.Group controlId="title">
           <Form.Label>Title</Form.Label>
@@ -209,10 +207,10 @@ const QuestionForm = ({ mode, question, submitForm, children, showCloseButton, c
 
         {(viewing || editing) &&
           <>
-            <QuestionAnswers
+            <AssignedAnswers
               questionId={id!}
               questionTitle={title}
-              questionAnswers={questionAnswers}
+              assignedAnswers={assignedAnswers}
               isDisabled={isDisabled}
             />
 

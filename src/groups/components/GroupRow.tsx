@@ -2,6 +2,7 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faRemove, faCaretRight, faCaretDown, faPlus, faThumbsUp } from '@fortawesome/free-solid-svg-icons'
+import A from 'assets/A.png';
 
 import { ListGroup, Button, Badge } from "react-bootstrap";
 
@@ -79,7 +80,9 @@ const GroupRow = ({ group }: { group: IGroup }) => {
             </Button>
 
             <Badge pill bg="secondary" className={numOfAnswers === 0 ? 'd-none' : 'd-inline'}>
-                {numOfAnswers}<FontAwesomeIcon icon={faThumbsUp} size='sm' />
+                {numOfAnswers}a
+                {/* <FontAwesomeIcon icon={faThumbsUp} size='sm' /> */}
+                {/* <img width="22" height="18" src={A} alt="Answer" /> */}
             </Badge>
 
             {/* {canEdit && !alreadyAdding && hoverProps.isHovered &&

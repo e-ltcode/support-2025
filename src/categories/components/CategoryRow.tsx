@@ -2,6 +2,7 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faRemove, faCaretRight, faCaretDown, faPlus, faQuestion } from '@fortawesome/free-solid-svg-icons'
+import Q from 'assets/Q.png';
 
 import { ListGroup, Button, Badge } from "react-bootstrap";
 
@@ -79,7 +80,9 @@ const CategoryRow = ({ category }: { category: ICategory }) => {
             </Button>
 
             <Badge pill bg="secondary" className={numOfQuestions === 0 ? 'd-none' : 'd-inline'}>
-                {numOfQuestions}<FontAwesomeIcon icon={faQuestion} size='sm' />
+                {numOfQuestions}Q
+                {/* <FontAwesomeIcon icon={faQuestion} size='sm' /> */}
+                {/* <img width="22" height="18" src={Q} alt="Question" /> */}
             </Badge>
 
             {/* {canEdit && !alreadyAdding && hoverProps.isHovered &&

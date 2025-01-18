@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import * as Yup from "yup";
 import { useFormik } from "formik";
-import { Form, CloseButton } from "react-bootstrap";
+import { Form, CloseButton, Stack } from "react-bootstrap";
 import { CreatedModifiedForm } from "common/CreateModifiedForm"
 import { FormButtons } from "common/FormButtons"
 import { ActionTypes, FormMode, IGroup, IAnswer, IAnswerFormProps } from "groups/types";
@@ -41,7 +41,7 @@ const AnswerForm = ({ mode, answer, submitForm, children, showCloseButton, close
       dispatch({ type: ActionTypes.CANCEL_ANSWER_FORM, payload: { answer } })
     }
   }
-  
+
   // eslint-disable-next-line no-self-compare
   // const nameRef = useRef<HTMLAreaElement | null>(null);
   const nameRef = useRef<HTMLTextAreaElement>(null);
@@ -77,44 +77,48 @@ const AnswerForm = ({ mode, answer, submitForm, children, showCloseButton, close
       {showCloseButton && <CloseButton onClick={closeForm} className="float-end" />}
       <Form onSubmit={formik.handleSubmit}>
 
-        <Form.Label>Group</Form.Label>
-        <Form.Group controlId="parentGroup" className="group-select form-select-sm">
-          <Dropdown>
-            <Dropdown.Toggle variant="light" id="dropdown-basic" className="px-2 py-1 text-primary" disabled={isDisabled}>
-              {formik.values.groupTitle}
-            </Dropdown.Toggle>
-            <Dropdown.Menu className="p-0">
-              <Dropdown.Item className="p-0 m-0 rounded-3">
-                <CatList
-                  parentGroup='null'
-                  level={1}
-                  setParentGroup={setParentGroup}
-                />
-              </Dropdown.Item>
-            </Dropdown.Menu>
-          </Dropdown>
+        <Stack direction="horizontal" gap={0}>
+          <div className="p-0"><Form.Label>Group:</Form.Label></div>
+          <div className="p-1">
+            <Form.Group controlId="parentGroup" className="group-select form-select-sm">
+              <Dropdown>
+                <Dropdown.Toggle variant="light" id="dropdown-basic" className="px-2 py-1 text-primary" disabled={isDisabled}>
+                  {formik.values.groupTitle}
+                </Dropdown.Toggle>
+                <Dropdown.Menu className="p-0">
+                  <Dropdown.Item className="p-0 m-0 rounded-3">
+                    <CatList
+                      parentGroup='null'
+                      level={1}
+                      setParentGroup={setParentGroup}
+                    />
+                  </Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
 
-          <Form.Control
-            as="input"
-            name="parentGroup"
-            onChange={formik.handleChange}
-            //onBlur={formik.handleBlur}
-            // onBlur={(e: React.FocusEvent<HTMLTextAreaElement>): void => {
-            //   if (isEdit && formik.initialValues.title !== formik.values.title)
-            //     formik.submitForm();
-            // }}
-            value={formik.values.parentGroup.toString()}
-            placeholder='Group'
-            className="text-primary w-100"
-            disabled={isDisabled}
-            hidden={true}
-          />
-          <Form.Text className="text-danger">
-            {formik.touched.parentGroup && formik.errors.parentGroup ? (
-              <div className="text-danger">{formik.errors.parentGroup ? 'required' : ''}</div>
-            ) : null}
-          </Form.Text>
-        </Form.Group>
+              <Form.Control
+                as="input"
+                name="parentGroup"
+                onChange={formik.handleChange}
+                //onBlur={formik.handleBlur}
+                // onBlur={(e: React.FocusEvent<HTMLTextAreaElement>): void => {
+                //   if (isEdit && formik.initialValues.title !== formik.values.title)
+                //     formik.submitForm();
+                // }}
+                value={formik.values.parentGroup.toString()}
+                placeholder='Group'
+                className="text-primary w-100"
+                disabled={isDisabled}
+                hidden={true}
+              />
+              <Form.Text className="text-danger">
+                {formik.touched.parentGroup && formik.errors.parentGroup ? (
+                  <div className="text-danger">{formik.errors.parentGroup ? 'required' : ''}</div>
+                ) : null}
+              </Form.Text>
+            </Form.Group>
+          </div>
+        </Stack>
 
         <Form.Group controlId="title">
           <Form.Label>Title</Form.Label>
@@ -149,7 +153,7 @@ const AnswerForm = ({ mode, answer, submitForm, children, showCloseButton, close
             options={sourceOptions}
             onChange={(e, value) => {
               formik.setFieldValue('source', value)
-                // .then(() => { if (editing) formik.submitForm() })
+              // .then(() => { if (editing) formik.submitForm() })
             }}
             value={formik.values.source}
             disabled={isDisabled}
@@ -171,7 +175,7 @@ const AnswerForm = ({ mode, answer, submitForm, children, showCloseButton, close
             //onChange={formik.handleChange}
             onChange={(e, value) => {
               formik.setFieldValue('status', value)
-                //.then(() => { if (editing) formik.submitForm() })
+              //.then(() => { if (editing) formik.submitForm() })
             }}
             value={formik.values.status}
             disabled={isDisabled}

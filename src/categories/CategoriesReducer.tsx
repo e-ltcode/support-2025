@@ -7,7 +7,8 @@ export const initialQuestion: IQuestion = {
   categoryTitle: '',
   title: '',
   level: 0,
-  questionAnswers: [],
+  assignedAnswers: [],
+  numOfAssignedAnswers: 0,
   source: 0,
   status: 0
 }
@@ -180,7 +181,7 @@ const reducer = (state: ICategoriesState, action: CategoriesActions) => {
         ...initialCategory,
         title: '',
         level: level + 1,
-        parentCategory: parentCategory??'null',
+        parentCategory: parentCategory ?? 'null',
         inAdding: true
       }
       return {
@@ -379,7 +380,7 @@ const reducer = (state: ICategoriesState, action: CategoriesActions) => {
           ...c,
           questions: inAdding
             ? c.questions.map(q => q.inAdding ? { ...question, inAdding: false } : q)
-            : c.questions.map(q => q.id === id ? {...question, inEditing: false, inViewing: false } : q),
+            : c.questions.map(q => q.id === id ? { ...question, inEditing: false, inViewing: false } : q),
           inViewing: false,
           inEditing: false,
           inAdding: false
