@@ -27,7 +27,8 @@ const GroupRow = ({ group }: { group: IGroup }) => {
     const dispatch = useGroupDispatch();
 
     const alreadyAdding = state.mode === Mode.AddingGroup;
-    const showAnswers = numOfAnswers > 0 && !answers.find(q => q.inAdding); // We don't have answers loaded
+    // TODO proveri ovo
+    const showAnswers = numOfAnswers > 0 // && !answers.find(q => q.inAdding); // We don't have answers loaded
 
     const del = () => {
         deleteGroup(id);

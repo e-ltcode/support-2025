@@ -94,7 +94,7 @@ const AssignedAnswers = ({ questionId, questionTitle, assignedAnswers, isDisable
                     </Button>
                     <Button
                         size="sm"
-                        className="button-edit py-0 rounded-1"
+                        className="button-edit py-0 rounded-1 mx-1"
                         title="Add and Assign a new Answer"
                         style={{ border: '1px solid silver', fontSize: '12px' }}
                         variant={variant}

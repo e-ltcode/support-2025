@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import * as Yup from "yup";
 import { useFormik } from "formik";
-import { Form, CloseButton, Stack } from "react-bootstrap";
+import { Form, CloseButton, Stack, Row, Col } from "react-bootstrap";
 import { CreatedModifiedForm } from "common/CreateModifiedForm"
 import { FormButtons } from "common/FormButtons"
 import { ActionTypes, FormMode, IGroup, IAnswer, IAnswerFormProps } from "groups/types";
@@ -75,6 +75,11 @@ const AnswerForm = ({ mode, answer, submitForm, children, showCloseButton, close
   return (
     <div className="form-wrapper px-3 py-1 my-0 my-1 w-100">
       {showCloseButton && <CloseButton onClick={closeForm} className="float-end" />}
+
+      <Row className='text-center'>
+        <Form.Label>Answer</Form.Label>
+      </Row>
+
       <Form onSubmit={formik.handleSubmit}>
 
         <Stack direction="horizontal" gap={0}>
@@ -145,48 +150,54 @@ const AnswerForm = ({ mode, answer, submitForm, children, showCloseButton, close
           </Form.Text>
         </Form.Group>
 
-        <Form.Group controlId="source">
-          <Form.Label>Source</Form.Label>
-          <Select
-            id="source"
-            name="source"
-            options={sourceOptions}
-            onChange={(e, value) => {
-              formik.setFieldValue('source', value)
-              // .then(() => { if (editing) formik.submitForm() })
-            }}
-            value={formik.values.source}
-            disabled={isDisabled}
-            classes="text-primary"
-          />
-          <Form.Text className="text-danger">
-            {formik.touched.source && formik.errors.source ? (
-              <div className="text-danger">{formik.errors.source}</div>
-            ) : null}
-          </Form.Text>
-        </Form.Group>
-
-        <Form.Group controlId="status">
-          <Form.Label>Status</Form.Label>
-          <Select
-            id="status"
-            name="status"
-            options={statusOptions}
-            //onChange={formik.handleChange}
-            onChange={(e, value) => {
-              formik.setFieldValue('status', value)
-              //.then(() => { if (editing) formik.submitForm() })
-            }}
-            value={formik.values.status}
-            disabled={isDisabled}
-            classes="text-primary"
-          />
-          <Form.Text className="text-danger">
-            {formik.touched.status && formik.errors.status ? (
-              <div className="text-danger">{formik.errors.status}</div>
-            ) : null}
-          </Form.Text>
-        </Form.Group>
+        <Row>
+          <Col>
+            <Form.Group controlId="source">
+              <Form.Label>Source</Form.Label>
+              <Select
+                id="source"
+                name="source"
+                options={sourceOptions}
+                onChange={(e, value) => {
+                  formik.setFieldValue('source', value)
+                  // .then(() => { if (editing) formik.submitForm() })
+                }}
+                value={formik.values.source}
+                disabled={isDisabled}
+                classes="text-primary"
+              />
+              <Form.Text className="text-danger">
+                {formik.touched.source && formik.errors.source ? (
+                  <div className="text-danger">{formik.errors.source}</div>
+                ) : null}
+              </Form.Text>
+            </Form.Group>
+          </Col>
+          <Col>
+            <Form.Group controlId="status">
+              <Form.Label>Status</Form.Label>
+              <Select
+                id="status"
+                name="status"
+                options={statusOptions}
+                //onChange={formik.handleChange}
+                onChange={(e, value) => {
+                  formik.setFieldValue('status', value)
+                  //.then(() => { if (editing) formik.submitForm() })
+                }}
+                value={formik.values.status}
+                disabled={isDisabled}
+                classes="text-primary"
+              />
+              <Form.Text className="text-danger">
+                {formik.touched.status && formik.errors.status ? (
+                  <div className="text-danger">{formik.errors.status}</div>
+                ) : null}
+              </Form.Text>
+            </Form.Group>
+          </Col>
+        </Row>
+        <br />
 
 
         {(viewing || editing) &&

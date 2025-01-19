@@ -104,7 +104,8 @@ const AnswerRow = ({ answer, groupInAdding }: { answer: IAnswer, groupInAdding: 
                     }}
                 >
                     <FontAwesomeIcon icon={faPlus} size='lg' />
-                    <FontAwesomeIcon icon={faThumbsUp} size='lg' style={{ marginLeft: '-5px' }} />
+                    {/* <FontAwesomeIcon icon={faThumbsUp} size='lg' style={{ marginLeft: '-5px' }} /> */}
+                    <img width="18" height="14" src={A} alt="Answer" style={{ marginLeft: '-2px' }} />
                 </Button>
             }
         </div>

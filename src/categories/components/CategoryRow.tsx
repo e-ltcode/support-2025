@@ -27,7 +27,8 @@ const CategoryRow = ({ category }: { category: ICategory }) => {
     const dispatch = useCategoryDispatch();
 
     const alreadyAdding = state.mode === Mode.AddingCategory;
-    const showQuestions = numOfQuestions > 0 && !questions.find(q => q.inAdding); // We don't have questions loaded
+    // TOD proveri ovo
+    const showQuestions = numOfQuestions > 0 // && !questions.find(q => q.inAdding); // We don't have questions loaded
 
     const del = () => {
         deleteCategory(id);
@@ -124,7 +125,7 @@ const CategoryRow = ({ category }: { category: ICategory }) => {
                 </Button>
             }
 
-            {/* {canEdit && !alreadyAdding && hoverProps.isHovered &&
+            {canEdit && !alreadyAdding && hoverProps.isHovered &&
                 <Button
                     variant='link'
                     size="sm"
@@ -141,7 +142,7 @@ const CategoryRow = ({ category }: { category: ICategory }) => {
                     <FontAwesomeIcon icon={faPlus} size='lg' />
                     <FontAwesomeIcon icon={faQuestion} size='lg' style={{ marginLeft: '-5px' }} />
                 </Button>
-            } */}
+            }
         </div>
 
     // console.log({ title, isExpanded })

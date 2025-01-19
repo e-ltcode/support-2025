@@ -18,7 +18,7 @@ import A from 'assets/A.png';
 
 //const QuestionRow = ({ question, categoryInAdding }: { ref: React.ForwardedRef<HTMLLIElement>, question: IQuestion, categoryInAdding: boolean | undefined }) => {
 const QuestionRow = ({ question, categoryInAdding }: { question: IQuestion, categoryInAdding: boolean | undefined }) => {
-        const { id, parentCategory, level, title, inViewing, inEditing, inAdding, numOfAssignedAnswers } = question;
+    const { id, parentCategory, level, title, inViewing, inEditing, inAdding, numOfAssignedAnswers } = question;
 
     const { canEdit, isDarkMode, variant, bg } = useGlobalState();
 
@@ -107,7 +107,8 @@ const QuestionRow = ({ question, categoryInAdding }: { question: IQuestion, cate
                     }}
                 >
                     <FontAwesomeIcon icon={faPlus} size='lg' />
-                    <FontAwesomeIcon icon={faQuestion} size='lg' style={{ marginLeft: '-5px' }} />
+                    {/* <FontAwesomeIcon icon={faQuestion} size='lg' style={{ marginLeft: '-5px' }} /> */}
+                    <img width="18" height="14" src={A} alt="Answer" style={{ marginLeft: '-2px' }} />
                 </Button>
             }
         </div>
