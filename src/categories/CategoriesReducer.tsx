@@ -495,7 +495,7 @@ const reducer = (state: ICategoriesState, action: CategoriesActions) => {
       return {
         ...state,
         categories: state.categories.map(c => c.id === question.parentCategory
-          ? { ...c, questions, inAdding: false, inEditing: false, inViewing: false }
+          ? { ...c, questions, numOfQuestions: questions.length, inAdding: false, inEditing: false, inViewing: false }
           : c
         ),
         mode: Mode.NULL,

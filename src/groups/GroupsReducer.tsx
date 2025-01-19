@@ -496,7 +496,7 @@ const reducer = (state: IGroupsState, action: GroupsActions) => {
       return {
         ...state,
         groups: state.groups.map(c => c.id === answer.parentGroup
-          ? { ...c, answers, inAdding: false, inEditing: false, inViewing: false }
+          ? { ...c, answers, numOfAnswers: answers.length, inAdding: false, inEditing: false, inViewing: false }
           : c
         ),
         mode: Mode.NULL,
