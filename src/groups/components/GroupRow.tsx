@@ -125,7 +125,7 @@ const GroupRow = ({ group }: { group: IGroup }) => {
                 </Button>
             }
 
-            {/* {canEdit && !alreadyAdding && hoverProps.isHovered &&
+            {canEdit && !alreadyAdding && hoverProps.isHovered &&
                 <Button
                     variant='link'
                     size="sm"
@@ -140,9 +140,10 @@ const GroupRow = ({ group }: { group: IGroup }) => {
                     }}
                 >
                     <FontAwesomeIcon icon={faPlus} size='lg' />
-                    <FontAwesomeIcon icon={faThumbsUp} size='lg' style={{ marginLeft: '-5px' }} />
+                    {/* <FontAwesomeIcon icon={faThumbsUp} size='lg' style={{ marginLeft: '-5px' }} /> */}
+                    <img width="18" height="14" src={A} alt="Answer" style={{ marginLeft: '-2px' }} />
                 </Button>
-            } */}
+            }
         </div>
 
     // console.log({ title, isExpanded })
