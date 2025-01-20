@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import * as Yup from "yup";
 import { useFormik } from "formik";
-import { Form, CloseButton, Row } from "react-bootstrap";
+import { Form, CloseButton, Row, Stack } from "react-bootstrap";
 import { CreatedModifiedForm } from "common/CreateModifiedForm"
 import { FormButtons } from "common/FormButtons"
 import { FormMode, ActionTypes, ICategoryFormProps, ICategory, ITag } from "categories/types";
@@ -82,9 +82,13 @@ const CategoryForm = ({ inLine, mode, category, submitForm, children }: ICategor
       </Row>
       <Form onSubmit={formik.handleSubmit}>
 
-        <Form.Group controlId="title">
-          <Form.Label>Title</Form.Label>
-          <TagList categoryId={id} tags={tags.map(tag => ({ name: tag} as ITag))} />
+        <Form.Group controlId="Tags">
+          <Stack direction="horizontal" gap={1}>
+            <div className="px-0"><Form.Label>Tags:</Form.Label></div>
+            <div className="px-1 border border-1 border-secondary rounded">
+              <TagList categoryId={id} tags={tags.map(tag => ({ name: tag } as ITag))} />
+            </div>
+          </Stack>
         </Form.Group>
 
         <Form.Group controlId="title">

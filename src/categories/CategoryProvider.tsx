@@ -202,6 +202,7 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
       const category = await dbp!.get('Categories', id);
       const obj: ICategory = {
         ...category,
+        tags: c.tags,
         title: c.title,
         modified: c.modified
       }
@@ -209,7 +210,8 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
       console.log("Category successfully updated");
       dispatch({ type: ActionTypes.CLEAN_SUB_TREE, payload: { category: obj } });
       dispatch({ type: ActionTypes.SET_CATEGORY, payload: { category: obj } });
-      dispatch({ type: ActionTypes.CLOSE_CATEGORY_FORM })
+      if (closeForm)
+        dispatch({ type: ActionTypes.CLOSE_CATEGORY_FORM })
     }
     catch (error: any) {
       console.log('error', error);

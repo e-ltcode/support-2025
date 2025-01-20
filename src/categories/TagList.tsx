@@ -4,9 +4,9 @@ import { useCategoryContext } from "categories/CategoryProvider";
 import { useGlobalState } from "global/GlobalProvider";
 import { List, ListItem, Loading } from "common/components/InfiniteList";
 import TagRow from "categories/TagRow";
-import { ListGroup } from "react-bootstrap";
+import { ListGroup, Stack } from "react-bootstrap";
 
-const TagList = ({ categoryId, tags }: { categoryId: string, tags: ITag[]}) => {
+const TagList = ({ categoryId, tags }: { categoryId: string, tags: ITag[] }) => {
 
   const { canEdit } = useGlobalState();
 
@@ -37,25 +37,23 @@ const TagList = ({ categoryId, tags }: { categoryId: string, tags: ITag[]}) => {
 
   return (
     <div
-      className="ms-2 border 	border-radius-4"
+      className="ms-2"
       // className="max-h-[500px] max-w-[500px] overflow-auto bg-slate-100"
-      style={{ overflowX: 'auto' }}
+      // style={{ overflowX: 'auto' }}
     >
-      <ListGroup horizontal>
+      <Stack direction="horizontal" gap={2}>
         {tags.length === 0 &&
           <div>No tags</div>
         }
         {
           tags.map((tag: ITag) => {
-            return <ListGroup.Item key={tag.name}>
-              <TagRow
-                categoryId={categoryId}
-                tag={tag}
-                categoryInAdding={undefined}
-              />
-            </ListGroup.Item>
+            return <TagRow
+              categoryId={categoryId}
+              tag={tag}
+              categoryInAdding={undefined}
+            />
           })}
-      </ListGroup>
+      </Stack>
       {error && <p>Error: {error.message}</p>}
     </div>
   );

@@ -132,7 +132,7 @@ const QuestionForm = ({ mode, question, submitForm, children, showCloseButton, c
           </div>
         </Stack>
 
-  
+
 
         <Form.Group controlId="title">
           <Form.Label>Title</Form.Label>
@@ -226,7 +226,7 @@ const QuestionForm = ({ mode, question, submitForm, children, showCloseButton, c
             />
           </>
         }
-        { formik.dirty && (editing || adding) &&
+        {formik.dirty && (editing || adding) &&
           <FormButtons
             cancelForm={cancelForm}
             handleSubmit={formik.handleSubmit}

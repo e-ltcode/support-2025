@@ -58,7 +58,7 @@ const TagRow = ({ categoryId, tag, categoryInAdding }: { categoryId: string, tag
         // <div ref={hoverRef} className="d-flex justify-content-start align-items-center text-secondary">
         <div ref={hoverRef}>
 
-            <Badge pill bg="secondary">
+            <Badge pill bg="secondary" className='d-inline'>
                 {/* className={`text-info ${numOfTags === 0 ? 'd-none' : 'd-inline'}`} */}
                 {name}
             </Badge> 
@@ -110,8 +110,12 @@ const TagRow = ({ categoryId, tag, categoryInAdding }: { categoryId: string, tag
         </div>
 
     return (
-  
-        <div className="py-1 px-1">
+        <ListGroup.Item
+             variant={"secondary"}
+             className="py-0 px-1 w-100"
+             as="li"
+        >
+        <div className="py-0 px-1 w-100 list-category-item">
             {inAdding && categoryInAdding && state.mode === Mode.AddingTag 
             ? (
                 // <AddTag tag={tag} inLine={true} showCloseButton={true} />
@@ -135,6 +139,7 @@ const TagRow = ({ categoryId, tag, categoryInAdding }: { categoryId: string, tag
                     )
             }
             </div>
+        </ListGroup.Item>
     );
 };
 
