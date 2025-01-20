@@ -1,4 +1,4 @@
-## This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+### This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Try It
 [Support Knowledge Database](https://slavkopar.github.io/support-2025/)
@@ -11,6 +11,13 @@ In the project directory, you can run:
 
 
 ## Dokumentacija (bice bolja, ovo je samo za jutrasnji miting) 
+
+Prvremeno, kad se menja struktura baze, treba prvo obrisati našu staru IndexDB 'SupportKnowledge' bazu, da bi se kreirala nova.\
+Dok ste na sajtu https://slavkopar.github.io/support-2025/\
+pritisnete **F12** i odaberete **Application**.\
+Odaberete **SupportKnowledge** database\
+i kliknete na **Delete Database**\
+
 
 You are software company and You have your software product.\
 Your QA people, repeatedly interupt your developers with the same questions.\
