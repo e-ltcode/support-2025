@@ -150,8 +150,8 @@ const AssignedAnswers = ({ questionId, questionTitle, assignedAnswers, isDisable
                         tekst={''}
                         alreadyAssigned={
                             assignedAnswers.length === 0
-                                ? 'empty'
-                                : assignedAnswers.map((a: IAssignedAnswer) => a.answer.id).join('-')
+                                ? []
+                                : assignedAnswers.map((a: IAssignedAnswer) => a.answer.id)
                         }
                         onSelectQuestionAnswer={onSelectQuestionAnswer}
                     />

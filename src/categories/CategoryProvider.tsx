@@ -5,6 +5,7 @@ import {
   ActionTypes, ICategory, IQuestion, ICategoriesContext, IParentInfo, IFromUserAssignedAnswer,
   IAssignedAnswer
 } from 'categories/types';
+
 import { initialCategoriesState, CategoriesReducer } from 'categories/CategoriesReducer';
 import { IDateAndBy } from 'global/types';
 import { IAnswer } from 'groups/types';
@@ -194,7 +195,7 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
     getCategory(id, ActionTypes.EDIT_CATEGORY)
   }, []);
 
-  const updateCategory = useCallback(async (c: ICategory) => {
+  const updateCategory = useCallback(async (c: ICategory, closeForm: boolean) => {
     const { id } = c;
     dispatch({ type: ActionTypes.SET_CATEGORY_LOADING, payload: { id, loading: false } });
     try {
@@ -227,6 +228,29 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
       dispatch({ type: ActionTypes.SET_ERROR, payload: { error } });
     }
   };
+
+  const deleteCategoryTag = async (id: string, tagName: string) => {
+    try {
+      const category = await dbp!.get('Categories', id);
+      const obj: ICategory = {
+        ...category,
+        tags: category.tags.filter((tag: string) => tag !== tagName),
+        modified: {
+          date: new Date(),
+          by: {
+              nickName: globalState.authUser.nickName
+          }
+      }
+      }
+      updateCategory(obj, false);
+      console.log("Category Tag successfully deleted");
+    }
+    catch (error: any) {
+      console.log('error', error);
+      dispatch({ type: ActionTypes.SET_ERROR, payload: { error } });
+    }
+  };
+  
 
   const expandCategory = async (category: ICategory, expanding: boolean) => {
     const { id, numOfQuestions, questions } = category;
@@ -558,7 +582,7 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
   const contextValue: ICategoriesContext = {
     state,
     reloadCategoryNode,
-    getSubCategories, getSubCats, createCategory, viewCategory, editCategory, updateCategory, deleteCategory,
+    getSubCategories, getSubCats, createCategory, viewCategory, editCategory, updateCategory, deleteCategory, deleteCategoryTag,
     expandCategory, loadCategoryQuestions, createQuestion, viewQuestion, editQuestion, updateQuestion, deleteQuestion,
     assignQuestionAnswer, unAssignQuestionAnswer, createAnswer
   }

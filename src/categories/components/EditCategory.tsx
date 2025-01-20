@@ -20,7 +20,7 @@ const EditCategory = ({ inLine }: { inLine: boolean }) => {
                 }
             }
         }
-        updateCategory(object)
+        updateCategory(object, true /* closeForm */)
     };
 
     return (

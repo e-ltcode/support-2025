@@ -211,7 +211,7 @@ const AnswerForm = ({ mode, answer, submitForm, children, showCloseButton, close
             />
           </>
         }
-        {(editing || adding) &&
+        {formik.dirty && (editing || adding) &&
           <FormButtons
             cancelForm={cancelForm}
             handleSubmit={formik.handleSubmit}

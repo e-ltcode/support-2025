@@ -8,6 +8,12 @@ export const Mode = {
 	ViewingCategory: 'ViewingCategory',
 	EditingCategory: 'EditingCategory',
 	DeletingCategory: 'DeletingCategory',
+
+	// tags
+	AddingTag: 'AddingTag',
+	EditingTag: 'EditingTag',
+	ViewingTag: 'ViewingTag',
+
 	//////////////////////////////////////
 	// questions
 	AddingQuestion: 'AddingQuestion',
@@ -55,17 +61,22 @@ export interface IFromUserAssignedAnswer {
 }
 
 export interface IQuestion extends IRecord {
-	id?: number,
-	title: string,
-	words?: string[],
-	level: number,
-	parentCategory: string,
-	categoryTitle?: string,
-	assignedAnswers: IAssignedAnswer[],
-	numOfAssignedAnswers: number,
-	source: number,
-	status: number,
-	fromUserAssignedAnswer?: IFromUserAssignedAnswer[]
+	id?: number;
+	title: string;
+	words?: string[];
+	level: number;
+	parentCategory: string;
+	categoryTitle?: string;
+	assignedAnswers: IAssignedAnswer[];
+	numOfAssignedAnswers: number;
+	source: number;
+	status: number;
+	fromUserAssignedAnswer?: IFromUserAssignedAnswer[];
+	tags: string[]
+}
+
+export interface ITag {
+	name: string;
 }
 
 export interface ICategory extends IRecord {
@@ -74,6 +85,7 @@ export interface ICategory extends IRecord {
 	// but it is not a valid key
 	title: string;
 	level: number;
+	tags: string[];
 	questions: IQuestion[];
 	numOfQuestions: number;
 	hasMore?: boolean;
@@ -130,8 +142,9 @@ export interface ICategoriesContext {
 	createCategory: (category: ICategory) => void,
 	viewCategory: (id: string) => void,
 	editCategory: (id: string) => void,
-	updateCategory: (category: ICategory) => void,
+	updateCategory: (category: ICategory, closeForm: boolean) => void,
 	deleteCategory: (id: string) => void,
+	deleteCategoryTag: (id: string, name: string) => void,
 	expandCategory: (category: ICategory, expand: boolean) => void,
 	//////////////
 	// questions

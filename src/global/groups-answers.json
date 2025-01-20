@@ -8,11 +8,11 @@
         "title": "Food",
         "answers": [
           {
-          "title": "Make apple pie",
-          "source": 0,
-          "status": 0
-        }
-      ]
+            "title": "Make apple pie",
+            "source": 0,
+            "status": 0
+          }
+        ]
       },
       {
         "id": "BEVERAGE",
@@ -45,7 +45,6 @@
               }
             ]
           }
-          
         ]
       }
     ]
@@ -59,11 +58,11 @@
         "title": "Windows",
         "answers": [
           {
-          "title": "On most Windows 10 installations, this path resolves to C:\\Users\\<Current-user>\\AppData\\Local\\Microsoft\\Edge\\Profile.",
-          "source": 0,
-          "status": 0
-        }
-      ]
+            "title": "On most Windows 10 installations, this path resolves to C:\\Users\\<Current-user>\\AppData\\Local\\Microsoft\\Edge\\Profile.",
+            "source": 0,
+            "status": 0
+          }
+        ]
       },
       {
         "id": "LINUX",
@@ -96,7 +95,6 @@
               }
             ]
           }
-          
         ]
       },
       {
@@ -126,7 +124,7 @@
         "source": 0,
         "status": 0
       },
-      { 
+      {
         "title": "We apply 20% for all the goods",
         "source": 0,
         "status": 0
@@ -135,7 +133,57 @@
   },
   {
     "id": "TECHNICAL",
-    "title": "Technical"
+    "title": "Technical",
+    "groups": [
+      {
+        "id": "DALJINSKI",
+        "title": "Daljinski",
+        "answers": [
+          {
+            "title": "Resetuj ruter, resetuj TV, znas vec kako 'Tata Prase' popravlja kompjuter",
+            "source": 0,
+            "status": 0
+          },
+          {
+            "title": "Zameni baterije i probaj ponovo",
+            "source": 0,
+            "status": 0
+          },
+          {
+            "title": "Baterije iscurela",
+            "source": 0,
+            "status": 0
+          },
+
+          {
+            "title": "Idi do najblize SBB poslovnice (ne standa), i oni ce ti dati novi",
+            "source": 0,
+            "status": 0
+          },
+          {
+            "title": "Evo ti lista poslovnica: https ://sbb.rs/podrska/kontakt/prodajna-mesta/",
+            "source": 0,
+            "status": 0
+          },
+          {
+            "title": "Resetuj ruter, resetuj TV, znas vec kako 'Tata Prase' popravlja kompjuter",
+            "source": 0,
+            "status": 0
+          }          
+        ]
+      },
+      {
+        "id": "ROUTER",
+        "title": "Router",
+        "answers": [
+          {
+            "title": "Resetuj ruter, resetuj TV, znas vec kako 'Tata Prase' popravlja kompjuter",
+            "source": 0,
+            "status": 0
+          }
+        ]
+      }
+    ]
   },
   {
     "id": "BUGS",

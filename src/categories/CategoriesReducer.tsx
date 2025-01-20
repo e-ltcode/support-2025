@@ -10,7 +10,8 @@ export const initialQuestion: IQuestion = {
   assignedAnswers: [],
   numOfAssignedAnswers: 0,
   source: 0,
-  status: 0
+  status: 0,
+  tags: []
 }
 
 export const initialCategory: ICategory = {
@@ -20,6 +21,7 @@ export const initialCategory: ICategory = {
   id: '',
   title: '',
   level: 0,
+  tags: [],
   parentCategory: 'null',
   hasSubCategories: false,
   questions: [],

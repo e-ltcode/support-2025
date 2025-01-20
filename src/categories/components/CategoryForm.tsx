@@ -1,14 +1,15 @@
 import React, { useEffect, useRef } from "react";
 import * as Yup from "yup";
 import { useFormik } from "formik";
-import { Form, CloseButton } from "react-bootstrap";
+import { Form, CloseButton, Row } from "react-bootstrap";
 import { CreatedModifiedForm } from "common/CreateModifiedForm"
 import { FormButtons } from "common/FormButtons"
-import { FormMode, ActionTypes, ICategoryFormProps, ICategory } from "categories/types";
+import { FormMode, ActionTypes, ICategoryFormProps, ICategory, ITag } from "categories/types";
 
 import { useCategoryDispatch } from "categories/CategoryProvider";
 import QuestionList from "categories/components/questions/QuestionList";
 import { useGlobalContext } from "global/GlobalProvider";
+import TagList from "categories/TagList";
 
 const CategoryForm = ({ inLine, mode, category, submitForm, children }: ICategoryFormProps) => {
 
@@ -19,7 +20,7 @@ const CategoryForm = ({ inLine, mode, category, submitForm, children }: ICategor
   const editing = mode === FormMode.editing;
   const adding = mode === FormMode.adding;
 
-  const { id, title, questions } = category;
+  const { id, title, tags, questions } = category;
 
   if (!document.getElementById('div-details')) {
 
@@ -32,7 +33,7 @@ const CategoryForm = ({ inLine, mode, category, submitForm, children }: ICategor
     so we execute loadCategoryQuestions() twice in QuestionList, but OK
   */
 
-  
+
   const dispatch = useCategoryDispatch();
 
   const closeForm = () => {
@@ -72,11 +73,20 @@ const CategoryForm = ({ inLine, mode, category, submitForm, children }: ICategor
     nameRef.current!.focus()
   }, [nameRef])
 
-  
+
   return (
-    <div className="form-wrapper p-2" data-bs-theme={`${isDarkMode ?'dark':'light'}`}>
+    <div className="form-wrapper p-2" data-bs-theme={`${isDarkMode ? 'dark' : 'light'}`}>
       <CloseButton onClick={closeForm} className="float-end" />
+      <Row className='text-center'>
+        <Form.Label>Category</Form.Label>
+      </Row>
       <Form onSubmit={formik.handleSubmit}>
+
+        <Form.Group controlId="title">
+          <Form.Label>Title</Form.Label>
+          <TagList categoryId={id} tags={tags.map(tag => ({ name: tag} as ITag))} />
+        </Form.Group>
+
         <Form.Group controlId="title">
           <Form.Label>Title</Form.Label>
           <Form.Control

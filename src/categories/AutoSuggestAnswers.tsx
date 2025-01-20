@@ -4,7 +4,7 @@ import AutosuggestHighlightMatch from "autosuggest-highlight/match";
 import AutosuggestHighlightParse from "autosuggest-highlight/parse";
 import { isMobile } from 'react-device-detect'
 
-import { escapeRegexCharacters } from 'common/utilities'
+import { debounce, escapeRegexCharacters } from 'common/utilities'
 
 import './AutoSuggestAnswers.css'
 import { IDBPCursorWithValue, IDBPCursorWithValueIteratorValue, IDBPDatabase } from 'idb';
@@ -54,10 +54,11 @@ interface IAnswerRowShort {
 
 const AnswerAutosuggestMulti = Autosuggest as { new(): Autosuggest<IAnswerShort, IGroupShort> };
 
+
 export class AutoSuggestAnswers extends React.Component<{
 	dbp: IDBPDatabase,
 	tekst: string | undefined,
-	alreadyAssigned: string,
+	alreadyAssigned: number[],
 	onSelectQuestionAnswer: (groupId: string, answerId: number) => void
 }, any
 > {
@@ -65,20 +66,48 @@ export class AutoSuggestAnswers extends React.Component<{
 	state: any;
 	isMob: boolean;
 	dbp: IDBPDatabase;
+	alreadyAssigned: number[];
+
+	debouncedLoadSuggestions: (value: string) => void;
 	//inputAutosuggest: React.RefObject<HTMLInputElement>;
 	// endregion region Constructor
 	constructor(props: any) {
 		super(props);
 		this.state = {
 			value: props.tekst || '',
-			alreadyAssigned: props.alreadyAssigned,
 			suggestions: this.getSuggestions(''),
 			noSuggestions: false,
-			highlighted: ''
+			highlighted: '',
+			isLoading: false
 		};
 		//this.inputAutosuggest = createRef<HTMLInputElement>();
 		this.dbp = props.dbp;
+		this.alreadyAssigned = props.alreadyAssigned;
 		this.isMob = isMobile;
+
+		this.loadSuggestions = this.loadSuggestions.bind(this);
+		this.debouncedLoadSuggestions = debounce(this.loadSuggestions, 300);
+	}
+
+	async loadSuggestions(value: string) {
+		this.setState({
+			isLoading: true
+		});
+
+		const suggestions = await this.getSuggestions(value);
+
+		if (value === this.state.value) {
+			this.setState({
+				isLoading: false,
+				suggestions,
+				noSuggestions: suggestions.length === 0
+			});
+		}
+		else { // Ignore suggestions if input value changed
+			this.setState({
+				isLoading: false
+			});
+		}
 	}
 
 	// componentDidMount() {
@@ -88,11 +117,16 @@ export class AutoSuggestAnswers extends React.Component<{
 	// 	}, 500)
 	// }
 
+
 	// endregion region Rendering methods
 	render(): JSX.Element {
-		const { value, suggestions, noSuggestions } = this.state;
+		const { value, suggestions, noSuggestions, isLoading } = this.state;
+		const status = (isLoading ? 'Loading...' : 'Type to load suggestions');
 
 		return <div>
+			<div className="status">
+				<strong>Status:</strong> {status}
+			</div>
 			<AnswerAutosuggestMulti
 				onSuggestionsClearRequested={this.onSuggestionsClearRequested}  // (sl) added
 				multiSection={true}
@@ -163,7 +197,6 @@ export class AutoSuggestAnswers extends React.Component<{
 		);
 	}
 
-
 	protected renderSectionTitle(section: IGroupShort): JSX.Element {
 		const { parentGroupUp, groupParentTitle, groupTitle } = section;
 		let str = (groupParentTitle ? (groupParentTitle + " / ") : "") + groupTitle;
@@ -223,14 +256,31 @@ export class AutoSuggestAnswers extends React.Component<{
 	// 	return { parentGroupTitle: group.title, parentGroupUp: '' };
 	// }
 
-	protected async onSuggestionsFetchRequested({ value }: any): Promise<void> {
+	protected /*async*/ onSuggestionsFetchRequested({ value }: any): void { //Promise<void> {
+		return /*await*/ this.debouncedLoadSuggestions(value);
+	}
+
+	private anyWord = (valueWordRegex: RegExp[], answerWords: string[]): boolean => {
+		for (let valWordRegex of valueWordRegex)
+			for (let answerWord of answerWords)
+				if (valWordRegex.test(answerWord))
+					return true;
+		return false;
+	}
+
+	// endregion region Helper methods
+	protected async getSuggestions(value: string): Promise<IAnswerRowShort[]> {
+		const escapedValue = escapeRegexCharacters(value.trim());
+		if (escapedValue === '') {
+			return [];
+		}
+		//return [];
 		if (!this.dbp || value.length < 2)
-			return;
+			return [];
 		const tx = this.dbp!.transaction(['Groups', 'Answers'], 'readonly');
 		const index = tx.objectStore('Answers').index('words_idx');
 		const answerRows: IAnswerRow[] = [];
 		//const mapParentGroupTitle = new Map<string, string>();
-
 		try {
 			//const search = encodeURIComponent(value.trim().replaceAll('?', ''));
 			const searchWords = value.toLowerCase().replaceAll('?', '').split(' ').map((s: string) => s.trim());
@@ -243,6 +293,9 @@ export class AutoSuggestAnswers extends React.Component<{
 				// for await (const cursor of index.iterate(searchWords[i])) {
 				for await (const cursor of index.iterate(IDBKeyRange.bound(searchWords[i], `${searchWords[i]}zzzzz`, true, true))) {
 					const q: IAnswer = { ...cursor!.value, id: parseInt(cursor!.primaryKey.toString()) }
+					if (this.props.alreadyAssigned.includes(q.id!)) {
+						continue;
+					}
 					const row: IAnswerRow = {
 						id: q.id!,
 						groupId: q.parentGroup,
@@ -264,7 +317,7 @@ export class AutoSuggestAnswers extends React.Component<{
 		};
 
 		if (answerRows.length === 0)
-			return;
+			return [];
 
 		try {
 			const groupsStore = tx.objectStore('Groups')
@@ -333,62 +386,12 @@ export class AutoSuggestAnswers extends React.Component<{
 			}
 			await tx.done;
 			console.log(data)
-			this.setState({ suggestions: data, noSuggestions: data.length === 0 })
+			return data;
+			//this.setState({ suggestions: data, noSuggestions: data.length === 0 })
 		}
 		catch (error: any) {
 			console.log(error)
 		};
-
-		//answers.push({ ...cursor.value, id: cursor.key })
-		/*
-		const z = {
-			"_id": "645250c80081ac3894275619",
-			"parentGroupUp": "",
-			"groupParentTitle": "Featuressss",
-			"groupTitle": "Taxes",
-			"answers": [
-				{
-					"_id": "645250c80081ac3894275625",
-					"title": "Does Chrome support Manifest 3 Extensions?\n",
-					"parentGroup": "645250c80081ac3894275619"
-				}
-			]
-		}
-		*/
-	}
-
-	// axios
-	// 	.get(`/api/answers/get-answers/${this.wsId}/${search}`)
-	// 	.then(({ data }) => {
-	// 		console.log('samo stampaj sta dolazi:', { data })
-	// 		this.setState({
-	// 			suggestions: data,
-	// 			noSuggestions: data.length === 0
-	// 		})
-
-	// 		this.setState({ suggestions: data })
-	// 		//dispatch({ type, payload: { answer } });
-	// 	})
-	// 	.catch((error) => {
-	// 		console.log(error);
-	// 		//dispatch({ type: ActionTypes.SET_ERROR, payload: error });
-	// 	});
-
-
-	private anyWord = (valueWordRegex: RegExp[], answerWords: string[]): boolean => {
-		for (let valWordRegex of valueWordRegex)
-			for (let answerWord of answerWords)
-				if (valWordRegex.test(answerWord))
-					return true;
-		return false;
-	}
-	// endregion region Helper methods
-	protected getSuggestions(value: string): IGroupShort[] {
-		const escapedValue = escapeRegexCharacters(value.trim());
-
-		if (escapedValue === '') {
-			return [];
-		}
 		return [];
 	}
 

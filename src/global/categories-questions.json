@@ -100,5 +100,43 @@
   {
     "id": "BUGS",
     "title": "Bugs"
+  },
+  {
+    "id": "TECHNICAL",
+    "title": "Tehnical",
+    "categories": [
+          {
+            "id": "DALJINSKI",
+            "title": "Daljinski",
+            "tags": ["MTS", "SBB", "A1", "YETTEL"],
+            "questions": [
+              {
+                "title": "Pokvario mi se D3mini daljinski",
+                "source": 0,
+                "status": 0
+              },
+              {
+                "title": "Promenio sam baterije, ali i dalje ne radi",
+                "source": 0,
+                "status": 0
+              },
+              {
+                "title": "Dajte mi listu poslovnica (ne standova)",
+                "source": 0,
+                "status": 0
+              },
+              {
+                "title": "Nista ne radi",
+                "source": 0,
+                "status": 0
+              }
+            ]
+
+          },
+          {
+            "id": "ROUTER",
+            "title": "Router"
+          }
+        ]
   }
 ]

@@ -160,11 +160,13 @@ export interface IQuestionData {
 	title: string;
 	source: number;
 	status: number;
+	tags?: string[]
 }
 
 export interface ICategoryData {
 	id: string,
 	title: string,
+	tags?: string[]
 	categories?: ICategoryData[],
 	questions?: IQuestionData[]
 }

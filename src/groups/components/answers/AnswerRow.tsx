@@ -17,7 +17,7 @@ import A from 'assets/A.png';
 
 //const AnswerRow = ({ answer, groupInAdding }: { ref: React.ForwardedRef<HTMLLIElement>, answer: IAnswer, groupInAdding: boolean | undefined }) => {
 const AnswerRow = ({ answer, groupInAdding }: { answer: IAnswer, groupInAdding: boolean | undefined }) => {
-        const { id, parentGroup, level, title, inViewing, inEditing, inAdding, numOfAnswers } = answer;
+    const { id, parentGroup, level, title, inViewing, inEditing, inAdding, numOfAnswers } = answer;
 
     const { canEdit, isDarkMode, variant, bg } = useGlobalState();
 

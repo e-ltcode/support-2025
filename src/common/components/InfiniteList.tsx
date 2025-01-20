@@ -12,7 +12,7 @@ export type ListItemProps = {
 export function List({ direction, ...rest }: ListProps) {
   return (
     <ul
-      className={`p-0 ${direction === 'horizontal' ? 'flex' : 'block'} list-group list-group-darkr`}
+      className={`p-0 ${direction === 'horizontal' ? 'flex' : 'block'} list-group list-group-dark`}
       {...rest}
     />
   );

@@ -16,6 +16,7 @@ import { useCategoryDispatch } from "categories/CategoryProvider";
 import Dropdown from 'react-bootstrap/Dropdown';
 import AssignedAnswers from './AssignedAnswers';
 import { useGlobalContext } from 'global/GlobalProvider';
+import TagList from 'categories/TagList';
 
 const QuestionForm = ({ mode, question, submitForm, children, showCloseButton, closeModal }: IQuestionFormProps) => {
 
@@ -131,6 +132,8 @@ const QuestionForm = ({ mode, question, submitForm, children, showCloseButton, c
           </div>
         </Stack>
 
+  
+
         <Form.Group controlId="title">
           <Form.Label>Title</Form.Label>
           <Form.Control
@@ -223,7 +226,7 @@ const QuestionForm = ({ mode, question, submitForm, children, showCloseButton, c
             />
           </>
         }
-        {(editing || adding) &&
+        { formik.dirty && (editing || adding) &&
           <FormButtons
             cancelForm={cancelForm}
             handleSubmit={formik.handleSubmit}

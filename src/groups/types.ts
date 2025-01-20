@@ -7,6 +7,7 @@ export const Mode = {
 	ViewingGroup: 'ViewingGroup',
 	EditingGroup: 'EditingGroup',
 	DeletingGroup: 'DeletingGroup',
+
 	//////////////////////////////////////
 	// answers
 	AddingAnswer: 'AddingAnswer',

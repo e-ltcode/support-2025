@@ -267,7 +267,7 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
     parentCategory: string,
     level: number)
     : Promise<void> => {
-    const { id, title, categories, questions } = categoryData;
+    const { id, title, tags, categories, questions } = categoryData;
 
     if (id === 'SAFARI') {
       const q = {
@@ -286,6 +286,7 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
       hasSubCategories: categories ? categories.length > 0 : false,
       title,
       level,
+      tags: tags??[],
       questions: [],
       numOfQuestions: questions?.length || 0,
       created: {
@@ -312,7 +313,8 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
           status: 0,
           assignedAnswers: [],
           numOfAssignedAnswers: 0,
-          level: 2
+          level: 2,
+          tags: q.tags??[]
         }
         await dbp.add('Questions', question);
         i++;
