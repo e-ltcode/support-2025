@@ -89,12 +89,12 @@ export function Navigation(props: INavigation) {
             >
               {isAuthenticated &&
                 // <NavLink to={`/supporter/0/${encodeURIComponent('Does Firefox support Manifest 3?')}/xyz`} className="nav-link"
-                <NavLink to={`/support-2025/supporter/0/${encodeURIComponent('Does microsoft')}/xyz`} className="nav-link"
+                <NavLink to={`/support-2025/supporter/0/${encodeURIComponent('extension')}/xyz`} className="nav-link"
                   onClick={() => {
                     //closeQuestionForm();
                   }
                   }>
-                  <FontAwesomeIcon icon={faSurprise} color='lightblue' />{' '}Supporter
+                  <FontAwesomeIcon icon={faSurprise} color='lightblue' />{' '}Supporter <small>(QA)</small>
                 </NavLink>
               }
               {isAuthenticated &&
@@ -108,7 +108,7 @@ export function Navigation(props: INavigation) {
                 </NavLink>
               }
 
-              {isAuthenticated && (ROLES.OWNER == enumRole || ROLES.ADMIN == enumRole) &&
+              {isAuthenticated && (ROLES.OWNER === enumRole || ROLES.ADMIN === enumRole) &&
                 <NavLink to="/support-2025/users" className="nav-link">
                   <FontAwesomeIcon icon={faUserFriends} color='lightblue' />{' '}Users
                 </NavLink>

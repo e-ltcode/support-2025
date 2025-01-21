@@ -4,7 +4,7 @@ import AutosuggestHighlightMatch from "autosuggest-highlight/match";
 import AutosuggestHighlightParse from "autosuggest-highlight/parse";
 import { isMobile } from 'react-device-detect'
 
-import { escapeRegexCharacters } from 'common/utilities'
+import { debounce, escapeRegexCharacters } from 'common/utilities'
 import './AutoSuggestQuestions.css'
 import { IDBPCursorWithValue, IDBPCursorWithValueIteratorValue, IDBPDatabase } from 'idb';
 import { IQuestion } from './types';
@@ -30,7 +30,8 @@ interface IQuestionRow {
 	categoryParentTitle: string, // TODO ???
 	id: number,
 	parentCategory: string,
-	title: string
+	title: string,
+	tags?: string[] // to keep parantCategory tags
 }
 
 interface IQuestionRowShort {
@@ -40,7 +41,6 @@ interface IQuestionRowShort {
 	categoryParentTitle: string, // TODO ???
 	questions: IQuestionShort[]
 }
-
 
 // https://developer.mozilla.org/en/docs/Web/JavaScript/Guide/Regular_Expression
 // s#Using_Special_Characters
@@ -57,25 +57,51 @@ export class AutoSuggestQuestions extends React.Component<{
 	dbp: IDBPDatabase,
 	tekst: string | undefined,
 	onSelectQuestion: (categoryId: string, questionId: number) => void
-}, any
-> {
+}, any> {
 	// region Fields
 	state: any;
 	isMob: boolean;
 	dbp: IDBPDatabase;
+	debouncedLoadSuggestions: (value: string) => void;
 	//inputAutosuggest: React.RefObject<HTMLInputElement>;
 	// endregion region Constructor
 	constructor(props: any) {
 		super(props);
 		this.state = {
 			value: props.tekst || '',
-			suggestions: this.getSuggestions(''),
+			suggestions: [], //this.getSuggestions(''),
 			noSuggestions: false,
 			highlighted: ''
 		};
 		//this.inputAutosuggest = createRef<HTMLInputElement>();
 		this.dbp = props.dbp;
 		this.isMob = isMobile;
+		this.loadSuggestions = this.loadSuggestions.bind(this);
+		this.debouncedLoadSuggestions = debounce(this.loadSuggestions, 300);
+	}
+
+	
+	async loadSuggestions(value: string) {
+		this.setState({
+			isLoading: true
+		});
+
+		console.time();
+		const suggestions = await this.getSuggestions(value);
+		console.timeEnd();
+
+		if (value === this.state.value) {
+			this.setState({
+				isLoading: false,
+				suggestions,
+				noSuggestions: suggestions.length === 0
+			});
+		}
+		else { // Ignore suggestions if input value changed
+			this.setState({
+				isLoading: false
+			});
+		}
 	}
 
 	componentDidMount() {
@@ -104,10 +130,10 @@ export class AutoSuggestQuestions extends React.Component<{
 				onSuggestionHighlighted={this.onSuggestionHighlighted.bind(this)}
 				highlightFirstSuggestion={false}
 				renderInputComponent={this.renderInputComponent}
-				renderSuggestionsContainer={this.renderSuggestionsContainer}
+				// renderSuggestionsContainer={this.renderSuggestionsContainer}
 				focusInputOnSuggestionClick={!this.isMob}
 				inputProps={{
-					placeholder: `Type 'microsoft'`,
+					placeholder: `Type 'daljinski'`,
 					value,
 					onChange: (e, changeEvent) => this.onChange(e, changeEvent),
 					autoFocus: true
@@ -148,7 +174,7 @@ export class AutoSuggestQuestions extends React.Component<{
 		const matches = AutosuggestHighlightMatch(suggestion.title, params.query);
 		const parts = AutosuggestHighlightParse(suggestion.title, matches);
 		return (
-			<span style={{ textAlign: 'left'}}>
+			<span style={{ textAlign: 'left' }}>
 				{parts.map((part, index) => {
 					const className = part.highlight ? 'react-autosuggest__suggestion-match' : undefined;
 					return (
@@ -160,7 +186,6 @@ export class AutoSuggestQuestions extends React.Component<{
 			</span>
 		);
 	}
-
 
 	protected renderSectionTitle(section: ICategoryShort): JSX.Element {
 		const { parentCategoryUp, categoryParentTitle, categoryTitle } = section;
@@ -203,14 +228,14 @@ export class AutoSuggestQuestions extends React.Component<{
 	//   );
 
 
-	protected renderSuggestionsContainer({ containerProps, children, query }:
-		Autosuggest.RenderSuggestionsContainerParams): JSX.Element {
-		return (
-			<div {...containerProps}>
-				<span>{children}</span>
-			</div>
-		);
-	}
+	// protected renderSuggestionsContainer({ containerProps, children, query }:
+	// 	Autosuggest.RenderSuggestionsContainerParams): JSX.Element {
+	// 	return (
+	// 		<div {...containerProps}>
+	// 			<span>{children}</span>
+	// 		</div>
+	// 	);
+	// }
 	// endregion region Event handlers
 
 	protected onChange(event: /*React.ChangeEvent<HTMLInputElement>*/ React.FormEvent<any>, { newValue, method }: Autosuggest.ChangeEvent): void {
@@ -224,25 +249,44 @@ export class AutoSuggestQuestions extends React.Component<{
 	// }
 
 	protected async onSuggestionsFetchRequested({ value }: any): Promise<void> {
+		return /*await*/ this.debouncedLoadSuggestions(value);
+
+	}
+
+	private anyWord = (valueWordRegex: RegExp[], questionWords: string[]): boolean => {
+		for (let valWordRegex of valueWordRegex)
+			for (let questionWord of questionWords)
+				if (valWordRegex.test(questionWord))
+					return true;
+		return false;
+	}
+	// endregion region Helper methods
+	protected async getSuggestions(value: string): Promise<IQuestionRowShort[]> {
+
+		const escapedValue = escapeRegexCharacters(value.trim());
+		if (escapedValue === '') {
+			return [];
+		}
+
 		if (!this.dbp || value.length < 2)
-			return;
+			return [];
 
 		const tx = this.dbp!.transaction(['Categories', 'Questions'], 'readonly');
 		const index = tx.objectStore('Questions').index('words_idx');
 		const questionRows: IQuestionRow[] = [];
-		//const mapParentCategoryTitle = new Map<string, string>();
-
 		try {
-			console.time();
+			
 			//const search = encodeURIComponent(value.trim().replaceAll('?', ''));
-			const searchWords = value.toLowerCase().replaceAll('?', '').split(' ').map((s:string) => s.trim());
+			const searchWords = value.toLowerCase().replaceAll('?', '').split(' ').map((s: string) => s.trim());
+			// TODO  osim questions, pretrazuj i Categories title
 			let i = 0;
 			while (i < searchWords.length) {
 				// let cursor: IDBPCursorWithValue<unknown, string[], "Questions", "words_idx", "readwrite">|null = 
 				// 		await index.openCursor(word);
 				// while (cursor) {
 				// 	console.log(cursor.key, cursor.value);
-				for await (const cursor of index.iterate(IDBKeyRange.bound(searchWords[i], `${searchWords[i]}zzzzz`, true, true))) {
+				const w = searchWords[i];
+				for await (const cursor of index.iterate(IDBKeyRange.bound(w, `${w}zzzzz`, true, true))) {
 					const q: IQuestion = { ...cursor!.value, id: parseInt(cursor!.primaryKey.toString()) }
 					const row: IQuestionRow = {
 						id: q.id!,
@@ -265,17 +309,17 @@ export class AutoSuggestQuestions extends React.Component<{
 		};
 
 		if (questionRows.length === 0)
-			return;
+			return [];
 
 		try {
 			const categoriesStore = tx.objectStore('Categories')
-			const mapParentCategoryTitle = new Map<string, string>();
+			const mapParentCategory = new Map<string, { title: string, tags: string[] }>();
 			let i = 0;
-			while ( i < questionRows.length) {
+			while (i < questionRows.length) {
 				const row = questionRows[i];
-				if (!mapParentCategoryTitle.has(row.parentCategory)) {
+				if (!mapParentCategory.has(row.parentCategory)) {
 					const category = await categoriesStore.get(row.parentCategory);
-					mapParentCategoryTitle.set(category.id, category.title)
+					mapParentCategory.set(category.id, { title: category.title, tags: { ...category.tags } })
 				}
 				i++;
 			}
@@ -284,7 +328,7 @@ export class AutoSuggestQuestions extends React.Component<{
 			i = 0;
 			while (i < questionRows.length) {
 				const row = questionRows[i];
-				row.categoryTitle = mapParentCategoryTitle.get(row.categoryId)!;
+				row.categoryTitle = mapParentCategory.get(row.categoryId)!.title;
 				if (!map.has(row.categoryId)) {
 					map.set(row.categoryId, [row]);
 				}
@@ -314,7 +358,7 @@ export class AutoSuggestQuestions extends React.Component<{
 					console.log(row);
 					const { id, title, categoryId, categoryTitle, parentCategory, parentCategoryUp } = row;
 					let categoryParentTitle = '';
-
+					// TODO probaj da ne radis categoriesStore.get kad ne treba
 					let category = await categoriesStore.get(categoryId);
 					while (category.parentCategory !== 'null') {
 						category = await categoriesStore.get(category.parentCategory);
@@ -327,6 +371,7 @@ export class AutoSuggestQuestions extends React.Component<{
 						questionRowShort.categoryParentTitle = categoryParentTitle;
 						questionRowShort.parentCategoryUp = parentCategoryUp;
 					}
+
 					questionRowShort.questions.push({ id, title, parentCategory } as IQuestionShort);
 					i++;
 				};
@@ -334,29 +379,12 @@ export class AutoSuggestQuestions extends React.Component<{
 			}
 			await tx.done;
 			console.log(data)
-			this.setState({ suggestions: data, noSuggestions: data.length === 0 })
+			return data;
+			// this.setState({ suggestions: data, noSuggestions: data.length === 0 })
 		}
 		catch (error: any) {
 			console.log(error)
 		};
-
-		console.timeEnd();
-	}
-
-	private anyWord = (valueWordRegex: RegExp[], questionWords: string[]): boolean => {
-		for (let valWordRegex of valueWordRegex)
-			for (let questionWord of questionWords)
-				if (valWordRegex.test(questionWord))
-					return true;
-		return false;
-	}
-	// endregion region Helper methods
-	protected getSuggestions(value: string): ICategoryShort[] {
-		const escapedValue = escapeRegexCharacters(value.trim());
-
-		if (escapedValue === '') {
-			return [];
-		}
 		return [];
 	}
 

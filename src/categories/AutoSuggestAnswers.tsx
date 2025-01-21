@@ -67,7 +67,6 @@ export class AutoSuggestAnswers extends React.Component<{
 	isMob: boolean;
 	dbp: IDBPDatabase;
 	alreadyAssigned: number[];
-
 	debouncedLoadSuggestions: (value: string) => void;
 	//inputAutosuggest: React.RefObject<HTMLInputElement>;
 	// endregion region Constructor
@@ -291,7 +290,8 @@ export class AutoSuggestAnswers extends React.Component<{
 				// while (cursor) {
 				// 	console.log(cursor.key, cursor.value);
 				// for await (const cursor of index.iterate(searchWords[i])) {
-				for await (const cursor of index.iterate(IDBKeyRange.bound(searchWords[i], `${searchWords[i]}zzzzz`, true, true))) {
+				const w = searchWords[i];
+				for await (const cursor of index.iterate(IDBKeyRange.bound(w, `${w}zzzzz`, true, true))) {
 					const q: IAnswer = { ...cursor!.value, id: parseInt(cursor!.primaryKey.toString()) }
 					if (this.props.alreadyAssigned.includes(q.id!)) {
 						continue;

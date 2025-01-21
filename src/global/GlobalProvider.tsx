@@ -269,16 +269,16 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
     : Promise<void> => {
     const { id, title, tags, categories, questions } = categoryData;
 
-    if (id === 'SAFARI') {
-      const q = {
-        title: '',
-        source: 0,
-        status: 0,
-      }
-      for (var i = 999; i > 100; i--) {
-        questions!.push({ ...q, title: 'This is demo question related to test of infinite scroll, when Group has a few hundreds of questions _ ' + i });
-      }
-    }
+    // if (id === 'SAFARI') {
+    //   const q = {
+    //     title: '',
+    //     source: 0,
+    //     status: 0,
+    //   }
+    //   for (var i = 999; i > 100; i--) {
+    //     questions!.push({ ...q, title: 'This is demo question related to test of infinite scroll, when Group has a few hundreds of questions ' + i });
+    //   }
+    // }
 
     const cat: ICategory = {
       id,
