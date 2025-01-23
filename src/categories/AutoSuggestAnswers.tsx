@@ -291,7 +291,7 @@ export class AutoSuggestAnswers extends React.Component<{
 				// 	console.log(cursor.key, cursor.value);
 				// for await (const cursor of index.iterate(searchWords[i])) {
 				const w = searchWords[i];
-				for await (const cursor of index.iterate(IDBKeyRange.bound(w, `${w}zzzzz`, true, true))) {
+				for await (const cursor of index.iterate(IDBKeyRange.bound(w, `${w}zzzzz`, false, true))) {
 					const q: IAnswer = { ...cursor!.value, id: parseInt(cursor!.primaryKey.toString()) }
 					if (this.props.alreadyAssigned.includes(q.id!)) {
 						continue;

@@ -5,7 +5,8 @@ import {
   ICategoryData, IQuestionData,
   IGroupData, IAnswerData,
   IRoleData, IUserData,
-  IRegisterUser
+  IRegisterUser,
+  ICat
 } from 'global/types'
 
 import { globalReducer, initialGlobalState } from "global/globalReducer";
@@ -269,16 +270,16 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
     : Promise<void> => {
     const { id, title, tags, categories, questions } = categoryData;
 
-    // if (id === 'SAFARI') {
-    //   const q = {
-    //     title: '',
-    //     source: 0,
-    //     status: 0,
-    //   }
-    //   for (var i = 999; i > 100; i--) {
-    //     questions!.push({ ...q, title: 'This is demo question related to test of infinite scroll, when Group has a few hundreds of questions ' + i });
-    //   }
-    // }
+    if (id === 'SAFARI') {
+      const q = {
+        title: '',
+        source: 0,
+        status: 0,
+      }
+      for (var i = 999; i > 100; i--) {
+        questions!.push({ ...q, title: 'This is demo question related to test of infinite scroll, when Group has a few hundreds of questions ' + i });
+      }
+    }
 
     const cat: ICategory = {
       id,
@@ -286,7 +287,7 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
       hasSubCategories: categories ? categories.length > 0 : false,
       title,
       level,
-      tags: tags??[],
+      tags: tags ?? [],
       questions: [],
       numOfQuestions: questions?.length || 0,
       created: {
@@ -314,7 +315,7 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
           assignedAnswers: [],
           numOfAssignedAnswers: 0,
           level: 2,
-          tags: q.tags??[]
+          tags: q.tags ?? []
         }
         await dbp.add('Questions', question);
         i++;
@@ -393,6 +394,46 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
     //})
   }
 
+  const loadAllCategories = useCallback(async (dbp: IDBPDatabase): Promise<any> => {
+    try {
+      const tx = dbp.transaction('Categories');
+      const allCategories: Map<string, ICat> = new Map<string, ICat>();
+      for await (const cursor of tx.store.iterate()) {
+        let category: ICategory = cursor.value;
+        const { id, parentCategory, title, tags, hasSubCategories } = category;
+        const cat: ICat = {
+          id,
+          parentCategory,
+          title,
+          titlesUpTheTree: '',
+          tags,
+          hasSubCategories
+        }
+        allCategories.set(id, cat);
+      }
+      await tx.done;
+
+      let values = allCategories.values();
+      while (true) {
+				let result = values.next();
+				if (result.done) break;
+        let cat = result.value as unknown as ICat;
+        let titlesUpTheTree = cat.id;
+        let cat2 = cat;
+        while (cat2.parentCategory !== 'null') {
+          cat2 = allCategories.get(cat2.parentCategory)!;
+          titlesUpTheTree = cat2!.id + '/' + titlesUpTheTree;
+        }
+        cat.titlesUpTheTree = titlesUpTheTree;
+      }
+      dispatch({ type: GlobalActionTypes.SET_ALL_CATEGORIES, payload: { allCategories } });
+    }
+    catch (error: any) {
+      console.log(error)
+      dispatch({ type: GlobalActionTypes.SET_ERROR, payload: { error } });
+    }
+  }, [dispatch]);
+
   const OpenDB = useCallback(async (): Promise<any> => {
     try {
       let initializeData = false;
@@ -448,6 +489,7 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
         const regUser: IRegisterUser = { ...userData, level: 1, confirmed: false }
         await registerUser(regUser, true, dbp);
       }
+      loadAllCategories(dbp);
       await dispatch({ type: GlobalActionTypes.SET_DBP, payload: { dbp } });
       // else {
       //   signInUser({nickName: 'Boss', password: 'Boss12345'})
@@ -490,7 +532,7 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
 
   return (
     <GlobalContext.Provider value={{
-      globalState, OpenDB, registerUser, signInUser, getUser, health
+      globalState, OpenDB, loadAllCategories, registerUser, signInUser, getUser, health
     }}>
       <GlobalDispatchContext.Provider value={dispatch}>
         {children}

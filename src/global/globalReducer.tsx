@@ -1,6 +1,6 @@
 
 import { Reducer } from 'react'
-import { IGlobalState, GlobalActionTypes, GlobalActions, ROLES, IAuthUser, IGlobalStateFromLocalStorage } from "./types";
+import { IGlobalState, GlobalActionTypes, GlobalActions, ROLES, IAuthUser, IGlobalStateFromLocalStorage, ICat } from "./types";
 
 const initialAuthUser: IAuthUser = {
     nickName: '',
@@ -23,6 +23,7 @@ const initGlobalState: IGlobalState = {
     variant: 'dark',
     bg: 'dark',
     loading: false,
+    allCategories: new Map<string, ICat>
 }
 
 let globalStateFromLocalStorage: IGlobalStateFromLocalStorage | undefined;
@@ -178,6 +179,15 @@ const reducer: Reducer<IGlobalState, GlobalActions> = (state, action) => {
 
         case GlobalActionTypes.DARK_MODE:
             return { ...state, isDarkMode: true, variant: 'dark', bg: 'dark' };
+
+        case GlobalActionTypes.SET_ALL_CATEGORIES: {
+            const { allCategories } = action.payload;
+            console.log("SET_CATEGORY_TAGS", allCategories)
+            return {
+                ...state,
+                allCategories
+            };
+        }
 
         default: {
             throw Error('Unknown action: ' + str);

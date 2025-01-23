@@ -90,8 +90,9 @@ export interface ICategory extends IRecord {
 	numOfQuestions: number;
 	hasMore?: boolean;
 	isExpanded?: boolean;
-	hasSubCategories: boolean
+	hasSubCategories: boolean,
 }
+
 
 export interface ICategoryInfo {
 	id: string,
@@ -115,13 +116,13 @@ export interface ICatInfo {
 }
 
 export interface ICategoriesState {
-	mode: string | null,
-	categories: ICategory[],
-	currentCategoryExpanded: string,
+	mode: string | null;
+	categories: ICategory[];
+	currentCategoryExpanded: string;
 	lastCategoryExpanded: string | null;
 	categoryId_questionId_done: string | null;
 	parentNodes: IParentCategories;
-	loading: boolean,
+	loading: boolean;
 	questionLoading: boolean,
 	error?: Error;
 }
@@ -202,6 +203,8 @@ export enum ActionTypes {
 	CLOSE_CATEGORY_FORM = 'CLOSE_CATEGORY_FORM',
 	CANCEL_CATEGORY_FORM = 'CANCEL_CATEGORY_FORM',
 	SET_EXPANDED = 'SET_EXPANDED',
+
+	SET_ALL_CATEGORIES = "SET_ALL_CATEGORIES",
 	SET_PARENT_CATEGORIES = "SET_PARENT_CATEGORIES",
 
 	// questions

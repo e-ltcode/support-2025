@@ -7,7 +7,7 @@ import {
 } from 'categories/types';
 
 import { initialCategoriesState, CategoriesReducer } from 'categories/CategoriesReducer';
-import { IDateAndBy } from 'global/types';
+import { IDateAndBy, ICat } from 'global/types';
 import { IAnswer } from 'groups/types';
 
 const CategoriesContext = createContext<ICategoriesContext>({} as any);
@@ -240,9 +240,9 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
         modified: {
           date: new Date(),
           by: {
-              nickName: globalState.authUser.nickName
+            nickName: globalState.authUser.nickName
           }
-      }
+        }
       }
       updateCategory(obj, false);
       console.log("Category Tag successfully deleted");
@@ -252,7 +252,7 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
       dispatch({ type: ActionTypes.SET_ERROR, payload: { error } });
     }
   };
-  
+
 
   const expandCategory = async (category: ICategory, expanding: boolean) => {
     const { id, numOfQuestions, questions } = category;
@@ -492,7 +492,7 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
 
       const assignedAnswers = question.questionAnswers.filter((qa: IAssignedAnswer) => qa.answer.id !== answerId);
       const obj: IQuestion = {
-        ...question,        
+        ...question,
         assignedAnswers,
         numOfAssignedAnswers: assignedAnswers.length
       }
@@ -582,8 +582,7 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
   };
 
   const contextValue: ICategoriesContext = {
-    state,
-    reloadCategoryNode,
+    state, reloadCategoryNode,
     getSubCategories, getSubCats, createCategory, viewCategory, editCategory, updateCategory, deleteCategory, deleteCategoryTag,
     expandCategory, loadCategoryQuestions, createQuestion, viewQuestion, editQuestion, updateQuestion, deleteQuestion,
     assignQuestionAnswer, unAssignQuestionAnswer, createAnswer

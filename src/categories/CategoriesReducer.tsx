@@ -337,7 +337,7 @@ const reducer = (state: ICategoriesState, action: CategoriesActions) => {
       return {
         ...state,
         categories: state.categories.map(c => c.id === id
-          ? { ...c, questions: [question, ...c.questions], numOfQuestions: c.numOfQuestions+1, inAdding: true }
+          ? { ...c, questions: [question, ...c.questions], numOfQuestions: c.numOfQuestions + 1, inAdding: true }
           : { ...c, inAdding: false }),
         mode: Mode.AddingQuestion
       };

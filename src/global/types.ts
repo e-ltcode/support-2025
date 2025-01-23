@@ -40,25 +40,36 @@ export interface IAuthUser {
 // 	['VIEWER', 'VIEWER']
 // ])
 
-export enum  ROLES  {
+export enum ROLES {
 	OWNER = 'OWNER',
 	ADMIN = 'ADMIN',
 	EDITOR = 'EDITOR',
 	VIEWER = 'VIEWER'
 }
 
+export interface ICat {
+	id: string;
+	parentCategory: string; // | null is a valid value so you can store data with null value in indexeddb 
+	// but it is not a valid key
+	title: string;
+	titlesUpTheTree: string; // traverse up the tree, until root
+	tags: string[];
+	hasSubCategories: boolean
+}
+
 export interface IGlobalState {
-		isAuthenticated: boolean | null;
-		dbp: IDBPDatabase | null;
-		everLoggedIn: boolean;
-		authUser: IAuthUser;
-		canEdit: boolean,
-		isOwner: boolean,
-		isDarkMode: boolean;
-		variant: string,
-		bg: string,
+	isAuthenticated: boolean | null;
+	dbp: IDBPDatabase | null;
+	everLoggedIn: boolean;
+	authUser: IAuthUser;
+	canEdit: boolean,
+	isOwner: boolean,
+	isDarkMode: boolean;
+	variant: string,
+	bg: string,
 	loading: boolean;
 	error?: Error;
+	allCategories: Map<string, ICat>;
 }
 
 export interface IGlobalStateFromLocalStorage {
@@ -72,9 +83,10 @@ export interface IGlobalStateFromLocalStorage {
 export interface IGlobalContext {
 	globalState: IGlobalState;
 	getUser: (nickName: string) => Promise<any>;
-	registerUser: (regUser: IRegisterUser, isOwner: boolean, dbp: IDBPDatabase|null) => Promise<any>;
+	registerUser: (regUser: IRegisterUser, isOwner: boolean, dbp: IDBPDatabase | null) => Promise<any>;
 	signInUser: (loginUser: ILoginUser) => Promise<any>;
 	OpenDB: () => Promise<any>;
+	loadAllCategories: (dbp: IDBPDatabase) => void;
 	health: () => void;
 }
 
@@ -86,7 +98,8 @@ export enum GlobalActionTypes {
 	SET_ERROR = 'SET_ERROR',
 	DARK_MODE = "DARK_MODE",
 	LIGHT_MODE = "LIGHT_MODE",
-	SET_REGISTRATION_CONFIRMED = 'SET_REGISTRATION_CONFIRMED'
+	SET_REGISTRATION_CONFIRMED = 'SET_REGISTRATION_CONFIRMED',
+	SET_ALL_CATEGORIES = 'SET_ALL_CATEGORIES'
 }
 
 export interface ILoginUser {
@@ -105,7 +118,6 @@ export interface IRegisterUser {
 	level: number,
 	confirmed: boolean
 }
-
 
 export interface IJoinToWorkspace {
 	invitationId: string,
@@ -148,8 +160,11 @@ export type GlobalPayload = {
 
 	[GlobalActionTypes.DARK_MODE]: undefined;
 
+	[GlobalActionTypes.SET_REGISTRATION_CONFIRMED]: undefined;
 
-	[GlobalActionTypes.SET_REGISTRATION_CONFIRMED]: undefined
+	[GlobalActionTypes.SET_ALL_CATEGORIES]: {
+		allCategories: Map<string, ICat>
+	};
 };
 
 

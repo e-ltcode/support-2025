@@ -36,7 +36,7 @@ const SupportPage: React.FC = () => {
 		navigate(`/support-2025/categories/${categoryId}_${questionId.toString()}`)
 	}
 
-	const { dbp, canEdit, authUser, isDarkMode, variant, bg } = useGlobalState();
+	const { dbp, canEdit, authUser, isDarkMode, variant, bg, allCategories } = useGlobalState();
 
 	return (
 		<Container fluid>
@@ -48,7 +48,8 @@ const SupportPage: React.FC = () => {
 								dbp={dbp!}
 								tekst={tekst}
 								onSelectQuestion={onSelectQuestion}
-							/>	
+								allCategories={allCategories}
+							/>
 						</div>
 						<Button
 							variant={variant}
