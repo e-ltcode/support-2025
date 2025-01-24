@@ -7,22 +7,14 @@ import { isMobile } from 'react-device-detect'
 import { debounce, escapeRegexCharacters } from 'common/utilities'
 import './AutoSuggestQuestions.css'
 import { IDBPCursorWithValue, IDBPCursorWithValueIteratorValue, IDBPDatabase } from 'idb';
-import { IQuestion } from './types';
+import { IQuestion } from 'categories/types';
 import { ICat } from 'global/types';
 
-interface IQuestionShort {
-	id: number;
-	parentCategory: string;
-	title: string;
-}
-
-interface ICategoryShort {
-	id: string,
-	parentCategoryUp: string,
-	categoryParentTitle: string,
-	categoryTitle: string,
-	quests: IQuestionShort[]
-}
+// interface IQuestionShort {
+// 	id: number;
+// 	parentCategory: string;
+// 	title: string;
+// }
 
 interface IQuest {
 	id: number;
@@ -31,18 +23,16 @@ interface IQuest {
 	categoryTitle: string;
 }
 
-// interface IQuestionRow {
-// 	categoryId: string,
-// 	categoryTitle: string,
-// 	parentCategoryUp: string,
-// 	categoryParentTitle: string, // TODO ???
-// 	id: number,
-// 	parentCategory: string,
-// 	title: string,
-// 	tags?: string[] // to keep parantCategory tags
-// }
+interface ICatMy {
+	id: string,
+	parentCategoryUp: string,
+	categoryParentTitle: string,
+	categoryTitle: string,
+	quests: IQuest[]
+}
 
-interface IQuestionRowShort {
+
+interface ICatSection {
 	categoryId: string,
 	categoryTitle: string,
 	parentCategoryUp: string,
@@ -59,7 +49,7 @@ interface IQuestionRowShort {
 // autoFocus does the job
 //let inputAutosuggest = createRef<HTMLInputElement>();
 
-const QuestionAutosuggestMulti = Autosuggest as { new(): Autosuggest<IQuestionShort, ICategoryShort> };
+const QuestionAutosuggestMulti = Autosuggest as { new(): Autosuggest<IQuest, ICatMy> };
 
 export class AutoSuggestQuestions extends React.Component<{
 	dbp: IDBPDatabase,
@@ -157,7 +147,7 @@ export class AutoSuggestQuestions extends React.Component<{
 		</div>
 	}
 
-	protected async getSuggestions(value: string): Promise<IQuestionRowShort[]> {
+	protected async getSuggestions(value: string): Promise<ICatSection[]> {
 		const escapedValue = escapeRegexCharacters(value.trim());
 		if (escapedValue === '') {
 			return [];
@@ -165,16 +155,15 @@ export class AutoSuggestQuestions extends React.Component<{
 		if (!this.dbp || value.length < 2)
 			return [];
 
+		const searchWords = value.toLowerCase().replaceAll('?', '').split(' ').map((s: string) => s.trim());
+
 		const catQuests = new Map<string, IQuest[]>();
-		// const categoryQuestions = new Map<string, IQuestionRow[]>();
-		// const categoryQuestions = new Map<string, IQuest[]>();
 
 		const tx = this.dbp!.transaction(['Categories', 'Questions'], 'readonly');
 		const index = tx.objectStore('Questions').index('words_idx');
 		const questionRows: number[] = [];
 		try {
 			//const search = encodeURIComponent(value.trim().replaceAll('?', ''));
-			const searchWords = value.toLowerCase().replaceAll('?', '').split(' ').map((s: string) => s.trim());
 			// TODO  osim questions, pretrazuj i Categories title
 			let i = 0;
 			// 1) Find all questions that starts with one of the words
@@ -183,16 +172,6 @@ export class AutoSuggestQuestions extends React.Component<{
 				for await (const cursor of index.iterate(IDBKeyRange.bound(w, `${w}zzzzz`, false, true))) {
 					const q: IQuestion = { ...cursor!.value, id: parseInt(cursor!.primaryKey.toString()) }
 					const { id, parentCategory, title } = q;
-					// const row: IQuestionRow = {
-					// 	id: id!,
-					// 	categoryId: parentCategory,
-					// 	categoryTitle: '',
-					// 	categoryParentTitle: '',
-					// 	parentCategoryUp: '',
-					// 	title,
-					// 	parentCategory
-					// }
-					
 					if (!questionRows.includes(id!))
 						questionRows.push(id!);
 
@@ -209,12 +188,6 @@ export class AutoSuggestQuestions extends React.Component<{
 					else {
 						catQuests.get(parentCategory)!.push(quest);
 					}
-					// if (!categoryQuestions.has(row.categoryId)) {
-					// 	categoryQuestions.set(row.categoryId, [row]);
-					// }
-					// else {
-					// 	categoryQuestions.get(row.categoryId)!.push(row);
-					// }
 				}
 				i++;
 			}
@@ -229,57 +202,6 @@ export class AutoSuggestQuestions extends React.Component<{
 			return [];
 
 		try {
-			////////////////////////////////////////////////////////////
-			// 2) Create map question.parentCategory => {title and tags}
-			// const categoriesStore = tx.objectStore('Categories')
-			// const mapParentCategoryTags = new Map<string, ICategoryTags>();
-			// let i = 0;
-			// while (i < questionRows.length) {
-			// 	const row = questionRows[i];
-			// 	if (!mapParentCategoryTags.has(row.parentCategory)) {
-			// 		const category = await categoriesStore.get(row.parentCategory);
-			// 		const { title, tags } = category;
-			// 		// if (tags.length > 0) {
-			// 		mapParentCategoryTags.set(category.id, { title, tags: { ...tags } })
-			// 		// }
-			// 	}
-			// 	i++;
-			// }
-
-			////////////////////////////////////////////////////
-			// 3) Group questions by parentCategory
-			/*
-			const mapCategoryQuestions = new Map<string, IQuestionRow[]>();
-			let i = 0;
-			while (i < questionRows.length) {
-				const row = questionRows[i];
-				const catTags = this.categoryTags.get(row.categoryId);
-				const { title, tags } = catTags!;
-				row.categoryTitle = title;
-				row.tags = tags;
-				if (!mapCategoryQuestions.has(row.categoryId)) {
-					mapCategoryQuestions.set(row.categoryId, [row]);
-				}
-				else {
-					mapCategoryQuestions.get(row.categoryId)!.push(row);
-				}
-				i++
-			};
-			console.log('map', mapCategoryQuestions);
-			*/
-
-			////////////////////////////////////////////////////////////////
-			// 4) insert one question for each tag, add tag at the end of title
-			// let keys = mapParentCategory.keys();
-			// while (true) {
-			// 	let result = keys.next();
-			// 	if (result.done) break;
-			// 	const zzz = result.value as unknown as ICategoryTags;
-			// 	if (zzz.tags.length > 0 ) {
-			// 	const newQuestionRows: IQuestionRow[] = [];
-			// 	questionRows.forEach(questionRow => newQuestionRows.push(questionRow))
-			// 	}
-			// }
 
 			////////////////////////////////////////////////////////////
 			// map
@@ -287,59 +209,47 @@ export class AutoSuggestQuestions extends React.Component<{
 			// 1 = {'EDGE2' => IQuestionRow[3]}
 			// 2 = {'EDGE3' => IQuestionRow[4]}
 
-			// let valuesss = mapCategoryQuestions.values();
-			// let dataaa: IQuestionRowShort[] = [];
-			// while (true) {
-			// 	let result = valuesss.next();
-			// 	if (result.done) break;
-			// 	const rows = result.value as unknown as IQuestionRow[];
-			// }
-
 			////////////////////////////////////////////////////////////
-			// 5) Go up the category tree, up to the root
-			let values = catQuests.values();
-			let data: IQuestionRowShort[] = [];
-			while (true) {
-				let result = values.next();
-				if (result.done) break;
-				const quests = result.value as unknown as IQuest[];
-				const questionRowShort: IQuestionRowShort = {
-					categoryId: '',
-					categoryTitle: '',
-					categoryParentTitle: '',
-					parentCategoryUp: '',
+			// 
+			let catSections: ICatSection[] = [];
+			catQuests.forEach((quests, categoryId) => {
+				const cat = this.allCategories.get(categoryId);
+				const { title, titlesUpTheTree, tags } = cat!;
+				console.log(`${categoryId} = ${quests}`);
+				const catSection: ICatSection = {
+					categoryId,
+					categoryTitle: title,
+					categoryParentTitle: 'kuro',
+					parentCategoryUp: titlesUpTheTree!,
 					quests: []
 				};
-				let i = 0;
-				while (i < quests.length) {
-					const quest = quests[i];
-					console.log(quest);
-					const { id, title, parentCategory } = quest;
-					let categoryParentTitle = '';
-					// TODO probaj da ne radis categoriesStore.get kad ne treba
-					// let cat = await this.categoryTags.get(categoryId);
-					// while (cat!.parentCategory !== 'null') {
-					// 	cat = await this.categoryTags.get(cat!.parentCategory);
-					// 	categoryParentTitle += ' / ' + cat!.title;
-					// }
-					const cat = this.allCategories.get(parentCategory);
-
-					if (questionRowShort.categoryId === '') {
-						questionRowShort.categoryId = parentCategory;
-						questionRowShort.categoryTitle = cat!.title; //categoryTitle;
-						questionRowShort.categoryParentTitle = 'kuro'; //categoryParentTitle;
-						questionRowShort.parentCategoryUp = cat?.titlesUpTheTree!;
+				quests.forEach(quest => {
+					// console.log(quest);
+					if (tags.length > 0) {
+						let wordsIncludesTag = false;
+						searchWords.forEach(w => {
+							tags.forEach(tag => {
+								if (tag === w.toUpperCase()) {
+									wordsIncludesTag = true;
+									catSection.quests.push({ ...quest, title: quest.title + ' ' + tag });
+								}
+							})
+						})
+						if (!wordsIncludesTag) {
+							tags.forEach(tag => {
+								// console.log(quest);
+								catSection.quests.push({ ...quest, title: quest.title + ' ' + tag });
+							});
+						}
 					}
-
-					questionRowShort.quests.push(quest); //{ id, title, parentCategory } as IQuestionShort);
-					i++;
-				};
-				data.push(questionRowShort);
-			}
-			// await tx.done;
-			console.log(data)
-			return data;
-			// this.setState({ suggestions: data, noSuggestions: data.length === 0 })
+					else {
+						catSection.quests.push(quest);
+					}
+				});
+				catSections.push(catSection);
+				console.log(catSections)
+			});
+			return catSections;
 		}
 		catch (error: any) {
 			console.log(error)
@@ -355,8 +265,8 @@ export class AutoSuggestQuestions extends React.Component<{
 		});
 	};
 
-	protected onSuggestionSelected(event: React.FormEvent<any>, data: Autosuggest.SuggestionSelectedEventData<IQuestionShort>): void {
-		const question: IQuestionShort = data.suggestion;
+	protected onSuggestionSelected(event: React.FormEvent<any>, data: Autosuggest.SuggestionSelectedEventData<IQuest>): void {
+		const question: IQuest = data.suggestion;
 		// alert(`Selected question is ${question.questionId} (${question.text}).`);
 		this.props.onSelectQuestion(question.parentCategory, question.id);
 	}
@@ -369,7 +279,7 @@ export class AutoSuggestQuestions extends React.Component<{
 	*/
 
 	// TODO bac ovo u external css   style={{ textAlign: 'left'}}
-	protected renderSuggestion(suggestion: IQuestionShort, params: Autosuggest.RenderSuggestionParams): JSX.Element {
+	protected renderSuggestion(suggestion: IQuest, params: Autosuggest.RenderSuggestionParams): JSX.Element {
 		// const className = params.isHighlighted ? "highlighted" : undefined;
 		//return <span className={className}>{suggestion.name}</span>;
 		const matches = AutosuggestHighlightMatch(suggestion.title, params.query);
@@ -388,7 +298,7 @@ export class AutoSuggestQuestions extends React.Component<{
 		);
 	}
 
-	protected renderSectionTitle(section: ICategoryShort): JSX.Element {
+	protected renderSectionTitle(section: ICatMy): JSX.Element {
 		const { parentCategoryUp, categoryParentTitle, categoryTitle } = section;
 		// let str = (categoryParentTitle ? (categoryParentTitle + " / ") : "") + categoryTitle;
 		// if (parentCategoryUp)
@@ -461,11 +371,11 @@ export class AutoSuggestQuestions extends React.Component<{
 	////////////////////////////////////
 	// endregion region Helper methods
 
-	protected getSuggestionValue(suggestion: IQuestionShort) {
+	protected getSuggestionValue(suggestion: IQuest) {
 		return suggestion.title;
 	}
 
-	protected getSectionSuggestions(section: ICategoryShort) {
+	protected getSectionSuggestions(section: ICatMy) {
 		return section.quests;
 	}
 

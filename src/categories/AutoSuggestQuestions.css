@@ -125,9 +125,9 @@
 */
 
 .react-autosuggest__section-title {
-	font-size: 14px;
+	font-size: 12px;
 	font-weight: bold;
-	padding: 3px 10px;
+	padding: 1px 5px;
 }
 
 .light .react-autosuggest__section-container {

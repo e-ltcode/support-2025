@@ -57,6 +57,7 @@ export interface ICat {
 	hasSubCategories: boolean
 }
 
+
 export interface IGlobalState {
 	isAuthenticated: boolean | null;
 	dbp: IDBPDatabase | null;
@@ -173,8 +174,8 @@ export type GlobalPayload = {
 // Category -> questions
 export interface IQuestionData {
 	title: string;
-	source: number;
-	status: number;
+	source?: number;
+	status?: number;
 	tags?: string[]
 }
 
@@ -190,8 +191,8 @@ export interface ICategoryData {
 // Group -> answers
 export interface IAnswerData {
 	title: string;
-	source: number;
-	status: number;
+	source?: number;
+	status?: number;
 }
 
 export interface IGroupData {

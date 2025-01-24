@@ -1,200 +1,228 @@
 [
   {
-    "id": "GENERAL",
-    "title": "General",
+    "id": "PRODAJA",
+    "title": "Prodaja",
     "groups": [
       {
-        "id": "FOOD",
-        "title": "Food",
+        "id": "CHROME",
+        "title": "Chrome",
         "answers": [
           {
-            "title": "Make apple pie",
-            "source": 0,
-            "status": 0
-          }
-        ]
-      },
-      {
-        "id": "BEVERAGE",
-        "title": "Beverage",
-        "groups": [
-          {
-            "id": "UBUNTU",
-            "title": "Ubuntu",
-            "answers": [
-              {
-                "title": "Jump through the window",
-                "source": 0,
-                "status": 0
-              }
-            ]
-          },
-          {
-            "id": "REDHAT",
-            "title": "Red Hat",
-            "answers": [
-              {
-                "title": "Take off the hat",
-                "source": 0,
-                "status": 0
-              },
-              {
-                "title": "Jump through the window",
-                "source": 0,
-                "status": 0
-              }
-            ]
+            "title": "Yes, I play often"
           }
         ]
       }
     ]
   },
   {
-    "id": "OPSYS",
-    "title": "Operating Systems",
+    "id": "RACUNI",
+    "title": "Računi i naplata",
     "groups": [
       {
-        "id": "WINDOWS",
-        "title": "Windows",
+        "id": "CHROME",
+        "title": "Chrome",
         "answers": [
           {
-            "title": "On most Windows 10 installations, this path resolves to C:\\Users\\<Current-user>\\AppData\\Local\\Microsoft\\Edge\\Profile.",
-            "source": 0,
-            "status": 0
+            "title": "Naravno"
           }
         ]
-      },
-      {
-        "id": "LINUX",
-        "title": "Linux",
-        "groups": [
-          {
-            "id": "UBUNTU",
-            "title": "Ubuntu",
-            "answers": [
-              {
-                "title": "Jump through the window",
-                "source": 0,
-                "status": 0
-              }
-            ]
-          },
-          {
-            "id": "REDHAT",
-            "title": "Red Hat",
-            "answers": [
-              {
-                "title": "Take off the hat",
-                "source": 0,
-                "status": 0
-              },
-              {
-                "title": "Jump through the window",
-                "source": 0,
-                "status": 0
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "id": "APPLE",
-        "title": "Apple",
-        "answers": [
-          {
-            "title": "Apple Admin will help you",
-            "source": 0,
-            "status": 0
-          },
-          {
-            "title": "Uraaaaaaaaa reseno je",
-            "source": 0,
-            "status": 0
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "id": "TAXES",
-    "title": "Taxes",
-    "answers": [
-      {
-        "title": "In Microsoft Edge, select Extensions, located to the right of your browser address bar. Note: If you don't see Extensions to the right of your browser address bar, select Settings and more > Extensions. Select Open Microsoft Edge Add-ons. Find the extension you'd like to add and select Get.",
-        "source": 0,
-        "status": 0
-      },
-      {
-        "title": "We apply 20% for all the goods",
-        "source": 0,
-        "status": 0
       }
     ]
   },
   {
     "id": "TECHNICAL",
-    "title": "Technical",
+    "title": "Tehnička podrška",
     "groups": [
       {
-        "id": "DALJINSKI",
-        "title": "Daljinski",
-        "answers": [
+        "id": "INTERNET",
+        "title": "Internet",
+        "groups": [
           {
-            "title": "Resetuj ruter, resetuj TV, znas vec kako 'Tata Prase' popravlja kompjuter",
-            "source": 0,
-            "status": 0
+            "id": "CLOUD",
+            "title": "Cloud",
+            "answers": []
           },
           {
-            "title": "Zameni baterije i probaj ponovo",
-            "source": 0,
-            "status": 0
+            "id": "DOMAIN",
+            "title": "Domain",
+            "answers": [
+              { "title": "Pronađite pravila za naziv domena" },
+              { "title": "Slobodno registruje internacionalni domen (.com, .net, .org, .info…)?" },
+              { "title": "Moguća je rezervacija domena pre uplate" },
+              { "title": "Prilikom registracije domena omogućavamo uslugu DNS parking domena" },
+              { "title": "Ako hoćeju mogu da postanu reseller domena, ako nećejo, nemorajo" },
+              { "title": "Samo pravna lica mogu da registruju .СРБ domen, i još poneko" },
+              { "title": "Sve Sava je koristio email na svom ćiriličnom domenu" }
+            ]
           },
           {
-            "title": "Baterije iscurela",
-            "source": 0,
-            "status": 0
-          },
-
-          {
-            "title": "Idi do najblize SBB poslovnice (ne standa), i oni ce ti dati novi",
-            "source": 0,
-            "status": 0
-          },
-          {
-            "title": "Evo ti lista poslovnica: https ://sbb.rs/podrska/kontakt/prodajna-mesta/",
-            "source": 0,
-            "status": 0
-          },
-          {
-            "title": "Resetuj ruter, resetuj TV, znas vec kako 'Tata Prase' popravlja kompjuter",
-            "source": 0,
-            "status": 0
-          }          
+            "id": "WEB",
+            "title": "Web hosting",
+            "answers": []
+          }
         ]
       },
       {
-        "id": "ROUTER",
-        "title": "Router",
+        "id": "TV",
+        "title": "Televizija",
+        "groups": [
+          {
+            "id": "INSTALATION",
+            "title": "Instalacija",
+            "answers": [
+              { "title": "Poveži se nekako na EON Smart Box?" },
+              { "title": "Preimenuj nekako EON Smart Box?" },
+              { "title": "Nekako Upari EON daljinski upravljač i EON" },
+              { "title": "Somehow Poveži digitalni prijemnik D3mini Smart Box?" }
+            ]
+          },
+          {
+            "id": "USAGE",
+            "title": "Korišćenje",
+            "answers": [
+              { "title": "Nateraj EON smart box-a da reaguje" },
+              { "title": "Podesi poziciju ekrana na EON smart box-ukomande" },
+              { "title": "Podesi promena jezika titla na EON smart box-u" },
+              { "title": "Podesi zvuk na EON smart box-u" },
+              { "title": "Promeni baterije" },
+              { "title": "Idi u poslvnicu, dobićeš novi" },
+              { "title": "Evo liste poslovnica (ne standova), 'Novi Merkator', 'Ušće'" },
+              { "title": "Restartuj TV, router, D3 mini, kao što Tata prase radi" }            ]
+          },
+          {
+            "id": "INFO",
+            "title": "Informacije o kanalima",
+            "answers": [
+              { "title": "Programski vodič i pregled TV kanala na EON smart boksu, možeš preko daljinskog" },
+              { "title": "TV unazad koristiš nekako na EON smart box-u" },
+              { "title": "Roditeljskua kontrol možeš ovako preko menija ..."},
+              { "title": "Blokiram kanal, snađi se nekako"},
+              { "title": "Koristi roditeljsku kontrolu nekako, plači malo"}
+            ]
+          },
+          {
+            "id": "VIDEO",
+            "title": "Video klub",
+            "answers": [
+              { "title": "Napravi liste omiljenih TV sadržaja i kanala na EON Smart Boxu" },
+              { "title": "Glasovna pretraga filmova, kanala i sadržaja EON daljinskim upravljačem" },
+              { "title": "Gledaj Pickbox" }
+            ]
+          },
+          {
+            "id": "TV-UNAZAD",
+            "title": "TV Unazad",
+            "answers": [
+              { "title": "Okreni se unayd i gledaj" }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "USLUGE",
+        "title": "Ostale usluge",
         "answers": [
           {
-            "title": "Resetuj ruter, resetuj TV, znas vec kako 'Tata Prase' popravlja kompjuter",
-            "source": 0,
-            "status": 0
+            "title": "Does you play often?"
           }
+        ]
+      },
+      {
+        "id": "WANTED",
+        "title": "Najtraženiji odgovori",
+        "answers": [
+          { "title": "Promeni ime i lozinku svoje WiFi mreže Cisco EPC" },
+          { "title": "Skoči kroz prozor" },
+          { "title": "Plači" }
         ]
       }
     ]
   },
   {
-    "id": "BUGS",
-    "title": "Bugs"
-  },
-  {
-    "id": "FEATURES",
-    "title": "Features"
-  },
-  {
-    "id": "OTHER",
-    "title": "Other"
+    "id": "INFO",
+    "title": "Opšte informacije",
+    "groups": [
+      {
+        "id": "CHROME",
+        "title": "Chrome",
+        "groups": [
+          {
+            "id": "INTERNET",
+            "title": "Internet",
+            "groups": [
+              {
+                "id": "DOMAIN",
+                "title": "Domain",
+                "answers": []
+              },
+              {
+                "id": "WEB-HOSTING",
+                "title": "Web hosting",
+                "answers": []
+              },
+              {
+                "id": "CLAUD-HOSTING",
+                "title": "Claud hosting",
+                "answers": []
+              }
+            ]
+          },
+          {
+            "id": "TV",
+            "title": "Televizija",
+            "groups": [
+              {
+                "id": "INSTALATION",
+                "title": "Instalacija",
+                "answers": []
+              },
+              {
+                "id": "USAGE",
+                "title": "Korišćenje",
+                "answers": []
+              },
+              {
+                "id": "INFO",
+                "title": "Informacije o kanalima",
+                "answers": []
+              },
+              {
+                "id": "VIDEO",
+                "title": "Video klub",
+                "answers": []
+              },
+              {
+                "id": "TV-UNAZAD",
+                "title": "TV Unazad",
+                "answers": []
+              }
+            ]
+          },
+          {
+            "id": "USLUGE",
+            "title": "Ostale usluge",
+            "answers": [
+              {
+                "title": "Does you play often?"
+              }
+            ]
+          },
+          {
+            "id": "TV",
+            "title": "Internet",
+            "answers": [
+              {
+                "title": "Does you play often?"
+              }
+            ]
+          }
+        ],
+        "answers": [
+          {
+            "title": "Does you play often?"
+          }
+        ]
+      }
+    ]
   }
 ]

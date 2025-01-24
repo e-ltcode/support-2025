@@ -1,142 +1,228 @@
 [
   {
-    "id": "EXT",
-    "title": "Chrome Extensions",
+    "id": "PRODAJA",
+    "title": "Prodaja",
     "categories": [
       {
         "id": "CHROME",
         "title": "Chrome",
         "questions": [
-          
-        ]
-      },
-      {
-        "id": "EDGE",
-        "title": "Edge",
-        "categories": [
           {
-            "id": "EDGE2",
-            "title": "Edge2",
-            "questions": [
-              {
-                "title": "Does Microsoft Edge support extensions?",
-                "source": 0,
-                "status": 0
-              },
-              {
-                "title": "What file type are Microsoft Edge extensions?",
-                "source": 0,
-                "status": 0
-              },
-              {
-                "title": "Where is Edge extension data stored?",
-                "source": 0,
-                "status": 0
-              },
-              {
-                "title": "Is Microsoft Edge extension safe?",
-                "source": 0,
-                "status": 0
-              }
-            ]
-          },
-          {
-            "id": "EDGE3",
-            "title": "Edge3",
-            "questions": [
-              {
-                "title": "Can you install Extensions in Safari for Mac?",
-                "source": 0,
-                "status": 0
-              },
-              {
-                "title": "How do I install Chrome Extensions on Safari?",
-                "source": 0,
-                "status": 0
-              },
-              {
-                "title": "Does you play regurarly on safari?",
-                "source": 0,
-                "status": 0
-              },
-              {
-                "title": "Where is the Safari Extensions folder?",
-                "source": 0,
-                "status": 0
-              },
-              {
-                "title": "Does safari play?",
-                "source": 0,
-                "status": 0
-              }
-            ]
+            "title": "Does you play often?"
           }
         ]
-      },
+      }
+    ]
+  },
+  {
+    "id": "RACUNI",
+    "title": "Računi i naplata",
+    "categories": [
       {
-        "id": "SAFARI",
-        "title": "Safari",
+        "id": "CHROME",
+        "title": "Chrome",
         "questions": [
           {
-            "title": "FIKTIVNO?",
-            "source": 0,
-            "status": 0
+            "title": "Does you play often?"
           }
         ]
       }
     ]
-  },
-  {
-    "id": "FEAT",
-    "title": "Features",
-    "questions": [
-      {
-        "title": "Does you play often?",
-        "source": 0,
-        "status": 0
-      }
-    ]
-  },
-  {
-    "id": "BUGS",
-    "title": "Bugs"
   },
   {
     "id": "TECHNICAL",
-    "title": "Tehnical",
+    "title": "Tehnička podrška",
     "categories": [
+      {
+        "id": "INTERNET",
+        "title": "Internet",
+        "categories": [
           {
-            "id": "DALJINSKI",
-            "title": "Daljinski",
-            "tags": ["MTS", "SBB", "A1", "YETTEL"],
-            "questions": [
-              {
-                "title": "Pokvario mi se D3mini daljinski",
-                "source": 0,
-                "status": 0
-              },
-              {
-                "title": "Promenio sam baterije, ali i dalje ne radi",
-                "source": 0,
-                "status": 0
-              },
-              {
-                "title": "Dajte mi listu poslovnica (ne standova)",
-                "source": 0,
-                "status": 0
-              },
-              {
-                "title": "Nista ne radi",
-                "source": 0,
-                "status": 0
-              }
-            ]
-
+            "id": "CLOUD",
+            "title": "Cloud",
+            "questions": []
           },
           {
-            "id": "ROUTER",
-            "title": "Router"
+            "id": "DOMAIN",
+            "title": "Domain",
+            "questions": [
+              { "title": "Zaboravili ste pravila za naziv domena?" },
+              { "title": "Ko može da registruje internacionalni domen (.com, .net, .org, .info…)?" },
+              { "title": "Da li je moguća rezervacija domena pre uplate?" },
+              { "title": "Da li prilikom registracije domena omogućavate uslugu DNS parking domena?" },
+              { "title": "Želim da postanem reseller domena i cPanel hosting paketa" },
+              { "title": "Ko sve može da registruje .СРБ domen?" },
+              { "title": "Da li mogu da koristim email na svom ćiriličnom domenu?" }
+            ]
+          },
+          {
+            "id": "WEB",
+            "title": "Web hosting",
+            "questions": []
           }
         ]
+      },
+      {
+        "id": "TV",
+        "title": "Televizija",
+        "categories": [
+          {
+            "id": "INSTALATION",
+            "title": "Instalacija",
+            "questions": [
+              { "title": "Kako da povežem EON Smart Box?" },
+              { "title": "Kako da preimenujem EON Smart Box?" },
+              { "title": "Kako da uparim EON daljinski upravljač i EON" },
+              { "title": "Kako da povežem digitalni prijemnik D3miniSmart Box?" }
+            ]
+          },
+          {
+            "id": "USAGE",
+            "title": "Korišćenje",
+            "questions": [
+              { "title": "Daljinski od EON smart box-a ne reaguje" },
+              { "title": "Podešavanje pozicije ekrana na EON smart box-ukomande" },
+              { "title": "Podešavanje i promena jezika titla na EON smart box-u" },
+              { "title": "Podešavanje zvuka na EON smart box-u" },
+              { "title": "Pokvario mi se D3mini daljinski" },
+              { "title": "Promenio sam baterije, ali i dalje ne radi" },
+              { "title": "Dajte mi listu poslovnica (ne standova)" },
+              {  "title": "Ovo ništa ne radi" }            ]
+          },
+          {
+            "id": "INFO",
+            "title": "Informacije o kanalima",
+            "questions": [
+              { "title": "Programski vodič i pregled TV kanala na EON smart boksu" },
+              { "title": "Kako da koristim TV unazad na EON smart box-u?" },
+              { "title": "Roditeljska kontrola i promena PIN kod-a na EON smart boksu"},
+              { "title": "Kako da blokiram kanal?"},
+              { "title": "Kako da koristim roditeljsku kontrolu?"}
+            ]
+          },
+          {
+            "id": "VIDEO",
+            "title": "Video klub",
+            "questions": [
+              { "title": "Napravi liste omiljenih TV sadržaja i kanala na EON Smart Boxu" },
+              { "title": "Glasovna pretraga filmova, kanala i sadržaja EON daljinskim upravljačem" },
+              { "title": "Gledaj Pickbox" }
+            ]
+          },
+          {
+            "id": "TV-UNAZAD",
+            "title": "TV Unazad",
+            "questions": [
+              { "title": "Kako da koristim TV unazad na EON smart box-u?" }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "USLUGE",
+        "title": "Ostale usluge",
+        "questions": [
+          {
+            "title": "Does you play often?"
+          }
+        ]
+      },
+      {
+        "id": "WANTED",
+        "title": "Najtraženije teme",
+        "questions": [
+          { "title": "Promeni ime i lozinku svoje WiFi mreže Cisco EPC" },
+          { "title": "Kako da podnesem zahtev za prenos broja u SBB mrežu?" },
+          { "title": "xxxxx" }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "INFO",
+    "title": "Opšte informacije",
+    "categories": [
+      {
+        "id": "CHROME",
+        "title": "Chrome",
+        "categories": [
+          {
+            "id": "INTERNET",
+            "title": "Internet",
+            "categories": [
+              {
+                "id": "DOMAIN",
+                "title": "Domain",
+                "questions": []
+              },
+              {
+                "id": "WEB-HOSTING",
+                "title": "Web hosting",
+                "questions": []
+              },
+              {
+                "id": "CLAUD-HOSTING",
+                "title": "Claud hosting",
+                "questions": []
+              }
+            ]
+          },
+          {
+            "id": "TV",
+            "title": "Televizija",
+            "categories": [
+              {
+                "id": "INSTALATION",
+                "title": "Instalacija",
+                "questions": []
+              },
+              {
+                "id": "USAGE",
+                "title": "Korišćenje",
+                "questions": []
+              },
+              {
+                "id": "INFO",
+                "title": "Informacije o kanalima",
+                "questions": []
+              },
+              {
+                "id": "VIDEO",
+                "title": "Video klub",
+                "questions": []
+              },
+              {
+                "id": "TV-UNAZAD",
+                "title": "TV Unazad",
+                "questions": []
+              }
+            ]
+          },
+          {
+            "id": "USLUGE",
+            "title": "Ostale usluge",
+            "questions": [
+              {
+                "title": "Does you play often?"
+              }
+            ]
+          },
+          {
+            "id": "TV",
+            "title": "Internet",
+            "questions": [
+              {
+                "title": "Does you play often?"
+              }
+            ]
+          }
+        ],
+        "questions": [
+          {
+            "title": "Does you play often?"
+          }
+        ]
+      }
+    ]
   }
 ]

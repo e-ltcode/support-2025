@@ -11,7 +11,7 @@ import {
 
 import { globalReducer, initialGlobalState } from "global/globalReducer";
 
-import { ICategory, IQuestion } from "categories/types";
+import { ICategory, IQuestion, KINDS } from "categories/types";
 import { IGroup, IAnswer } from "groups/types";
 import { IRole, IUser } from 'roles/types';
 
@@ -231,6 +231,7 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
       let i = 0;
       while (i < answers.length) {
         const a: IAnswerData = answers[i];
+        const { title, source, status } = a;
         // TODO remove spec chars 
         // const escapedValue = escapeRegexCharacters(a.title.trim());
         // if (escapedValue === '') {
@@ -238,10 +239,10 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
         const words: string[] = a.title.toLowerCase().replaceAll('?', '').split(' ').map((s: string) => s.trim());
         const answer: IAnswer = {
           parentGroup: g.id,
-          title: a.title,
+          title,
           words: words.filter(w => w.length > 1),
-          source: 0,
-          status: 0,
+          source: source??0,
+          status: status??0,
           level: 2
         }
         await dbp.add('Answers', answer);
@@ -283,6 +284,7 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
 
     const cat: ICategory = {
       id,
+      kind: KINDS.UNKNOWN,
       parentCategory,
       hasSubCategories: categories ? categories.length > 0 : false,
       title,
@@ -304,14 +306,15 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
       let i = 0;
       while (i < questions.length) {
         const q: IQuestionData = questions[i];
+        const { title, source, status } = q;
         // TODO
         const words = q.title.toLowerCase().replaceAll('?', '').split(' ').map((s: string) => s.trim());
         const question: IQuestion = {
           parentCategory: cat.id,
-          title: q.title,
+          title,
           words: words.filter(w => w.length > 1),
-          source: 0,
-          status: 0,
+          source: source??0,
+          status: status??0,
           assignedAnswers: [],
           numOfAssignedAnswers: 0,
           level: 2,
@@ -422,7 +425,7 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
         let cat2 = cat;
         while (cat2.parentCategory !== 'null') {
           cat2 = allCategories.get(cat2.parentCategory)!;
-          titlesUpTheTree = cat2!.id + '/' + titlesUpTheTree;
+          titlesUpTheTree = cat2!.id + ' / ' + titlesUpTheTree;
         }
         cat.titlesUpTheTree = titlesUpTheTree;
       }
