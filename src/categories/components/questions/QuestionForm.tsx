@@ -127,7 +127,6 @@ const QuestionForm = ({ mode, question, submitForm, children, showCloseButton, c
                 ) : null}
               </Form.Text>
             </Form.Group>
-
           </div>
         </Stack>
 

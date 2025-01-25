@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import * as Yup from "yup";
 import { useFormik } from "formik";
-import { Form, CloseButton, Row, Stack } from "react-bootstrap";
+import { Form, CloseButton, Row, Stack, Dropdown } from "react-bootstrap";
 import { CreatedModifiedForm } from "common/CreateModifiedForm"
 import { FormButtons } from "common/FormButtons"
 import { FormMode, ActionTypes, ICategoryFormProps, ICategory, ITag } from "categories/types";
@@ -10,6 +10,8 @@ import { useCategoryDispatch } from "categories/CategoryProvider";
 import QuestionList from "categories/components/questions/QuestionList";
 import { useGlobalContext } from "global/GlobalProvider";
 import TagList from "categories/TagList";
+import { Select } from "common/components/Select";
+import { kindOptions } from "common/kindOptions ";
 
 const CategoryForm = ({ inLine, mode, category, submitForm, children }: ICategoryFormProps) => {
 
@@ -20,7 +22,7 @@ const CategoryForm = ({ inLine, mode, category, submitForm, children }: ICategor
   const editing = mode === FormMode.editing;
   const adding = mode === FormMode.adding;
 
-  const { id, title, tags, questions } = category;
+  const { id, title, tags, questions, kind } = category;
 
   if (!document.getElementById('div-details')) {
 
@@ -73,7 +75,8 @@ const CategoryForm = ({ inLine, mode, category, submitForm, children }: ICategor
     nameRef.current!.focus()
   }, [nameRef])
 
-
+  const isDisabled = false;
+  
   return (
     <div className="form-wrapper p-2" data-bs-theme={`${isDarkMode ? 'dark' : 'light'}`}>
       <CloseButton onClick={closeForm} className="float-end" />
@@ -87,6 +90,29 @@ const CategoryForm = ({ inLine, mode, category, submitForm, children }: ICategor
             <div className="px-0"><Form.Label>Tags:</Form.Label></div>
             <div className="px-1 border border-1 border-secondary rounded">
               <TagList categoryId={id} tags={tags.map(tag => ({ name: tag } as ITag))} />
+            </div>
+            <div className="ps-2"><Form.Label>Kind:</Form.Label></div>
+            <div className="px-1 border border-1 border-secondary rounded">
+              <Form.Group controlId="kind">
+                {/* <Form.Label>Kind</Form.Label> */}
+                <Select
+                  id="kind"
+                  name="kind"
+                  options={kindOptions}
+                  onChange={(e, value) => {
+                    formik.setFieldValue('kind', value)
+                    // .then(() => { if (editing) formik.submitForm() })
+                  }}
+                  value={formik.values.kind}
+                  disabled={isDisabled}
+                  classes="text-primary"
+                />
+                <Form.Text className="text-danger">
+                  {formik.touched.kind && formik.errors.kind ? (
+                    <div className="text-danger">{formik.errors.kind}</div>
+                  ) : null}
+                </Form.Text>
+              </Form.Group>
             </div>
           </Stack>
         </Form.Group>

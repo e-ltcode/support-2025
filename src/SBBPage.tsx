@@ -1,15 +1,16 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom' // useRouteMatch
 
 import { AutoSuggestQuestions } from 'categories/AutoSuggestQuestions';
 
-import { Button, Col, Container, Row } from 'react-bootstrap';
-import { useGlobalState } from 'global/GlobalProvider';
+import { Button, Col, Container, Form, Row } from 'react-bootstrap';
+import { useGlobalContext, useGlobalState } from 'global/GlobalProvider';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faQuestion } from '@fortawesome/free-solid-svg-icons'
 import CatList from 'global/Components/SelectCategory/CatList';
 import { ICategory } from 'categories/types';
+import { ICat } from 'global/types';
 
 type SupportParams = {
 	source: string;
@@ -38,27 +39,75 @@ const SBBPage: React.FC = () => {
 		navigate(`/support-2025/categories/${categoryId}_${questionId.toString()}`)
 	}
 
+	const { getCatsByKind } = useGlobalContext();
 	const { dbp, canEdit, authUser, isDarkMode, variant, bg, allCategories } = useGlobalState();
+
 
 	const setParentCategory = (cat: ICategory) => {
 		alert(cat.title)
 	}
 
+	const [catsOptions, setCatOptions] = useState<ICat[]>([]);
+	const [catsUsage, setCatUsage] = useState<ICat[]>([]);
+
+	useEffect(() => {
+		(async () => {
+			setCatOptions(await getCatsByKind(2));
+			setCatUsage(await getCatsByKind(3));
+		})()
+	}, [])
 
 	return (
-		<Container fluid>
+		<Container fluid className='text-secondary'>
+			<div>
+				<p>Dobrodošli! Ja sam SBBuddy i tu sam da Vam pomognem :)</p>
+				<p>U slučaju da se odnosi na ugovor i račune, pripremite ID korisnika. Podatak se nalazi na SBB računu</p>
+			</div>
+			<Form className='text-center border border-1 m-1'>
+				<div className='text-center'>
+					Izberi Opcije
+				</div>
+				<div className='text-center'>
+					{catsOptions.map(({ id, title }: ICat) => (
+						<Form.Check // prettier-ignore
+							id={id}
+							label={title}
+							name="opcije"
+							type='checkbox'
+							inline
+							className=''
+						/>
+					))}
+				</div>
+			</Form>
+			<Form className='text-center border border-1 m-1'>
+				<div className='text-center'>
+					Izaberite uslugu za koju Vam je potrebna podrška
+				</div>
+				<div className='text-center'>
+					{catsUsage.map(({ id, title }: ICat) => (
+						<Form.Check // prettier-ignore
+							id={id}
+							label={title}
+							name="usluge"
+							type='checkbox'
+							inline
+							className=''
+						/>
+					))}
+				</div>
+			</Form>
 
-
-
-			<Row className="my-1">
+			{/* align-items-center" */}
+			<Row className={`my-1 ${isDarkMode ? "dark" : ""}`}>
 				<Col xs={12} md={3} className='mb-1'>
-					<CatList
+					{/* <CatList
 						parentCategory={'null'}
 						level={1}
 						setParentCategory={setParentCategory}
-					/>
+					/> */}
 				</Col>
-				<Col xs={0} md={7}>
+				<Col xs={0} md={12}>
 					<div className="d-flex justify-content-start align-items-center">
 						<div className="w-75">
 							<AutoSuggestQuestions

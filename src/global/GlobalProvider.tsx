@@ -12,7 +12,7 @@ import {
 
 import { globalReducer, initialGlobalState } from "global/globalReducer";
 
-import { ICategory, IQuestion, KINDS } from "categories/types";
+import { ICategory, IQuestion } from "categories/types";
 import { IGroup, IAnswer } from "groups/types";
 import { IRole, IUser } from 'roles/types';
 
@@ -27,7 +27,6 @@ import roleData from './roles-users.json';
 
 const GlobalContext = createContext<IGlobalContext>({} as any);
 const GlobalDispatchContext = createContext<Dispatch<any>>(() => null);
-
 
 interface Props {
   children: React.ReactNode
@@ -242,8 +241,8 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
           parentGroup: g.id,
           title,
           words: words.filter(w => w.length > 1),
-          source: source??0,
-          status: status??0,
+          source: source ?? 0,
+          status: status ?? 0,
           level: 2
         }
         await dbp.add('Answers', answer);
@@ -270,7 +269,7 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
     parentCategory: string,
     level: number)
     : Promise<void> => {
-    const { id, title, tags, categories, questions } = categoryData;
+    const { id, title, kind, tags, categories, questions } = categoryData;
 
     if (id === 'SAFARI') {
       const q = {
@@ -285,7 +284,7 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
 
     const cat: ICategory = {
       id,
-      kind: KINDS.UNKNOWN,
+      kind: kind??0,
       parentCategory,
       hasSubCategories: categories ? categories.length > 0 : false,
       title,
@@ -314,8 +313,8 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
           parentCategory: cat.id,
           title,
           words: words.filter(w => w.length > 1),
-          source: source??0,
-          status: status??0,
+          source: source ?? 0,
+          status: status ?? 0,
           assignedAnswers: [],
           numOfAssignedAnswers: 0,
           level: 2,
@@ -404,14 +403,15 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
       const allCategories: Map<string, ICat> = new Map<string, ICat>();
       for await (const cursor of tx.store.iterate()) {
         let category: ICategory = cursor.value;
-        const { id, parentCategory, title, tags, hasSubCategories } = category;
+        const { id, parentCategory, title, tags, hasSubCategories, kind } = category;
         const cat: ICat = {
           id,
           parentCategory,
           title,
           titlesUpTheTree: '',
           tags,
-          hasSubCategories
+          hasSubCategories,
+          kind
         }
         allCategories.set(id, cat);
       }
@@ -419,8 +419,8 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
 
       let values = allCategories.values();
       while (true) {
-				let result = values.next();
-				if (result.done) break;
+        let result = values.next();
+        if (result.done) break;
         let cat = result.value as unknown as ICat;
         let titlesUpTheTree = cat.id;
         let cat2 = cat;
@@ -516,55 +516,84 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
     }
   }, []);
 
+
+  const getCatsByKind = async (kind: number): Promise<ICat[]> => {
+    try {
+      const { allCategories } = globalState;
+      const cats: ICat[] = [];
+      allCategories.forEach((c, id) => {
+        if (c.kind === kind) {
+          const cat: ICat = {
+            id,
+            title: c.title,
+            parentCategory: "",
+            titlesUpTheTree: "",
+            tags: [],
+            hasSubCategories: false,
+            kind
+          }
+          cats.push(cat);
+        }
+      })
+      return cats;
+    }
+    catch (error: any) {
+      console.log(error)
+      dispatch({ type: GlobalActionTypes.SET_ERROR, payload: { error } });
+    }
+    return [];
+  }
+
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // Select Category
-    const getSubCats = async ({ parentCategory, level }: IParentInfo): Promise<any> => {
+  // TOD mozda ne mora iz baze
+  const getSubCats = async ({ parentCategory, level }: IParentInfo): Promise<any> => {
+    try {
+      const { dbp } = globalState;
       try {
-        const { dbp } = globalState;
-        try {
-          const tx = dbp!.transaction('Categories')
-          const index = tx.store.index('parentCategory_idx');
-          const list: ICategory[] = [];
-          for await (const cursor of index.iterate(parentCategory)) {
-            console.log(cursor.value);
-            list.push(cursor.value)
-          }
-          await tx.done;
-          const subCats = list.map((c: ICategory) => ({
-            ...c,
-            questions: [],
-            isExpanded: false
-          }))
-          return subCats;
+        const tx = dbp!.transaction('Categories')
+        const index = tx.store.index('parentCategory_idx');
+        const list: ICategory[] = [];
+        for await (const cursor of index.iterate(parentCategory)) {
+          console.log(cursor.value);
+          list.push(cursor.value)
         }
-        catch (error: any) {
-          console.log(error)
-          dispatch({ type: GlobalActionTypes.SET_ERROR, payload: { error } });
-        }
-  
-        // const url = `/api/categories/${wsId}-${parentCategory}`
-        // const res = await axios.get(url)
-        // const { status, data } = res;
-        // if (status === 200) {
-        //   const subCategories = data.map((c: ICategory) => ({
-        //     ...c,
-        //     questions: [],
-        //     isExpanded: false
-        //   }))
-        //   return subCategories;
-        // }
-        // else {
-        //   console.log('Status is not 200', status)
-        //   dispatch({
-        //     type: ActionTypes.SET_ERROR,
-        //     payload: { error: new Error('Status is not 200 status:' + status) }
-        //   });
-        // }
+        await tx.done;
+        const subCats = list.map((c: ICategory) => ({
+          ...c,
+          questions: [],
+          isExpanded: false
+        }))
+        return subCats;
       }
-      catch (err: any | Error) {
-        console.log(err);
+      catch (error: any) {
+        console.log(error)
+        dispatch({ type: GlobalActionTypes.SET_ERROR, payload: { error } });
       }
+
+      // const url = `/api/categories/${wsId}-${parentCategory}`
+      // const res = await axios.get(url)
+      // const { status, data } = res;
+      // if (status === 200) {
+      //   const subCategories = data.map((c: ICategory) => ({
+      //     ...c,
+      //     questions: [],
+      //     isExpanded: false
+      //   }))
+      //   return subCategories;
+      // }
+      // else {
+      //   console.log('Status is not 200', status)
+      //   dispatch({
+      //     type: ActionTypes.SET_ERROR,
+      //     payload: { error: new Error('Status is not 200 status:' + status) }
+      //   });
+      // }
     }
+    catch (err: any | Error) {
+      console.log(err);
+    }
+  }
 
   const health = () => {
     const url = `api/health`;
@@ -586,7 +615,7 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
 
   return (
     <GlobalContext.Provider value={{
-      globalState, OpenDB, loadAllCategories, registerUser, signInUser, getUser, health, getSubCats
+      globalState, OpenDB, loadAllCategories, registerUser, signInUser, getUser, health, getSubCats, getCatsByKind
     }}>
       <GlobalDispatchContext.Provider value={dispatch}>
         {children}

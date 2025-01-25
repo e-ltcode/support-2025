@@ -55,7 +55,8 @@ export interface ICat {
 	title: string;
 	titlesUpTheTree: string; // traverse up the tree, until root
 	tags: string[];
-	hasSubCategories: boolean
+	hasSubCategories: boolean;
+	kind: number
 }
 
 
@@ -97,7 +98,8 @@ export interface IGlobalContext {
 	OpenDB: () => Promise<any>;
 	loadAllCategories: (dbp: IDBPDatabase) => void;
 	health: () => void;
-	getSubCats: ({ parentCategory, level }: IParentInfo) => Promise<any>,
+	getSubCats: ({ parentCategory, level }: IParentInfo) => Promise<any>;
+	getCatsByKind: (kind: number) => Promise<ICat[]>;
 }
 
 export enum GlobalActionTypes {
@@ -239,9 +241,10 @@ export interface IQuestionData {
 }
 
 export interface ICategoryData {
-	id: string,
-	title: string,
-	tags?: string[]
+	id: string;
+	title: string;
+	kind?: number;
+	tags?: string[];
 	categories?: ICategoryData[],
 	questions?: IQuestionData[]
 }

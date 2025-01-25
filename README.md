@@ -1,7 +1,7 @@
 ### This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Try It
-[Support Knowledge Database](https://slavkopar.github.io/support-2025/)
+[Support Knowledge](https://slavkopar.github.io/support-2025/)
 
 ## Available Scripts
 
@@ -18,6 +18,27 @@ pritisnete **F12** i odaberete **Application**.\
 Odaberete **SupportKnowledge** database\
 i kliknete na **Delete Database**\
 
+
+## Dodao sam novu stranicu
+Koja osim email služi da izgradnju Database\
+Tu može da se napravi neki Chat Bot.\
+Mislim da danas ljudi više postavljaju pitanja, prko **ChatBot-a** nego putem emaila.
+
+## Svaka kategorija ima Tagove
+Pa recimo ako klijent ukuca pitanje u AutoSuggest: 'Daljinski ne radi',\
+a kategorija ima Tagove: ["MTS", "SBB", "A1", "YETTEL"], mi onda u drop-down ubacimo\
+Daljinski ne radi MTS\
+Daljinski ne radi SBB\
+Daljinski ne radi A1\
+Daljinski ne radi YETTEL\
+i tako pomažemo klijentu da brže nadje odgovor\
+Takođe, ako korisnik kuca reč koja se nalazi u nazivu kategorije, možemo onda  da ubacima sva pitanje te kategorije, u drop-down listu\
+
+Bussines logic se preselila u **SupportPage** i **SBBPage**, Question/Answers su samo **maintenace**\
+Nisam još počeo da ulazim u ChatBot logiku, ali ovo gore služi da pomogne klijentu da što lakš dože do  odgovora.
+
+
+## Ideja
 
 You are software company and You have your software product.\
 Your QA people, repeatedly interupt your developers with the same questions.\

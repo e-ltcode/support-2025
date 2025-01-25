@@ -1,5 +1,5 @@
 import { Reducer } from 'react'
-import { Mode, ActionTypes, ICategoriesState, ICategory, IQuestion, CategoriesActions, KINDS } from "categories/types";
+import { Mode, ActionTypes, ICategoriesState, ICategory, IQuestion, CategoriesActions } from "categories/types";
 
 export const initialQuestion: IQuestion = {
   id: 0, // real id will be given by DB
@@ -19,7 +19,7 @@ export const initialCategory: ICategory = {
   // it will be removed on submitForm
   // real _id will be given by the MongoDB 
   id: '',
-  kind: KINDS.UNKNOWN,
+  kind: 0,
   title: '',
   level: 0,
   tags: [],

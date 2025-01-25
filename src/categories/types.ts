@@ -79,17 +79,10 @@ export interface ITag {
 	name: string;
 }
 
-export enum KINDS {
-	UNKNOWN,
-	PODRSKA,
-	OPCIJA,
-	USLUGA,
-	TEMA
-}
 
 export interface ICategory extends IRecord {
 	id: string;
-	kind: KINDS;
+	kind: number;
 	parentCategory: string; // | null is a valid value so you can store data with null value in indexeddb 
 	// but it is not a valid key
 	title: string;
@@ -199,7 +192,6 @@ export enum ActionTypes {
 	CANCEL_CATEGORY_FORM = 'CANCEL_CATEGORY_FORM',
 	SET_EXPANDED = 'SET_EXPANDED',
 
-	SET_ALL_CATEGORIES = "SET_ALL_CATEGORIES",
 	SET_PARENT_CATEGORIES = "SET_PARENT_CATEGORIES",
 
 	// questions

@@ -2,6 +2,7 @@
   {
     "id": "PRODAJA",
     "title": "Prodaja",
+    "kind": 2,
     "categories": [
       {
         "id": "CHROME",
@@ -17,6 +18,7 @@
   {
     "id": "RACUNI",
     "title": "Računi i naplata",
+    "kind": 2,
     "categories": [
       {
         "id": "CHROME",
@@ -32,10 +34,12 @@
   {
     "id": "TECHNICAL",
     "title": "Tehnička podrška",
+    "kind": 2,
     "categories": [
       {
         "id": "INTERNET",
         "title": "Internet",
+        "kind": 3,
         "categories": [
           {
             "id": "CLOUD",
@@ -65,6 +69,7 @@
       {
         "id": "TV",
         "title": "Televizija",
+        "kind": 3,
         "categories": [
           {
             "id": "INSTALATION",
@@ -79,6 +84,7 @@
           {
             "id": "USAGE",
             "title": "Korišćenje",
+            "kind": 3,
             "questions": [
               { "title": "Daljinski od EON smart box-a ne reaguje" },
               { "title": "Podešavanje pozicije ekrana na EON smart box-ukomande" },
@@ -92,6 +98,7 @@
           {
             "id": "INFO",
             "title": "Informacije o kanalima",
+            "kind": 3,
             "questions": [
               { "title": "Programski vodič i pregled TV kanala na EON smart boksu" },
               { "title": "Kako da koristim TV unazad na EON smart box-u?" },
@@ -141,6 +148,7 @@
   {
     "id": "INFO",
     "title": "Opšte informacije",
+    "kind": 2,
     "categories": [
       {
         "id": "CHROME",

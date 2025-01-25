@@ -150,15 +150,16 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
   }, []);
 
   const updateCategory = useCallback(async (c: ICategory, closeForm: boolean) => {
-    const { id } = c;
+    const { id, tags, title, kind, modified } = c;
     dispatch({ type: ActionTypes.SET_CATEGORY_LOADING, payload: { id, loading: false } });
     try {
       const category = await dbp!.get('Categories', id);
       const obj: ICategory = {
         ...category,
-        tags: c.tags,
-        title: c.title,
-        modified: c.modified
+        tags,
+        title,
+        kind,
+        modified
       }
       await dbp!.put('Categories', obj);
       console.log("Category successfully updated");
