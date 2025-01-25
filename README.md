@@ -18,9 +18,11 @@ pritisnete **F12** i odaberete **Application**.\
 Odaberete **SupportKnowledge** database i kliknete na **Delete Database**
 
 ## Dodao sam novu stranicu SBBPage
-Koja osim email služi da izgradnju Database\
+SupportPage preko emaila služi da izgradnju Database\
+A SBBPage omogućuje da sam klijent, izgradjuje bazu preko komunikacije klijenta\
 Tu može da se napravi neki Chat Bot.\
-Mislim da danas ljudi više postavljaju pitanja, preko **ChatBot-a** nego putem emaila.
+Mislim da danas ljudi više postavljaju pitanja, preko **ChatBot-a** nego putem emaila.\
+E jebiga za ovaj način trebala bi nam baza na netu, a ne lokalna.
 
 ## Svaka kategorija ima Tagove
 Pa recimo ako klijent ukuca pitanje u AutoSuggest: 'Daljinski ne radi',\
