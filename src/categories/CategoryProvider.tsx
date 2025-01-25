@@ -70,53 +70,7 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
     return false;
   }, [dispatch]);
 
-  const getSubCats = useCallback(async ({ parentCategory, level }: IParentInfo): Promise<any> => {
-    try {
 
-      try {
-        const tx = dbp!.transaction('Categories')
-        const index = tx.store.index('parentCategory_idx');
-        const list: ICategory[] = [];
-        for await (const cursor of index.iterate(parentCategory)) {
-          console.log(cursor.value);
-          list.push(cursor.value)
-        }
-        await tx.done;
-        const subCats = list.map((c: ICategory) => ({
-          ...c,
-          questions: [],
-          isExpanded: false
-        }))
-        return subCats;
-      }
-      catch (error: any) {
-        console.log(error)
-        dispatch({ type: ActionTypes.SET_ERROR, payload: { error } });
-      }
-
-      // const url = `/api/categories/${wsId}-${parentCategory}`
-      // const res = await axios.get(url)
-      // const { status, data } = res;
-      // if (status === 200) {
-      //   const subCategories = data.map((c: ICategory) => ({
-      //     ...c,
-      //     questions: [],
-      //     isExpanded: false
-      //   }))
-      //   return subCategories;
-      // }
-      // else {
-      //   console.log('Status is not 200', status)
-      //   dispatch({
-      //     type: ActionTypes.SET_ERROR,
-      //     payload: { error: new Error('Status is not 200 status:' + status) }
-      //   });
-      // }
-    }
-    catch (err: any | Error) {
-      console.log(err);
-    }
-  }, []);
 
   const getSubCategories = useCallback(async ({ parentCategory, level }: IParentInfo) => {
     //const url = `/api/categories/${wsId}-${parentCategory}`
@@ -283,10 +237,11 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
       let included = false;
       let hasMore = false;
       let advanced = false;
+      console.log('loadCategoryQuestions>>>>>>>>>>>>>')
       console.time();
       const tx = dbp!.transaction('Questions', 'readonly');
       const index = tx.store.index('parentCategory_title_idx');
-      for await (const cursor of index.iterate(IDBKeyRange.bound([parentCategory, ''], [parentCategory, 'zzzzz'], true, true))) {
+      for await (const cursor of index.iterate(IDBKeyRange.bound([parentCategory, ''], [parentCategory, 'zzzzz'], false, true))) {
         if (startCursor! > 0 && !advanced) {
           cursor.advance(startCursor!);
           advanced = true;
@@ -342,10 +297,10 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
     // const url = `/api/questions/get-question/${id}`;
     try {
       const question: IQuestion = await dbp!.get("Questions", id);
-      const category: ICategory = await dbp!.get("Categories", question.parentCategory)
+      const { parentCategory } = question;
+      const category: ICategory = await dbp!.get("Categories", parentCategory)
       question.id = id;
       question.categoryTitle = category.title;
-
       // const { fromUserAssignedAnswer } = question;
       // if (fromUserAssignedAnswer) {
       //   question.questionAnswers.forEach(questionAnswer => {
@@ -355,7 +310,9 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
       //   })
       //   delete question.fromUserAssignedAnswer;
       // }
-
+      if (category.numOfQuestions > 0) {
+        await loadCategoryQuestions({ parentCategory, startCursor: 0, level: 0 });
+      }
       dispatch({ type, payload: { question } });
     }
     catch (error: any) {
@@ -583,7 +540,7 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
 
   const contextValue: ICategoriesContext = {
     state, reloadCategoryNode,
-    getSubCategories, getSubCats, createCategory, viewCategory, editCategory, updateCategory, deleteCategory, deleteCategoryTag,
+    getSubCategories, createCategory, viewCategory, editCategory, updateCategory, deleteCategory, deleteCategoryTag,
     expandCategory, loadCategoryQuestions, createQuestion, viewQuestion, editQuestion, updateQuestion, deleteQuestion,
     assignQuestionAnswer, unAssignQuestionAnswer, createAnswer
   }

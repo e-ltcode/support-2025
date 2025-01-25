@@ -341,9 +341,13 @@ export const GroupProvider: React.FC<Props> = ({ children }) => {
     // const url = `/api/answers/get-answer/${id}`;
     try {
       const answer: IAnswer = await dbp!.get("Answers", id);
-      const group: IGroup = await dbp!.get("Groups", answer.parentGroup)
+      const { parentGroup } = answer;
+      const group: IGroup = await dbp!.get("Groups", parentGroup)
       answer.id = id;
       answer.groupTitle = group.title;
+      if (group.numOfAnswers > 0) {
+        await loadGroupAnswers({ parentGroup, startCursor: 0, level: 0 });
+      }
       dispatch({ type, payload: { answer } });
     }
     catch (error: any) {

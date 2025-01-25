@@ -1,13 +1,14 @@
 import React, { useEffect, useReducer } from "react";
 import { ListGroup } from "react-bootstrap";
-import CatRow from "categories/components/SelectCategory/CatRow";
-import { CatsActionTypes, ICatInfo, ICategory } from "categories/types";
-import { useCategoryContext } from "categories/CategoryProvider";
-import { CatsReducer, initialState } from "./CatsReducer";
+import CatRow from "global/Components/SelectCategory/CatRow";
+import { CatsReducer, initialState } from "global/Components/SelectCategory/CatsReducer";
+import { ICategory } from "categories/types";
+import { CatsActionTypes, ICatInfo } from "global/types";
+import { useGlobalContext } from "global/GlobalProvider";
 
 const CatList = ({ parentCategory, level, setParentCategory }: ICatInfo) => {
     const [state, dispatch] = useReducer(CatsReducer, initialState);
-    const { getSubCats } = useCategoryContext();
+    const { getSubCats } = useGlobalContext();
     useEffect(() => {
         (async () => {
             const subCats = await getSubCats({ parentCategory, level });

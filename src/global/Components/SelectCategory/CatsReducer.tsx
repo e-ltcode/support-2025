@@ -1,5 +1,6 @@
 import React, { Reducer } from 'react'
-import { CatsActionTypes, ICategory, ICatsState, CatsActions } from "categories/types";
+import { ICategory } from "categories/types";
+import { CatsActionTypes, CatsActions, ICatsState } from "global/types";
 
 export const initialState: ICatsState = {
   loading: false,

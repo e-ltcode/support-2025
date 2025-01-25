@@ -10,7 +10,7 @@ import { ActionTypes, FormMode, ICategory, IQuestion, IQuestionFormProps } from 
 import { Select } from 'common/components/Select';
 import { sourceOptions } from 'common/sourceOptions'
 import { statusOptions } from 'common/statusOptions'
-import CatList from 'categories/components/SelectCategory/CatList'
+import CatList from 'global/Components/SelectCategory/CatList'
 
 import { useCategoryDispatch } from "categories/CategoryProvider";
 import Dropdown from 'react-bootstrap/Dropdown';
@@ -22,7 +22,6 @@ const QuestionForm = ({ mode, question, submitForm, children, showCloseButton, c
 
   const { globalState } = useGlobalContext();
   const { isDarkMode, variant, bg } = globalState;
-
 
   const viewing = mode === FormMode.viewing;
   const editing = mode === FormMode.editing;

@@ -22,14 +22,14 @@ export function Navigation(props: INavigation) {
   const { globalState } = useGlobalContext();
   const { authUser, isAuthenticated, isDarkMode, variant, bg } = globalState;
   const { nickName, role } = authUser;
-  
+
   let enumRole: ROLES = role === 'OWNER'
-        ? ROLES.OWNER
-        : role === 'ADMIN'
-          ? ROLES.ADMIN
-          : role === 'EDITOR'
-            ? ROLES.EDITOR
-            : ROLES.VIEWER
+    ? ROLES.OWNER
+    : role === 'ADMIN'
+      ? ROLES.ADMIN
+      : role === 'EDITOR'
+        ? ROLES.EDITOR
+        : ROLES.VIEWER
 
   const dispatch = useGlobalDispatch();
 
@@ -49,7 +49,7 @@ export function Navigation(props: INavigation) {
   return (
     <Navbar expand={"md"} variant={variant} bg={bg} collapseOnSelect className="sticky-top">
       <Container fluid>
-        <Navbar.Brand href="#" className="ps-3">Support Knowledge</Navbar.Brand>
+        <Navbar.Brand href="#" className="ps-3"><i>Support Knowledge</i></Navbar.Brand>
         <Navbar.Toggle aria-controls={`offcanvasNavbar-expand`} />
         <Navbar.Offcanvas
           id={`offcanvasNavbar-expand`}
@@ -113,6 +113,18 @@ export function Navigation(props: INavigation) {
                   <FontAwesomeIcon icon={faUserFriends} color='lightblue' />{' '}Users
                 </NavLink>
               }
+
+              {isAuthenticated &&
+                // <NavLink to={`/supporter/0/${encodeURIComponent('Does Firefox support Manifest 3?')}/xyz`} className="nav-link"
+                <NavLink to={`/support-2025/SBBPage/0/${encodeURIComponent('radi extension')}/xyz`} className="nav-link"
+                  onClick={() => {
+                    //closeQuestionForm();
+                  }
+                  }>
+                  <FontAwesomeIcon icon={faSurprise} color='lightblue' />{' '}SBBPage
+                </NavLink>
+              }
+
 
               {!isAuthenticated &&
                 <NavLink to="/support-2025/about" className="nav-link">

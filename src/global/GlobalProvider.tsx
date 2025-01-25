@@ -6,7 +6,8 @@ import {
   IGroupData, IAnswerData,
   IRoleData, IUserData,
   IRegisterUser,
-  ICat
+  ICat,
+  IParentInfo
 } from 'global/types'
 
 import { globalReducer, initialGlobalState } from "global/globalReducer";
@@ -515,6 +516,56 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
     }
   }, []);
 
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  // Select Category
+    const getSubCats = async ({ parentCategory, level }: IParentInfo): Promise<any> => {
+      try {
+        const { dbp } = globalState;
+        try {
+          const tx = dbp!.transaction('Categories')
+          const index = tx.store.index('parentCategory_idx');
+          const list: ICategory[] = [];
+          for await (const cursor of index.iterate(parentCategory)) {
+            console.log(cursor.value);
+            list.push(cursor.value)
+          }
+          await tx.done;
+          const subCats = list.map((c: ICategory) => ({
+            ...c,
+            questions: [],
+            isExpanded: false
+          }))
+          return subCats;
+        }
+        catch (error: any) {
+          console.log(error)
+          dispatch({ type: GlobalActionTypes.SET_ERROR, payload: { error } });
+        }
+  
+        // const url = `/api/categories/${wsId}-${parentCategory}`
+        // const res = await axios.get(url)
+        // const { status, data } = res;
+        // if (status === 200) {
+        //   const subCategories = data.map((c: ICategory) => ({
+        //     ...c,
+        //     questions: [],
+        //     isExpanded: false
+        //   }))
+        //   return subCategories;
+        // }
+        // else {
+        //   console.log('Status is not 200', status)
+        //   dispatch({
+        //     type: ActionTypes.SET_ERROR,
+        //     payload: { error: new Error('Status is not 200 status:' + status) }
+        //   });
+        // }
+      }
+      catch (err: any | Error) {
+        console.log(err);
+      }
+    }
+
   const health = () => {
     const url = `api/health`;
     // axios
@@ -535,7 +586,7 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
 
   return (
     <GlobalContext.Provider value={{
-      globalState, OpenDB, loadAllCategories, registerUser, signInUser, getUser, health
+      globalState, OpenDB, loadAllCategories, registerUser, signInUser, getUser, health, getSubCats
     }}>
       <GlobalDispatchContext.Provider value={dispatch}>
         {children}

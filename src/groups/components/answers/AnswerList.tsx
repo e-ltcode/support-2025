@@ -45,12 +45,10 @@ const AnswerList = ({ title, parentGroup, level }: IParentInfo) => {
   useEffect(() => {
     if (groupId != null) {
       if (groupId === parentGroup!.toString() && answerId) {
-        setTimeout(() => {
-          if (canEdit)
-            editAnswer(parseInt(answerId))
-          else
-            viewAnswer(parseInt(answerId))
-        }, 3000)
+        if (canEdit)
+          editAnswer(parseInt(answerId))
+        else
+          viewAnswer(parseInt(answerId))
       }
     }
   }, [viewAnswer, parentGroup, groupId, answerId, canEdit]);

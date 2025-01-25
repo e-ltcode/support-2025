@@ -108,7 +108,7 @@ export class AutoSuggestQuestions extends React.Component<{
 		setTimeout(() => {
 			window.focus()
 			// inputAutosuggest!.current!.focus();
-		}, 500)
+		}, 300)
 	}
 
 	// endregion region Rendering methods

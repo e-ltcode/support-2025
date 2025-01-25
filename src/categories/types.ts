@@ -118,11 +118,6 @@ export interface IParentInfo {
 	includeQuestionId?: number
 }
 
-export interface ICatInfo {
-	parentCategory: string,
-	level: number,
-	setParentCategory: (category: ICategory) => void;
-}
 
 export interface ICategoriesState {
 	mode: string | null;
@@ -136,19 +131,10 @@ export interface ICategoriesState {
 	error?: Error;
 }
 
-export interface ICatsState {
-	loading: boolean,
-	parentCategory: IDBValidKey | null,
-	title: string,
-	cats: ICategory[], // drop down categories
-	error?: Error;
-}
-
 export interface ICategoriesContext {
 	state: ICategoriesState,
 	reloadCategoryNode: (categoryId: string, questionId: string | null) => Promise<any>;
 	getSubCategories: ({ parentCategory, level }: IParentInfo) => void,
-	getSubCats: ({ parentCategory, level }: IParentInfo) => Promise<any>,
 	createCategory: (category: ICategory) => void,
 	viewCategory: (id: string) => void,
 	editCategory: (id: string) => void,
@@ -343,37 +329,3 @@ export type CategoriesPayload = {
 export type CategoriesActions =
 	ActionMap<CategoriesPayload>[keyof ActionMap<CategoriesPayload>];
 
-/////////////////////////////////////////////////////////////////////////
-// DropDown Select Category
-export enum CatsActionTypes {
-	SET_LOADING = 'SET_LOADING',
-	SET_SUB_CATS = 'SET_SUB_CATS',
-	SET_ERROR = 'SET_ERROR',
-	SET_EXPANDED = 'SET_EXPANDED',
-	SET_PARENT_CATEGORY = 'SET_PARENT_CATEGORY'
-}
-
-export type CatsPayload = {
-	[CatsActionTypes.SET_LOADING]: undefined;
-
-	[CatsActionTypes.SET_SUB_CATS]: {
-		subCats: ICategory[];
-	};
-
-	[CatsActionTypes.SET_EXPANDED]: {
-		id: string;
-		expanding: boolean;
-	}
-
-	[CatsActionTypes.SET_ERROR]: {
-		error: Error;
-	};
-
-	[CatsActionTypes.SET_PARENT_CATEGORY]: {
-		category: ICategory;
-	};
-
-};
-
-export type CatsActions =
-	ActionMap<CatsPayload>[keyof ActionMap<CatsPayload>];

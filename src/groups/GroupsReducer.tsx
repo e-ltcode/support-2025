@@ -255,6 +255,15 @@ const reducer = (state: IGroupsState, action: GroupsActions) => {
     case ActionTypes.LOAD_GROUP_ANSWERS: {
       const { parentGroup, answers, hasMore } = action.payload; // group doesn't contain inViewing, inEditing, inAdding 
       const group = state.groups.find(c => c.id === parentGroup);
+      if (answers.length > 0 && group!.answers.map(q => q.id).includes(answers[0].id)) {
+        // privremeno  TODO  uradi isto i u group/answers
+        // We have, at two places:
+        //   <EditCategory inLine={true} />
+        //   <EditCategory inLine={false} />
+        //   so we execute loadCategoryQuestions() twice in QuestionList, but OK
+        return state;
+      }
+
       const answerInAdding = group!.answers.find(q => q.inAdding);
       if (answerInAdding) {
         answers.unshift(answerInAdding);

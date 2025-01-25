@@ -85,7 +85,6 @@ export const initialCategoriesState: ICategoriesState = initialStateFromLocalSto
 
 export const CategoriesReducer: Reducer<ICategoriesState, CategoriesActions> = (state, action) => {
   const newState = reducer(state, action);
-  console.log('reducer', action, newState.categories[2])
   const aTypesToStore = [
     ActionTypes.SET_EXPANDED
   ];
@@ -127,7 +126,6 @@ const reducer = (state: ICategoriesState, action: CategoriesActions) => {
 
     case ActionTypes.SET_PARENT_CATEGORIES: {
       const { parentNodes } = action.payload;
-      console.log("SET_PARENT_CATEGORIES", parentNodes)
       return {
         ...state,
         parentNodes,
@@ -255,14 +253,26 @@ const reducer = (state: ICategoriesState, action: CategoriesActions) => {
     }
 
     case ActionTypes.LOAD_CATEGORY_QUESTIONS: {
+      console.time();
       const { parentCategory, questions, hasMore } = action.payload; // category doesn't contain inViewing, inEditing, inAdding 
       const category = state.categories.find(c => c.id === parentCategory);
+      if (questions.length > 0 && category!.questions.map(q => q.id).includes(questions[0].id)) {
+        // privremeno  TODO  uradi isto i u group/answers
+        // We have, at two places:
+        //   <EditCategory inLine={true} />
+        //   <EditCategory inLine={false} />
+        //   so we execute loadCategoryQuestions() twice in QuestionList, but OK
+        return state;
+      }
+
       const questionInAdding = category!.questions.find(q => q.inAdding);
       if (questionInAdding) {
         questions.unshift(questionInAdding);
         console.assert(state.mode === Mode.AddingQuestion, "expected Mode.AddingQuestion")
       }
       console.log('num of questions', category!.questions.length + questions.length)
+      console.timeEnd();
+
       return {
         ...state,
         categories: state.categories.map(c => c.id === parentCategory
@@ -416,7 +426,6 @@ const reducer = (state: ICategoriesState, action: CategoriesActions) => {
         }
         : c
       );
-      console.log({ categories })
       return {
         ...state,
         categories,
@@ -427,7 +436,7 @@ const reducer = (state: ICategoriesState, action: CategoriesActions) => {
 
     case ActionTypes.EDIT_QUESTION: {
       const { question } = action.payload;
-      return {
+      const obj = {
         ...state,
         categories: state.categories.map(c => c.id === question.parentCategory
           ? {
@@ -449,7 +458,8 @@ const reducer = (state: ICategoriesState, action: CategoriesActions) => {
         ),
         mode: Mode.EditingQuestion,
         loading: false
-      };
+      }
+      return obj;
     }
 
     case ActionTypes.DELETE_QUESTION: {

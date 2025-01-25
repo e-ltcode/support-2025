@@ -17,6 +17,7 @@ import LoginForm from 'global/LoginForm';
 import RegisterForm from 'global/RegisterForm';
 import Roles from 'roles/Roles';
 import { IUser } from 'roles/types';
+import SBBPage from 'SBBPage';
 
 function App() {
 
@@ -122,6 +123,7 @@ function App() {
               <Route path="/support-2025/sign-in" element={<LoginForm initialValues={formInitialValues} invitationId='' />} />
               <Route path="/support-2025/supporter/:source/:tekst" element={<SupportPage />} />
               <Route path="/support-2025/supporter/:source/:tekst/:email" element={<SupportPage />} />
+              <Route path="/support-2025/SBBPage/:source/:tekst/:email" element={<SBBPage />} />
               <Route path="/support-2025/categories/:categoryId_questionId" element={<Categories />} />
               <Route path="/support-2025/categories" element={<Categories />} />
               <Route path="/support-2025/answers" element={<Answers />} />

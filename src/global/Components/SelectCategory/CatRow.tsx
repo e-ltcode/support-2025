@@ -5,16 +5,16 @@ import { faCaretRight, faCaretDown } from '@fortawesome/free-solid-svg-icons'
 import { ListGroup, Button } from "react-bootstrap";
 
 import { useGlobalState } from 'global/GlobalProvider'
-import { CatsActionTypes, CatsActions } from "categories/types";
+import { CatsActionTypes, CatsActions } from "global/types";
 import { ICategory } from 'categories/types'
 
-import CatList from "categories/components/SelectCategory/CatList";
+import CatList from "global/Components/SelectCategory/CatList";
 
 interface ICatRow {
     category: ICategory;
     dispatch: React.Dispatch<CatsActions>;
     setParentCategory: (category: ICategory) => void;
-}    
+}
 
 const CatRow = ({ category, dispatch, setParentCategory }: ICatRow) => {
     const { id, title, level, isExpanded } = category;

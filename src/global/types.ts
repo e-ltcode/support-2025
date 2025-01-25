@@ -1,4 +1,5 @@
 // Define the Global State
+import { ICategory } from 'categories/types';
 import { IOption } from 'common/types';
 import { IDBPDatabase } from 'idb';
 import { IUser } from 'roles/types';
@@ -81,6 +82,13 @@ export interface IGlobalStateFromLocalStorage {
 	bg: string;
 }
 
+export interface IParentInfo {
+	parentCategory: string,
+	title?: string, // to easier follow getting the list of sub-categories
+	level: number
+}
+
+
 export interface IGlobalContext {
 	globalState: IGlobalState;
 	getUser: (nickName: string) => Promise<any>;
@@ -89,6 +97,7 @@ export interface IGlobalContext {
 	OpenDB: () => Promise<any>;
 	loadAllCategories: (dbp: IDBPDatabase) => void;
 	health: () => void;
+	getSubCats: ({ parentCategory, level }: IParentInfo) => Promise<any>,
 }
 
 export enum GlobalActionTypes {
@@ -168,6 +177,56 @@ export type GlobalPayload = {
 	};
 };
 
+
+/////////////////////////////////////////////////////////////////////////
+// DropDown Select Category
+
+export interface ICatsState {
+	loading: boolean,
+	parentCategory: IDBValidKey | null,
+	title: string,
+	cats: ICategory[], // drop down categories
+	error?: Error;
+}
+
+export interface ICatInfo {
+	parentCategory: string,
+	level: number,
+	setParentCategory: (category: ICategory) => void;
+}
+
+export enum CatsActionTypes {
+	SET_LOADING = 'SET_LOADING',
+	SET_SUB_CATS = 'SET_SUB_CATS',
+	SET_ERROR = 'SET_ERROR',
+	SET_EXPANDED = 'SET_EXPANDED',
+	SET_PARENT_CATEGORY = 'SET_PARENT_CATEGORY'
+}
+
+export type CatsPayload = {
+	[CatsActionTypes.SET_LOADING]: undefined;
+
+	[CatsActionTypes.SET_SUB_CATS]: {
+		subCats: ICategory[];
+	};
+
+	[CatsActionTypes.SET_EXPANDED]: {
+		id: string;
+		expanding: boolean;
+	}
+
+	[CatsActionTypes.SET_ERROR]: {
+		error: Error;
+	};
+
+	[CatsActionTypes.SET_PARENT_CATEGORY]: {
+		category: ICategory;
+	};
+
+};
+
+export type CatsActions =
+	ActionMap<CatsPayload>[keyof ActionMap<CatsPayload>];
 
 
 ////////////////////////

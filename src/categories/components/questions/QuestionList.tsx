@@ -45,12 +45,10 @@ const QuestionList = ({ title, parentCategory, level }: IParentInfo) => {
   useEffect(() => {
     if (categoryId != null) {
       if (categoryId === parentCategory! && questionId) {
-        setTimeout(() => {
           if (canEdit)
             editQuestion(parseInt(questionId))
           else
             viewQuestion(parseInt(questionId))
-        }, 3000)
       }
     }
   }, [viewQuestion, parentCategory, categoryId, questionId, canEdit]);

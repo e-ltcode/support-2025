@@ -45,12 +45,10 @@ const UserList = ({ title, parentRole, level }: IParentInfo) => {
   useEffect(() => {
     if (roleId != null) {
       if (roleId === parentRole!.toString() && nickName) {
-        setTimeout(() => {
-          if (canEdit)
-            editUser(nickName)
-          else
-            viewUser(nickName)
-        }, 3000)
+        if (canEdit)
+          editUser(nickName)
+        else
+          viewUser(nickName)
       }
     }
   }, [viewUser, parentRole, roleId, nickName, canEdit]);
