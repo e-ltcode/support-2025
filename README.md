@@ -7,7 +7,7 @@
 
 In the project directory, you can run:
 
-### `yarn start`\
+### `yarn start`
 ### `yarn run deploy`
 
 ## Dokumentacija (bice bolja, ovo je samo za jutrasnji miting) 
@@ -15,8 +15,7 @@ In the project directory, you can run:
 Prvremeno, kad se menja struktura baze, treba prvo obrisati našu staru IndexDB 'SupportKnowledge' bazu, da bi se kreirala nova.\
 Dok ste na sajtu https://slavkopar.github.io/support-2025 \
 pritisnete **F12** i odaberete **Application**.\
-Odaberete **SupportKnowledge** database\
-i kliknete na **Delete Database**
+Odaberete **SupportKnowledge** database i kliknete na **Delete Database**
 
 ## Dodao sam novu stranicu SBBPage
 Koja osim email služi da izgradnju Database\
@@ -31,7 +30,7 @@ Daljinski ne radi SBB\
 Daljinski ne radi A1\
 Daljinski ne radi YETTEL\
 i tako pomažemo klijentu da brže nadje odgovor\
-Takođe, ako korisnik kuca reč koja se nalazi u nazivu kategorije, možemo onda  da ubacima sva pitanje te kategorije, u drop-down listu
+Takođe, ako korisnik kuca reč koja se nalazi u nazivu kategorije, možemo onda da ubacimo sva pitanja iz te kategorije, u drop-down listu.
 
 Bussines logic se preselila u **SupportPage** preko emaila, i **SBBPage** preko ChatBot-a, Question/Answers su samo **maintenance**\
 Nisam još počeo da ulazim u ChatBot logiku, ali ovo gore služi da pomogne klijentu da što lakše dođe do  odgovora.
