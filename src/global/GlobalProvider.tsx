@@ -525,6 +525,15 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
         const category: ICategory = await dbp!.get("Categories", parentCategory)
         question.id = id;
         question.categoryTitle = category.title;
+        // join answer.title
+        const { assignedAnswers } = question;
+        let i = 0;
+        while (i < assignedAnswers.length) {
+          const assignedAnswer = assignedAnswers[0];
+          const answer: IAnswer = await dbp!.get("Answers", id);
+          assignedAnswer.answer.title = answer ? answer.title : "doesn't exist ";
+          i++;
+        }
         return question;
       }
       catch (error: any) {

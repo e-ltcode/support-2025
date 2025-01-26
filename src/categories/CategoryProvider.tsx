@@ -302,6 +302,16 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
       const category: ICategory = await dbp!.get("Categories", parentCategory)
       question.id = id;
       question.categoryTitle = category.title;
+      // join answer.title
+      const { assignedAnswers } = question;
+      let i = 0;
+      while (i < assignedAnswers.length) {
+        const assignedAnswer = assignedAnswers[0];
+        const answer: IAnswer = await dbp!.get("Answers", id);
+        assignedAnswer.answer.title = answer ? answer.title : "doesn't exist ";
+        i++;
+      }
+      
       // const { fromUserAssignedAnswer } = question;
       // if (fromUserAssignedAnswer) {
       //   question.questionAnswers.forEach(questionAnswer => {
@@ -413,10 +423,10 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
     try {
       const question: IQuestion = await dbp!.get('Questions', questionId);
       const answer: IAnswer = await dbp!.get('Answers', answerId);
-      const newQuestionAnser: IAssignedAnswer = {
+      const newAssignedAnwser: IAssignedAnswer = {
         answer: {
-          id: answerId,
-          title: answer.title
+          id: answerId
+          // title: answer.title
         },
         user: {
           nickName: globalState.authUser.nickName,
@@ -424,7 +434,7 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
         },
         assigned
       }
-      const assignedAnswers = [...question.assignedAnswers, newQuestionAnser];
+      const assignedAnswers = [...question.assignedAnswers, newAssignedAnwser];
       const obj: IQuestion = {
         ...question,
         assignedAnswers,
@@ -432,6 +442,9 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
       }
       await dbp!.put('Questions', obj, questionId);
       console.log("Question Answer successfully assigned");
+      ///////////////////
+      newAssignedAnwser.answer.title = answer.title;
+      obj.assignedAnswers = [...question.assignedAnswers, newAssignedAnwser];;
       // dispatch({ type: ActionTypes.SET_QUESTION, payload: { question: obj } });
       dispatch({ type: ActionTypes.SET_QUESTION_AFTER_ASSIGN_ANSWER, payload: { question: { id: questionId, ...obj } } });
       return obj;

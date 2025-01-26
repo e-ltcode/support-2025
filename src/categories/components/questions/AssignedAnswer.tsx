@@ -12,12 +12,12 @@ import React, { useState } from "react";
 
 interface IProps {
     questionTitle: string,
-    questionAnswer: IAssignedAnswer,
+    assignedAnswer: IAssignedAnswer,
     groupInAdding: boolean | undefined,
     isDisabled: boolean,
     unAssignAnswer: (answerId: number) => void
 }
-const QuestionAnswerRow = ({ questionTitle, questionAnswer, isDisabled, unAssignAnswer }: IProps) => {
+const AssignedAnswer = ({ questionTitle, assignedAnswer: questionAnswer, isDisabled, unAssignAnswer }: IProps) => {
 
     const { answer, assigned, user } = questionAnswer;
     const { title, id } = answer;
@@ -167,4 +167,4 @@ const QuestionAnswerRow = ({ questionTitle, questionAnswer, isDisabled, unAssign
     );
 };
 
-export default QuestionAnswerRow;
+export default AssignedAnswer;

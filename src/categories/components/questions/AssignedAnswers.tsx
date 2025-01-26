@@ -3,7 +3,7 @@ import { Button, ListGroup, Modal } from "react-bootstrap";
 import { IAssignedAnswer } from "categories/types";
 import { useCategoryContext } from "categories/CategoryProvider";
 import { useGlobalContext } from "global/GlobalProvider";
-import QuestionAnswerRow from "./QuestionAnswerRow";
+import AssignedAnswer from "./AssignedAnswer";
 import { AutoSuggestAnswers } from 'categories/AutoSuggestAnswers'
 import { IDateAndBy } from "global/types";
 import { IAnswer } from "groups/types";
@@ -61,9 +61,9 @@ const AssignedAnswers = ({ questionId, questionTitle, assignedAnswers, isDisable
                 <label className="text-info">Answers</label>
                 <ListGroup as="ul" variant={variant} className='my-1'>
                     {assignedAnswers.map((assignedAnswer: IAssignedAnswer) =>
-                        <QuestionAnswerRow
+                        <AssignedAnswer
                             questionTitle={questionTitle}
-                            questionAnswer={assignedAnswer}
+                            assignedAnswer={assignedAnswer}
                             groupInAdding={false}
                             isDisabled={isDisabled}
                             unAssignAnswer={unAssignAnswer}

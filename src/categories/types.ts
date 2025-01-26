@@ -46,7 +46,7 @@ export enum FormMode {
 export interface IAssignedAnswer {
 	answer: {
 		id: number,
-		title: string
+		title?: string
 	}
 	user: {
 		nickName: string,
