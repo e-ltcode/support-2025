@@ -105,7 +105,7 @@ const Providered = ({ categoryId_questionId }: IProps) => {
                 centered
                 size="lg"
                 className={`${isDarkMode ? "" : ""}`}
-                contentClassName={`${isDarkMode ? "bg-light bg-gradient" : ""}`}
+                contentClassName={`${isDarkMode ? "bg-dark bg-gradient" : "bg-light bg-gradient"}`}
             >
                 <Modal.Header closeButton>
                     Put the new Question to Database

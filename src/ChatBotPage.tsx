@@ -3,14 +3,15 @@ import { useNavigate, useParams } from 'react-router-dom' // useRouteMatch
 
 import { AutoSuggestQuestions } from 'categories/AutoSuggestQuestions';
 
-import { Button, Col, Container, Form, Row } from 'react-bootstrap';
+import { Button, Col, Container, Form, ListGroup, Row } from 'react-bootstrap';
 import { useGlobalContext, useGlobalState } from 'global/GlobalProvider';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faQuestion } from '@fortawesome/free-solid-svg-icons'
 import CatList from 'global/Components/SelectCategory/CatList';
-import { ICategory } from 'categories/types';
+import { ICategory, IQuestion } from 'categories/types';
 import { ICat } from 'global/types';
+import AssignedAnswers from 'global/ChatBotPage/AssignedAnswers';
 
 type SupportParams = {
 	source: string;
@@ -18,7 +19,7 @@ type SupportParams = {
 	email?: string;
 };
 
-const SBBPage: React.FC = () => {
+const ChatBotPage: React.FC = () => {
 
 	let { source, tekst, email } = useParams<SupportParams>();
 	let navigate = useNavigate();
@@ -35,20 +36,29 @@ const SBBPage: React.FC = () => {
 	// if (!isAuthenticated)
 	//     return <div>loading...</div>;
 
+	const [selectedQuestion, setSelectedQuestion] = useState<IQuestion | undefined>(undefined);
+
 	const onSelectQuestion = async (categoryId: string, questionId: number) => {
-		navigate(`/support-2025/categories/${categoryId}_${questionId.toString()}`)
+		// navigate(`/support-2025/categories/${categoryId}_${questionId.toString()}`)
+		const question = await getQuestion(questionId);
+		setSelectedQuestion(question);
 	}
 
-	const { getCatsByKind } = useGlobalContext();
+	const { getCatsByKind, getQuestion } = useGlobalContext();
 	const { dbp, canEdit, authUser, isDarkMode, variant, bg, allCategories } = useGlobalState();
-
 
 	const setParentCategory = (cat: ICategory) => {
 		alert(cat.title)
 	}
 
+	const [showUsage, setShowUsage] = useState(false);
+	const [showAutoSuggest, setShowAutoSuggest] = useState(false);
+
 	const [catsOptions, setCatOptions] = useState<ICat[]>([]);
+	const [catsOptionsSel, setCatsOptionsSel] = useState<Map<string, boolean>>(new Map<string, boolean>());
+
 	const [catsUsage, setCatUsage] = useState<ICat[]>([]);
+	const [catsUsageSel, setCatUsageSel] = useState<Map<string, boolean>>(new Map<string, boolean>());
 
 	useEffect(() => {
 		(async () => {
@@ -57,30 +67,60 @@ const SBBPage: React.FC = () => {
 		})()
 	}, [])
 
+
+	const onOptionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+		const target = event.target;
+		const value = target.type === 'checkbox' ? target.checked : target.value;
+		const name = target.name as any;
+		setShowUsage(true)
+		// setCatOptions((prevState) => ({ 
+		// 	stateName: prevState.stateName + 1 
+		// }))
+		// this.setState({
+		// 	 [name]: value
+		// });
+	}
+
+	//const onUsageChange = ({ target: { value } }) => {
+	const onUsageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+		const target = event.target;
+		const value = target.type === 'checkbox' ? target.checked : target.value;
+		const name = target.name as any;
+		setShowAutoSuggest(true);
+		//setPaymentMethod(value);
+	};
+
+
+
 	return (
-		<Container fluid className='text-secondary'>
+		<Container fluid className='text-info'>
 			<div>
 				<p>Dobrodošli! Ja sam SBBuddy i tu sam da Vam pomognem :)</p>
-				<p>U slučaju da se odnosi na ugovor i račune, pripremite ID korisnika. Podatak se nalazi na SBB računu</p>
+				{/* <p>U slučaju da se odnosi na ugovor i račune, pripremite ID korisnika. Podatak se nalazi na SBB računu</p> */}
 			</div>
 			<Form className='text-center border border-1 m-1'>
 				<div className='text-center'>
 					Izberi Opcije
 				</div>
 				<div className='text-center'>
-					{catsOptions.map(({ id, title }: ICat) => (
-						<Form.Check // prettier-ignore
-							id={id}
-							label={title}
-							name="opcije"
-							type='checkbox'
-							inline
-							className=''
-						/>
-					))}
+					{/* <ListGroup horizontal> */}
+						{catsOptions.map(({ id, title }: ICat) => (
+							// <ListGroup.Item>
+								<Form.Check // prettier-ignore
+									id={id}
+									label={title}
+									name="opcije"
+									type='checkbox'
+									inline
+									className=''
+									onChange={onOptionChange}
+								/>
+							// </ListGroup.Item>
+						))}
+					{/* </ListGroup> */}
 				</div>
 			</Form>
-			<Form className='text-center border border-1 m-1'>
+			{showUsage && <Form className='text-center border border-1 m-1'>
 				<div className='text-center'>
 					Izaberite uslugu za koju Vam je potrebna podrška
 				</div>
@@ -93,13 +133,15 @@ const SBBPage: React.FC = () => {
 							type='checkbox'
 							inline
 							className=''
+							onChange={onUsageChange}
 						/>
 					))}
 				</div>
 			</Form>
+			}
 
 			{/* align-items-center" */}
-			<Row className={`my-1 ${isDarkMode ? "dark" : ""}`}>
+			{ showAutoSuggest && <Row className={`my-1 ${isDarkMode ? "dark" : ""}`}>
 				<Col xs={12} md={3} className='mb-1'>
 					{/* <CatList
 						parentCategory={'null'}
@@ -108,6 +150,7 @@ const SBBPage: React.FC = () => {
 					/> */}
 				</Col>
 				<Col xs={0} md={12}>
+					<label className="text-info">Please enter the Question</label>
 					<div className="d-flex justify-content-start align-items-center">
 						<div className="w-75">
 							<AutoSuggestQuestions
@@ -117,7 +160,7 @@ const SBBPage: React.FC = () => {
 								allCategories={allCategories}
 							/>
 						</div>
-						<Button
+						{/* <Button
 							variant={variant}
 							title="Store Question to Knowledge database"
 							className="ms-2"
@@ -136,22 +179,28 @@ const SBBPage: React.FC = () => {
 						>
 							<FontAwesomeIcon icon={faPlus} size="sm" />
 							<FontAwesomeIcon icon={faQuestion} size='sm' style={{ marginLeft: '-5px' }} />
-						</Button>
+						</Button> */}
 					</div>
 				</Col>
 			</Row>
+			}
 
-
-
-
-			<Row className={`${isDarkMode ? "dark" : ""}`}>
-				<Col>
-
-				</Col>
-			</Row>
+			{selectedQuestion &&
+				<Row className={`${isDarkMode ? "dark" : "light"}`}>
+					<Col>
+						<AssignedAnswers
+							questionId={selectedQuestion.id!}
+							questionTitle={selectedQuestion.title}
+							assignedAnswers={selectedQuestion.assignedAnswers}
+							isDisabled={false}
+						/>
+						{/* isDisabled={selectedQuestion.isDisabled} */}
+					</Col>
+				</Row>
+			}
 		</Container>
 	);
 }
 
-export default SBBPage
+export default ChatBotPage
 

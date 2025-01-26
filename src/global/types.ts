@@ -1,5 +1,5 @@
 // Define the Global State
-import { ICategory } from 'categories/types';
+import { ICategory, IQuestion } from 'categories/types';
 import { IOption } from 'common/types';
 import { IDBPDatabase } from 'idb';
 import { IUser } from 'roles/types';
@@ -100,6 +100,8 @@ export interface IGlobalContext {
 	health: () => void;
 	getSubCats: ({ parentCategory, level }: IParentInfo) => Promise<any>;
 	getCatsByKind: (kind: number) => Promise<ICat[]>;
+	getQuestion: (id: number) => Promise<IQuestion | undefined>;
+	assignQuestionAnswer: (questionId: number, answerId: number, assigned: IDateAndBy) => Promise<any>;
 }
 
 export enum GlobalActionTypes {
@@ -111,7 +113,8 @@ export enum GlobalActionTypes {
 	DARK_MODE = "DARK_MODE",
 	LIGHT_MODE = "LIGHT_MODE",
 	SET_REGISTRATION_CONFIRMED = 'SET_REGISTRATION_CONFIRMED',
-	SET_ALL_CATEGORIES = 'SET_ALL_CATEGORIES'
+	SET_ALL_CATEGORIES = 'SET_ALL_CATEGORIES',
+	SET_QUESTION_AFTER_ASSIGN_ANSWER = 'SET_QUESTION_AFTER_ASSIGN_ANSWER',
 }
 
 export interface ILoginUser {
@@ -176,6 +179,10 @@ export type GlobalPayload = {
 
 	[GlobalActionTypes.SET_ALL_CATEGORIES]: {
 		allCategories: Map<string, ICat>
+	};
+
+	[GlobalActionTypes.SET_QUESTION_AFTER_ASSIGN_ANSWER]: {
+		question: IQuestion
 	};
 };
 

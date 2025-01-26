@@ -7,12 +7,13 @@ import {
   IRoleData, IUserData,
   IRegisterUser,
   ICat,
-  IParentInfo
+  IParentInfo,
+  IDateAndBy
 } from 'global/types'
 
 import { globalReducer, initialGlobalState } from "global/globalReducer";
 
-import { ICategory, IQuestion } from "categories/types";
+import { IAssignedAnswer, ICategory, IQuestion } from "categories/types";
 import { IGroup, IAnswer } from "groups/types";
 import { IRole, IUser } from 'roles/types';
 
@@ -516,6 +517,57 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
     }
   }, []);
 
+  const getQuestion = async (id: number) :  Promise<IQuestion|undefined> => {
+      try {
+        const { dbp } = globalState;
+        const question: IQuestion = await dbp!.get("Questions", id);
+        const { parentCategory } = question;
+        const category: ICategory = await dbp!.get("Categories", parentCategory)
+        question.id = id;
+        question.categoryTitle = category.title;
+        return question;
+      }
+      catch (error: any) {
+        console.log(error);
+        dispatch({ type: GlobalActionTypes.SET_ERROR, payload: error });
+      }
+      return undefined
+  }
+
+    const assignQuestionAnswer = useCallback(async (questionId: number, answerId: number, assigned: IDateAndBy): Promise<any> => {
+      try {
+        const { dbp } = globalState;
+        const question: IQuestion = await dbp!.get('Questions', questionId);
+        const answer: IAnswer = await dbp!.get('Answers', answerId);
+        const newQuestionAnser: IAssignedAnswer = {
+          answer: {
+            id: answerId,
+            title: answer.title
+          },
+          user: {
+            nickName: globalState.authUser.nickName,
+            createdBy: 'date string'
+          },
+          assigned
+        }
+        const assignedAnswers = [...question.assignedAnswers, newQuestionAnser];
+        const obj: IQuestion = {
+          ...question,
+          assignedAnswers,
+          numOfAssignedAnswers: assignedAnswers.length
+        }
+        await dbp!.put('Questions', obj, questionId);
+        console.log("Question Answer successfully assigned");
+        // dispatch({ type: ActionTypes.SET_QUESTION, payload: { question: obj } });
+        dispatch({ type: GlobalActionTypes.SET_QUESTION_AFTER_ASSIGN_ANSWER, payload: { question: { id: questionId, ...obj } } });
+        return obj;
+      }
+      catch (error: any) {
+        console.log('error', error);
+        dispatch({ type: GlobalActionTypes.SET_ERROR, payload: { error } });
+      }
+    }, []);
+
 
   const getCatsByKind = async (kind: number): Promise<ICat[]> => {
     try {
@@ -615,7 +667,8 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
 
   return (
     <GlobalContext.Provider value={{
-      globalState, OpenDB, loadAllCategories, registerUser, signInUser, getUser, health, getSubCats, getCatsByKind
+      globalState, OpenDB, loadAllCategories, registerUser, signInUser, getUser, health, 
+      getSubCats, getCatsByKind, getQuestion, assignQuestionAnswer
     }}>
       <GlobalDispatchContext.Provider value={dispatch}>
         {children}

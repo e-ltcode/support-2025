@@ -116,12 +116,12 @@ export function Navigation(props: INavigation) {
 
               {isAuthenticated &&
                 // <NavLink to={`/supporter/0/${encodeURIComponent('Does Firefox support Manifest 3?')}/xyz`} className="nav-link"
-                <NavLink to={`/support-2025/SBBPage/0/${encodeURIComponent('radi extension')}/xyz`} className="nav-link"
+                <NavLink to={`/support-2025/ChatBotPage/0/${encodeURIComponent('radi extension')}/xyz`} className="nav-link"
                   onClick={() => {
                     //closeQuestionForm();
                   }
                   }>
-                  <FontAwesomeIcon icon={faSurprise} color='lightblue' />{' '}SBBPage
+                  <FontAwesomeIcon icon={faSurprise} color='lightblue' />{' '}ChatBot
                 </NavLink>
               }
 

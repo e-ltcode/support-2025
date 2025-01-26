@@ -130,8 +130,6 @@ const QuestionForm = ({ mode, question, submitForm, children, showCloseButton, c
           </div>
         </Stack>
 
-
-
         <Form.Group controlId="title">
           <Form.Label>Title</Form.Label>
           <Form.Control

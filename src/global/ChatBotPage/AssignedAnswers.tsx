@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import { Button, ListGroup, Modal } from "react-bootstrap";
 import { IAssignedAnswer } from "categories/types";
-import { useCategoryContext } from "categories/CategoryProvider";
 import { useGlobalContext } from "global/GlobalProvider";
-import QuestionAnswerRow from "./QuestionAnswerRow";
+import QuestionAnswerRow from "global/ChatBotPage/QuestionAnswerRow";
 import { AutoSuggestAnswers } from 'categories/AutoSuggestAnswers'
 import { IDateAndBy } from "global/types";
 import { IAnswer } from "groups/types";
@@ -19,8 +18,9 @@ interface IProps {
 
 const AssignedAnswers = ({ questionId, questionTitle, assignedAnswers, isDisabled }: IProps) => {
 
-    const { globalState } = useGlobalContext();
-    const { authUser, isDarkMode, variant, dbp } = globalState;
+    //const { state, assignQuestionAnswer, unAssignQuestionAnswer } = useCategoryContext();
+    const { globalState, assignQuestionAnswer } = useGlobalContext();
+    const { authUser, isDarkMode, variant, dbp, error } = globalState;
 
     const [showAdd, setShowAdd] = useState(false);
     const handleClose = () => setShowAdd(false);
@@ -29,7 +29,6 @@ const AssignedAnswers = ({ questionId, questionTitle, assignedAnswers, isDisable
         handleClose();
     }
 
-    const { state, assignQuestionAnswer, unAssignQuestionAnswer } = useCategoryContext();
     const [showAssign, setShowAssign] = useState(false);
 
     const onSelectQuestionAnswer = async (parentGroup: string, answerId: number) => {
@@ -52,13 +51,13 @@ const AssignedAnswers = ({ questionId, questionTitle, assignedAnswers, isDisable
     }
 
     const unAssignAnswer = async (answerId: number) => {
-        await unAssignQuestionAnswer(questionId, answerId);
+        //await unAssignQuestionAnswer(questionId, answerId);
     }
 
     return (
         <div className={'mx-0 my-1 border rounded-2 px-3 py-1 border border-info'} >
             <div>
-                <label className="text-info">Answers</label>
+                <label className="text-info">Assigned Answers</label>
                 <ListGroup as="ul" variant={variant} className='my-1'>
                     {assignedAnswers.map((assignedAnswer: IAssignedAnswer) =>
                         <QuestionAnswerRow
@@ -71,7 +70,7 @@ const AssignedAnswers = ({ questionId, questionTitle, assignedAnswers, isDisable
                         // key={assignedAnswer.answer.id.toString()}
                     }
                 </ListGroup>
-                {state.error && <div>state.error</div>}
+                {error && <div>error</div>}
                 {/* {state.loading && <div>...loading</div>} */}
             </div>
             {true && // we expect no question will ever assign all the answers from the database

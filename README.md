@@ -17,9 +17,9 @@ Dok ste na sajtu https://slavkopar.github.io/support-2025 \
 pritisnete **F12** i odaberete **Application**.\
 Odaberete **SupportKnowledge** database i kliknete na **Delete Database**
 
-## Dodao sam novu stranicu SBBPage
-SupportPage preko emaila služi da izgradnju Database\
-A SBBPage omogućuje da sam klijent, izgradjuje bazu preko komunikacije klijenta\
+## Dodao sam novu stranicu ChatBotPage
+**SupportPage** služi da preko emaila izgrađuje Database\
+A **ChatBotPage** služi da omogući klijentu, da lako nađe Answer, te izgrađuje bazu preko komunikacije sa ChatBot-om\
 Tu može da se napravi neki Chat Bot.\
 Mislim da danas ljudi više postavljaju pitanja, preko **ChatBot-a** nego putem emaila.\
 E jebiga za ovaj način trebala bi nam baza na netu, a ne lokalna.
@@ -34,7 +34,7 @@ Daljinski ne radi YETTEL\
 i tako pomažemo klijentu da brže nadje odgovor\
 Takođe, ako korisnik kuca reč koja se nalazi u nazivu kategorije, možemo onda da ubacimo sva pitanja iz te kategorije, u drop-down listu.
 
-Bussines logic se preselila u **SupportPage** preko emaila, i **SBBPage** preko ChatBot-a, Question/Answers su samo **maintenance**\
+Bussines logic se preselila u **SupportPage** preko emaila, i **ChatBotPage** preko ChatBot-a, Question/Answers su samo **maintenance**\
 Nisam još počeo da ulazim u ChatBot logiku, ali ovo gore služi da pomogne klijentu da što lakše dođe do  odgovora.
 
 
