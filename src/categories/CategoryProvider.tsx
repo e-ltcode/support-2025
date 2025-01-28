@@ -302,16 +302,7 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
       const category: ICategory = await dbp!.get("Categories", parentCategory)
       question.id = id;
       question.categoryTitle = category.title;
-      // join answer.title
-      const { assignedAnswers } = question;
-      let i = 0;
-      while (i < assignedAnswers.length) {
-        const assignedAnswer = assignedAnswers[0];
-        const answer: IAnswer = await dbp!.get("Answers", id);
-        assignedAnswer.answer.title = answer ? answer.title : "doesn't exist ";
-        i++;
-      }
-      
+     
       // const { fromUserAssignedAnswer } = question;
       // if (fromUserAssignedAnswer) {
       //   question.questionAnswers.forEach(questionAnswer => {
@@ -441,13 +432,12 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
         numOfAssignedAnswers: assignedAnswers.length
       }
       await dbp!.put('Questions', obj, questionId);
-      console.log("Question Answer successfully assigned");
+      console.log("Question Answer successfully assigned",  obj);
       ///////////////////
-      newAssignedAnwser.answer.title = answer.title;
-      obj.assignedAnswers = [...question.assignedAnswers, newAssignedAnwser];;
+      // newAssignedAnwser.answer.title = answer.title;
+      // obj.assignedAnswers = [...question.assignedAnswers, newAssignedAnwser];;
       // dispatch({ type: ActionTypes.SET_QUESTION, payload: { question: obj } });
       dispatch({ type: ActionTypes.SET_QUESTION_AFTER_ASSIGN_ANSWER, payload: { question: { id: questionId, ...obj } } });
-      return obj;
     }
     catch (error: any) {
       console.log('error', error);

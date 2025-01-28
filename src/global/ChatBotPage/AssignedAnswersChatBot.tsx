@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, ListGroup, Modal } from "react-bootstrap";
 import { IAssignedAnswer } from "categories/types";
 import { useGlobalContext } from "global/GlobalProvider";
-import QuestionAnswerRow from "global/ChatBotPage/QuestionAnswerRow";
+import AssignedAnswerChatBot from "global/ChatBotPage/AssignedAnswerChatBot";
 import { AutoSuggestAnswers } from 'categories/AutoSuggestAnswers'
 import { IDateAndBy } from "global/types";
 import { IAnswer } from "groups/types";
@@ -16,10 +16,10 @@ interface IProps {
     isDisabled: boolean
 }
 
-const AssignedAnswers = ({ questionId, questionTitle, assignedAnswers, isDisabled }: IProps) => {
+const AssignedAnswersChatBot = ({ questionId, questionTitle, assignedAnswers, isDisabled }: IProps) => {
 
     //const { state, assignQuestionAnswer, unAssignQuestionAnswer } = useCategoryContext();
-    const { globalState, assignQuestionAnswer } = useGlobalContext();
+    const { globalState, joinAssignedAnswers } = useGlobalContext();
     const { authUser, isDarkMode, variant, dbp, error } = globalState;
 
     const [showAdd, setShowAdd] = useState(false);
@@ -28,6 +28,8 @@ const AssignedAnswers = ({ questionId, questionTitle, assignedAnswers, isDisable
     const closeModal = () => {
         handleClose();
     }
+
+    const [assignedAnswers2, setAssignAnswers2] = useState<IAssignedAnswer[]>([]);
 
     const [showAssign, setShowAssign] = useState(false);
 
@@ -40,7 +42,7 @@ const AssignedAnswers = ({ questionId, questionTitle, assignedAnswers, isDisable
         }
         // TODO in next version do not update MongoDB immediately, wait until users presses Save
         // User could have canceled question update
-        await assignQuestionAnswer(questionId, answerId, assigned);
+        // await assignQuestionAnswer(questionId, answerId, assigned);
         setShowAssign(false);
     }
 
@@ -54,13 +56,22 @@ const AssignedAnswers = ({ questionId, questionTitle, assignedAnswers, isDisable
         //await unAssignQuestionAnswer(questionId, answerId);
     }
 
+    useEffect(() => {
+        (async () => {
+            if (assignedAnswers.length > 0) {
+                const arr = await joinAssignedAnswers(assignedAnswers);
+                setAssignAnswers2(arr);
+            }
+        })()
+    }, [])
+
     return (
         <div className={'mx-0 my-1 border rounded-2 px-3 py-1 border border-info'} >
             <div>
                 <label className="text-info">Assigned Answers</label>
                 <ListGroup as="ul" variant={variant} className='my-1'>
-                    {assignedAnswers.map((assignedAnswer: IAssignedAnswer) =>
-                        <QuestionAnswerRow
+                    {assignedAnswers2.map((assignedAnswer: IAssignedAnswer) =>
+                        <AssignedAnswerChatBot
                             questionTitle={questionTitle}
                             questionAnswer={assignedAnswer}
                             groupInAdding={false}
@@ -159,4 +170,4 @@ const AssignedAnswers = ({ questionId, questionTitle, assignedAnswers, isDisable
     );
 };
 
-export default AssignedAnswers;
+export default AssignedAnswersChatBot;

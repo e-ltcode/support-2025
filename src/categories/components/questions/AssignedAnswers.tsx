@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, ListGroup, Modal } from "react-bootstrap";
 import { IAssignedAnswer } from "categories/types";
 import { useCategoryContext } from "categories/CategoryProvider";
@@ -19,8 +19,10 @@ interface IProps {
 
 const AssignedAnswers = ({ questionId, questionTitle, assignedAnswers, isDisabled }: IProps) => {
 
-    const { globalState } = useGlobalContext();
+    const { globalState, joinAssignedAnswers } = useGlobalContext();
     const { authUser, isDarkMode, variant, dbp } = globalState;
+
+    const [assignedAnswers2, setAssignAnswers2] = useState<IAssignedAnswer[]>([]);
 
     const [showAdd, setShowAdd] = useState(false);
     const handleClose = () => setShowAdd(false);
@@ -28,6 +30,15 @@ const AssignedAnswers = ({ questionId, questionTitle, assignedAnswers, isDisable
     const closeModal = () => {
         handleClose();
     }
+
+    useEffect(() => {
+        (async () => {
+            if (assignedAnswers.length > 0) {
+                const arr = await joinAssignedAnswers(assignedAnswers);
+                setAssignAnswers2(arr);
+            }
+        })()
+    }, [assignedAnswers])
 
     const { state, assignQuestionAnswer, unAssignQuestionAnswer } = useCategoryContext();
     const [showAssign, setShowAssign] = useState(false);
@@ -60,7 +71,7 @@ const AssignedAnswers = ({ questionId, questionTitle, assignedAnswers, isDisable
             <div>
                 <label className="text-info">Answers</label>
                 <ListGroup as="ul" variant={variant} className='my-1'>
-                    {assignedAnswers.map((assignedAnswer: IAssignedAnswer) =>
+                    {assignedAnswers2.map((assignedAnswer: IAssignedAnswer) =>
                         <AssignedAnswer
                             questionTitle={questionTitle}
                             assignedAnswer={assignedAnswer}

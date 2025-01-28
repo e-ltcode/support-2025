@@ -226,7 +226,7 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
       },
     }
     await dbp.add('Groups', g);
-    console.log('group added', g);
+    console.log('--->group added', g);
 
     if (answers) {
       let i = 0;
@@ -246,6 +246,7 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
           status: status ?? 0,
           level: 2
         }
+        console.log('========>>>>>>', { answer })
         await dbp.add('Answers', answer);
         i++;
       }
@@ -270,70 +271,100 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
     parentCategory: string,
     level: number)
     : Promise<void> => {
-    const { id, title, kind, tags, categories, questions } = categoryData;
+    try {
+      const { id, title, kind, tags, categories, questions } = categoryData;
 
-    if (id === 'SAFARI') {
-      const q = {
-        title: '',
-        source: 0,
-        status: 0,
-      }
-      for (var i = 999; i > 100; i--) {
-        questions!.push({ ...q, title: 'This is demo question related to test of infinite scroll, when Group has a few hundreds of questions ' + i });
-      }
-    }
-
-    const cat: ICategory = {
-      id,
-      kind: kind??0,
-      parentCategory,
-      hasSubCategories: categories ? categories.length > 0 : false,
-      title,
-      level,
-      tags: tags ?? [],
-      questions: [],
-      numOfQuestions: questions?.length || 0,
-      created: {
-        date: new Date(),
-        by: {
-          nickName: 'Boss'
+      if (id === 'SAFARI') {
+        const q = {
+          title: '',
+          source: 0,
+          status: 0,
         }
-      },
-    }
-    await dbp.add('Categories', cat);
-    console.log('category added', cat);
-
-    if (questions) {
-      let i = 0;
-      while (i < questions.length) {
-        const q: IQuestionData = questions[i];
-        const { title, source, status } = q;
-        // TODO
-        const words = q.title.toLowerCase().replaceAll('?', '').split(' ').map((s: string) => s.trim());
-        const question: IQuestion = {
-          parentCategory: cat.id,
-          title,
-          words: words.filter(w => w.length > 1),
-          source: source ?? 0,
-          status: status ?? 0,
-          assignedAnswers: [],
-          numOfAssignedAnswers: 0,
-          level: 2,
-          tags: q.tags ?? []
+        for (var i = 999; i > 100; i--) {
+          questions!.push({ ...q, title: 'This is demo question related to test of infinite scroll, when Group has a few hundreds of questions ' + i });
         }
-        await dbp.add('Questions', question);
-        i++;
+      }
+
+      const cat: ICategory = {
+        id,
+        kind: kind ?? 0,
+        parentCategory,
+        hasSubCategories: categories ? categories.length > 0 : false,
+        title,
+        level,
+        tags: tags ?? [],
+        questions: [],
+        numOfQuestions: questions?.length || 0,
+        created: {
+          date: new Date(),
+          by: {
+            nickName: 'Boss'
+          }
+        },
+      }
+      await dbp.add('Categories', cat);
+      console.log('category added', cat);
+
+      try {
+        if (questions) {
+          let assAnswers: IAssignedAnswer[] = [];
+          let i = 0;
+          while (i < questions.length) {
+            const q: IQuestionData = questions[i];
+            const { title, source, status, assignedAnswers } = q;
+            if (assignedAnswers) {
+              assAnswers = assignedAnswers.map(id => ({
+                answer: {
+                  id
+                },
+                user: {
+                  nickName: 'OWNER',
+                  createdBy: 'OWNER'
+                },
+                assigned: {
+                  date: new Date(),
+                  by: {
+                    nickName: globalState.authUser.nickName
+                  }
+                }
+              }))
+            }
+            // TODO
+            const words = q.title.toLowerCase().replaceAll('?', '').split(' ').map((s: string) => s.trim());
+            const question: IQuestion = {
+              parentCategory: cat.id,
+              title,
+              words: words.filter(w => w.length > 1),
+              source: source ?? 0,
+              status: status ?? 0,
+              assignedAnswers: assAnswers,
+              numOfAssignedAnswers: 0,
+              level: 2,
+              tags: q.tags ?? []
+            }
+            console.log('-->>>', { question })
+            await dbp.add('Questions', question);
+            i++;
+          }
+        }
+      } catch (err) {
+        console.error(err)
+      }
+
+      if (categories) {
+        const parentCategory = cat.id;
+        // const categoryDatas = categories;
+        let j = 0;
+        while (j < categories.length) {
+          const categoryData = categories[j];
+          console.error({ categoryData })
+          addCategory(dbp, categoryData, parentCategory, level + 1);
+          j++;
+        }
       }
     }
-
-    if (categories) {
-      const parentCategory = cat.id;
-      let j = 0;
-      const parentCategories = categories;
-      while (j < parentCategories.length) {
-        addCategory(dbp, parentCategories[j], parentCategory, level + 1);
-        j++;
-      }
+    catch (error) {
+      console.error(error);
     }
     Promise.resolve();
   }
@@ -517,65 +548,43 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
     }
   }, []);
 
-  const getQuestion = async (id: number) :  Promise<IQuestion|undefined> => {
-      try {
-        const { dbp } = globalState;
-        const question: IQuestion = await dbp!.get("Questions", id);
-        const { parentCategory } = question;
-        const category: ICategory = await dbp!.get("Categories", parentCategory)
-        question.id = id;
-        question.categoryTitle = category.title;
-        // join answer.title
-        const { assignedAnswers } = question;
-        let i = 0;
-        while (i < assignedAnswers.length) {
-          const assignedAnswer = assignedAnswers[0];
-          const answer: IAnswer = await dbp!.get("Answers", id);
-          assignedAnswer.answer.title = answer ? answer.title : "doesn't exist ";
-          i++;
-        }
-        return question;
+  const joinAssignedAnswers = async (assignedAnswers: IAssignedAnswer[]): Promise<IAssignedAnswer[]> => {
+    const arr: IAssignedAnswer[] = [];
+    try {
+      const { dbp } = globalState;
+      // join answer.title
+      let i = 0;
+      while (i < assignedAnswers.length) {
+        const assignedAnswer = assignedAnswers[i];
+        const answer: IAnswer = await dbp!.get("Answers", assignedAnswer.answer.id);
+        const title = answer ? answer.title : "Answer doesn't exist any more";
+        arr.push({ ...assignedAnswer, answer: { ...assignedAnswer.answer, title } });
+        i++;
       }
-      catch (error: any) {
-        console.log(error);
-        dispatch({ type: GlobalActionTypes.SET_ERROR, payload: error });
-      }
-      return undefined
+    }
+    catch (error: any) {
+      console.log(error);
+      dispatch({ type: GlobalActionTypes.SET_ERROR, payload: error });
+    }
+    return arr;
   }
 
-    const assignQuestionAnswer = useCallback(async (questionId: number, answerId: number, assigned: IDateAndBy): Promise<any> => {
-      try {
-        const { dbp } = globalState;
-        const question: IQuestion = await dbp!.get('Questions', questionId);
-        const answer: IAnswer = await dbp!.get('Answers', answerId);
-        const newQuestionAnser: IAssignedAnswer = {
-          answer: {
-            id: answerId,
-            title: answer.title
-          },
-          user: {
-            nickName: globalState.authUser.nickName,
-            createdBy: 'date string'
-          },
-          assigned
-        }
-        const assignedAnswers = [...question.assignedAnswers, newQuestionAnser];
-        const obj: IQuestion = {
-          ...question,
-          assignedAnswers,
-          numOfAssignedAnswers: assignedAnswers.length
-        }
-        await dbp!.put('Questions', obj, questionId);
-        console.log("Question Answer successfully assigned");
-        // dispatch({ type: ActionTypes.SET_QUESTION, payload: { question: obj } });
-        dispatch({ type: GlobalActionTypes.SET_QUESTION_AFTER_ASSIGN_ANSWER, payload: { question: { id: questionId, ...obj } } });
-        return obj;
-      }
-      catch (error: any) {
-        console.log('error', error);
-        dispatch({ type: GlobalActionTypes.SET_ERROR, payload: { error } });
-      }
-    }, []);
+  const getQuestion = async (id: number): Promise<IQuestion | undefined> => {
+    try {
+      const { dbp } = globalState;
+      const question: IQuestion = await dbp!.get("Questions", id);
+      const { parentCategory } = question;
+      const category: ICategory = await dbp!.get("Categories", parentCategory)
+      question.id = id;
+      question.categoryTitle = category.title;
+      return question;
+    }
+    catch (error: any) {
+      console.log(error);
+      dispatch({ type: GlobalActionTypes.SET_ERROR, payload: error });
+    }
+    return undefined
+  }
 
 
   const getCatsByKind = async (kind: number): Promise<ICat[]> => {
@@ -676,8 +685,8 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
 
   return (
     <GlobalContext.Provider value={{
-      globalState, OpenDB, loadAllCategories, registerUser, signInUser, getUser, health, 
-      getSubCats, getCatsByKind, getQuestion, assignQuestionAnswer
+      globalState, OpenDB, loadAllCategories, registerUser, signInUser, getUser, health,
+      getSubCats, getCatsByKind, getQuestion, joinAssignedAnswers
     }}>
       <GlobalDispatchContext.Provider value={dispatch}>
         {children}

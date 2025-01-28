@@ -3,30 +3,12 @@
     "id": "PRODAJA",
     "title": "Prodaja",
     "groups": [
-      {
-        "id": "CHROME",
-        "title": "Chrome",
-        "answers": [
-          {
-            "title": "Yes, I play often"
-          }
-        ]
-      }
     ]
   },
   {
     "id": "RACUNI",
     "title": "Računi i naplata",
     "groups": [
-      {
-        "id": "CHROME",
-        "title": "Chrome",
-        "answers": [
-          {
-            "title": "Naravno"
-          }
-        ]
-      }
     ]
   },
   {
@@ -90,7 +72,7 @@
               { "title": "Restartuj TV, router, D3 mini, kao što Tata prase radi" }            ]
           },
           {
-            "id": "INFO",
+            "id": "CHANELINFO",
             "title": "Informacije o kanalima",
             "answers": [
               { "title": "Programski vodič i pregled TV kanala na EON smart boksu, možeš preko daljinskog" },
@@ -140,89 +122,6 @@
   },
   {
     "id": "INFO",
-    "title": "Opšte informacije",
-    "groups": [
-      {
-        "id": "CHROME",
-        "title": "Chrome",
-        "groups": [
-          {
-            "id": "INTERNET",
-            "title": "Internet",
-            "groups": [
-              {
-                "id": "DOMAIN",
-                "title": "Domain",
-                "answers": []
-              },
-              {
-                "id": "WEB-HOSTING",
-                "title": "Web hosting",
-                "answers": []
-              },
-              {
-                "id": "CLAUD-HOSTING",
-                "title": "Claud hosting",
-                "answers": []
-              }
-            ]
-          },
-          {
-            "id": "TV",
-            "title": "Televizija",
-            "groups": [
-              {
-                "id": "INSTALATION",
-                "title": "Instalacija",
-                "answers": []
-              },
-              {
-                "id": "USAGE",
-                "title": "Korišćenje",
-                "answers": []
-              },
-              {
-                "id": "INFO",
-                "title": "Informacije o kanalima",
-                "answers": []
-              },
-              {
-                "id": "VIDEO",
-                "title": "Video klub",
-                "answers": []
-              },
-              {
-                "id": "TV-UNAZAD",
-                "title": "TV Unazad",
-                "answers": []
-              }
-            ]
-          },
-          {
-            "id": "USLUGE",
-            "title": "Ostale usluge",
-            "answers": [
-              {
-                "title": "Does you play often?"
-              }
-            ]
-          },
-          {
-            "id": "TV",
-            "title": "Internet",
-            "answers": [
-              {
-                "title": "Does you play often?"
-              }
-            ]
-          }
-        ],
-        "answers": [
-          {
-            "title": "Does you play often?"
-          }
-        ]
-      }
-    ]
+    "title": "Opšte informacije"
   }
 ]

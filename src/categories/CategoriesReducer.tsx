@@ -420,7 +420,7 @@ const reducer = (state: ICategoriesState, action: CategoriesActions) => {
           ...c,
           questions: inAdding
             ? c.questions.map(q => q.inAdding ? { ...question, inAdding: q.inAdding } : q)
-            : c.questions.map(q => q.id === id ? { ...question, inEditing: q.inEditing } : q),
+            : c.questions.map(q => q.id === id ? { ...question, inEditing: q.inEditing } : q), // TODO sta, ako je inViewing
           inEditing: c.inEditing,
           inAdding: c.inAdding
         }

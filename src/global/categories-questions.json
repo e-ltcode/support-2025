@@ -4,15 +4,6 @@
     "title": "Prodaja",
     "kind": 2,
     "categories": [
-      {
-        "id": "CHROME",
-        "title": "Chrome",
-        "questions": [
-          {
-            "title": "Does you play often?"
-          }
-        ]
-      }
     ]
   },
   {
@@ -20,15 +11,6 @@
     "title": "Računi i naplata",
     "kind": 2,
     "categories": [
-      {
-        "id": "CHROME",
-        "title": "Chrome",
-        "questions": [
-          {
-            "title": "Does you play often?"
-          }
-        ]
-      }
     ]
   },
   {
@@ -93,10 +75,11 @@
               { "title": "Pokvario mi se D3mini daljinski" },
               { "title": "Promenio sam baterije, ali i dalje ne radi" },
               { "title": "Dajte mi listu poslovnica (ne standova)" },
-              {  "title": "Ovo ništa ne radi" }            ]
+              { "title": "Ovo ništa ne radi", "assignedAnswers": [32, 27] }            
+            ]
           },
           {
-            "id": "INFO",
+            "id": "CHANEL-INFO",
             "title": "Informacije o kanalima",
             "kind": 3,
             "questions": [
@@ -150,87 +133,6 @@
     "title": "Opšte informacije",
     "kind": 2,
     "categories": [
-      {
-        "id": "CHROME",
-        "title": "Chrome",
-        "categories": [
-          {
-            "id": "INTERNET",
-            "title": "Internet",
-            "categories": [
-              {
-                "id": "DOMAIN",
-                "title": "Domain",
-                "questions": []
-              },
-              {
-                "id": "WEB-HOSTING",
-                "title": "Web hosting",
-                "questions": []
-              },
-              {
-                "id": "CLAUD-HOSTING",
-                "title": "Claud hosting",
-                "questions": []
-              }
-            ]
-          },
-          {
-            "id": "TV",
-            "title": "Televizija",
-            "categories": [
-              {
-                "id": "INSTALATION",
-                "title": "Instalacija",
-                "questions": []
-              },
-              {
-                "id": "USAGE",
-                "title": "Korišćenje",
-                "questions": []
-              },
-              {
-                "id": "INFO",
-                "title": "Informacije o kanalima",
-                "questions": []
-              },
-              {
-                "id": "VIDEO",
-                "title": "Video klub",
-                "questions": []
-              },
-              {
-                "id": "TV-UNAZAD",
-                "title": "TV Unazad",
-                "questions": []
-              }
-            ]
-          },
-          {
-            "id": "USLUGE",
-            "title": "Ostale usluge",
-            "questions": [
-              {
-                "title": "Does you play often?"
-              }
-            ]
-          },
-          {
-            "id": "TV",
-            "title": "Internet",
-            "questions": [
-              {
-                "title": "Does you play often?"
-              }
-            ]
-          }
-        ],
-        "questions": [
-          {
-            "title": "Does you play often?"
-          }
-        ]
-      }
     ]
   }
 ]

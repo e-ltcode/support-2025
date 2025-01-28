@@ -1,5 +1,5 @@
 // Define the Global State
-import { ICategory, IQuestion } from 'categories/types';
+import { IAssignedAnswer, ICategory, IQuestion } from 'categories/types';
 import { IOption } from 'common/types';
 import { IDBPDatabase } from 'idb';
 import { IUser } from 'roles/types';
@@ -101,7 +101,7 @@ export interface IGlobalContext {
 	getSubCats: ({ parentCategory, level }: IParentInfo) => Promise<any>;
 	getCatsByKind: (kind: number) => Promise<ICat[]>;
 	getQuestion: (id: number) => Promise<IQuestion | undefined>;
-	assignQuestionAnswer: (questionId: number, answerId: number, assigned: IDateAndBy) => Promise<any>;
+	joinAssignedAnswers: (assignedAnswers: IAssignedAnswer[]) => Promise<IAssignedAnswer[]>;
 }
 
 export enum GlobalActionTypes {
@@ -242,6 +242,7 @@ export type CatsActions =
 // Category -> questions
 export interface IQuestionData {
 	title: string;
+	assignedAnswers?: number[];
 	source?: number;
 	status?: number;
 	tags?: string[]

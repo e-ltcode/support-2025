@@ -11,7 +11,7 @@ import { faPlus, faQuestion } from '@fortawesome/free-solid-svg-icons'
 import CatList from 'global/Components/SelectCategory/CatList';
 import { ICategory, IQuestion } from 'categories/types';
 import { ICat } from 'global/types';
-import AssignedAnswers from 'global/ChatBotPage/AssignedAnswers';
+import AssignedAnswersChatBot from 'global/ChatBotPage/AssignedAnswersChatBot';
 
 type SupportParams = {
 	source: string;
@@ -104,19 +104,20 @@ const ChatBotPage: React.FC = () => {
 				</div>
 				<div className='text-center'>
 					{/* <ListGroup horizontal> */}
-						{catsOptions.map(({ id, title }: ICat) => (
-							// <ListGroup.Item>
-								<Form.Check // prettier-ignore
-									id={id}
-									label={title}
-									name="opcije"
-									type='checkbox'
-									inline
-									className=''
-									onChange={onOptionChange}
-								/>
-							// </ListGroup.Item>
-						))}
+					{catsOptions.map(({ id, title }: ICat) => (
+						// <ListGroup.Item>
+						<Form.Check // prettier-ignore
+							id={id}
+							key={id}
+							label={title}
+							name="opcije"
+							type='checkbox'
+							inline
+							className=''
+							onChange={onOptionChange}
+						/>
+						// </ListGroup.Item>
+					))}
 					{/* </ListGroup> */}
 				</div>
 			</Form>
@@ -141,7 +142,7 @@ const ChatBotPage: React.FC = () => {
 			}
 
 			{/* align-items-center" */}
-			{ showAutoSuggest && <Row className={`my-1 ${isDarkMode ? "dark" : ""}`}>
+			{showAutoSuggest && <Row className={`my-1 ${isDarkMode ? "dark" : ""}`}>
 				<Col xs={12} md={3} className='mb-1'>
 					{/* <CatList
 						parentCategory={'null'}
@@ -188,7 +189,7 @@ const ChatBotPage: React.FC = () => {
 			{selectedQuestion &&
 				<Row className={`${isDarkMode ? "dark" : "light"}`}>
 					<Col>
-						<AssignedAnswers
+						<AssignedAnswersChatBot
 							questionId={selectedQuestion.id!}
 							questionTitle={selectedQuestion.title}
 							assignedAnswers={selectedQuestion.assignedAnswers}
