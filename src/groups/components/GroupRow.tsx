@@ -2,7 +2,7 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faRemove, faCaretRight, faCaretDown, faPlus, faThumbsUp } from '@fortawesome/free-solid-svg-icons'
-import A from 'assets/A.png';
+import APlus from 'assets/APlus.png';
 
 import { ListGroup, Button, Badge } from "react-bootstrap";
 
@@ -139,9 +139,10 @@ const GroupRow = ({ group }: { group: IGroup }) => {
                             dispatch({ type: ActionTypes.SET_EXPANDED, payload: { id, expanding: true } });
                     }}
                 >
-                    <FontAwesomeIcon icon={faPlus} size='lg' />
+                    {/* <FontAwesomeIcon icon={faPlus} size='lg' /> */}
                     {/* <FontAwesomeIcon icon={faThumbsUp} size='lg' style={{ marginLeft: '-5px' }} /> */}
-                    <img width="18" height="14" src={A} alt="Answer" style={{ marginLeft: '-2px' }} />
+                    {/* <img width="18" height="14" src={A} alt="Answer" style={{ marginLeft: '-2px' }} /> */}
+                    <img width="22" height="18" src={APlus} alt="Add Answer" />
                 </Button>
             }
         </div>

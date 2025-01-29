@@ -15,7 +15,7 @@
   },
   {
     "id": "TECHNICAL",
-    "title": "Tehnička podrška",
+    "title": "Technical Support",
     "kind": 2,
     "categories": [
       {
@@ -65,7 +65,7 @@
           },
           {
             "id": "USAGE",
-            "title": "Korišćenje",
+            "title": "Usage",
             "kind": 3,
             "questions": [
               { "title": "Daljinski od EON smart box-a ne reaguje" },
@@ -130,7 +130,7 @@
   },
   {
     "id": "INFO",
-    "title": "Opšte informacije",
+    "title": "Information",
     "kind": 2,
     "categories": [
     ]

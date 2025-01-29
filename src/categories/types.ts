@@ -86,6 +86,7 @@ export interface ICategory extends IRecord {
 	parentCategory: string; // | null is a valid value so you can store data with null value in indexeddb 
 	// but it is not a valid key
 	title: string;
+	// words: string[];
 	level: number;
 	tags: string[];
 	questions: IQuestion[];

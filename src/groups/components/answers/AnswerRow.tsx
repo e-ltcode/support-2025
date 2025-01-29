@@ -13,7 +13,9 @@ import { IAnswer } from 'groups/types'
 import AddAnswer from "groups/components/answers/AddAnswer";
 import EditAnswer from "groups/components/answers/EditAnswer";
 import ViewAnswer from "groups/components/answers/ViewAnswer";
+
 import A from 'assets/A.png';
+import APlus from 'assets/APlus.png';
 
 //const AnswerRow = ({ answer, groupInAdding }: { ref: React.ForwardedRef<HTMLLIElement>, answer: IAnswer, groupInAdding: boolean | undefined }) => {
 const AnswerRow = ({ answer, groupInAdding }: { answer: IAnswer, groupInAdding: boolean | undefined }) => {
@@ -103,9 +105,10 @@ const AnswerRow = ({ answer, groupInAdding }: { answer: IAnswer, groupInAdding: 
                         dispatch({ type: ActionTypes.ADD_ANSWER, payload: { groupInfo } })
                     }}
                 >
-                    <FontAwesomeIcon icon={faPlus} size='lg' />
+                    {/* <FontAwesomeIcon icon={faPlus} size='lg' /> */}
                     {/* <FontAwesomeIcon icon={faThumbsUp} size='lg' style={{ marginLeft: '-5px' }} /> */}
-                    <img width="18" height="14" src={A} alt="Answer" style={{ marginLeft: '-2px' }} />
+                    {/* <img width="18" height="14" src={A} alt="Answer" style={{ marginLeft: '-2px' }} /> */}
+                    <img width="22" height="18" src={APlus} alt="Add Answer" />
                 </Button>
             }
         </div>

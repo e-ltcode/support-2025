@@ -53,6 +53,7 @@ export interface ICat {
 	parentCategory: string; // | null is a valid value so you can store data with null value in indexeddb 
 	// but it is not a valid key
 	title: string;
+	words: string[];
 	titlesUpTheTree: string; // traverse up the tree, until root
 	tags: string[];
 	hasSubCategories: boolean;

@@ -2,7 +2,7 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faRemove, faCaretRight, faCaretDown, faPlus, faQuestion } from '@fortawesome/free-solid-svg-icons'
-import Q from 'assets/Q.png';
+import QPlus from 'assets/QPlus.png';
 
 import { ListGroup, Button, Badge } from "react-bootstrap";
 
@@ -104,7 +104,7 @@ const CategoryRow = ({ category }: { category: ICategory }) => {
             }
 
             {canEdit && !alreadyAdding && hoverProps.isHovered &&
-                <Button 
+                <Button
                     variant='link'
                     size="sm"
                     className="ms-2 py-0 mx-1 text-primary"
@@ -139,8 +139,10 @@ const CategoryRow = ({ category }: { category: ICategory }) => {
                             dispatch({ type: ActionTypes.SET_EXPANDED, payload: { id, expanding: true } });
                     }}
                 >
-                    <FontAwesomeIcon icon={faPlus} size='lg' />
-                    <FontAwesomeIcon icon={faQuestion} size='lg' style={{ marginLeft: '-5px' }} />
+                    <img width="22" height="18" src={QPlus} alt="Add Question" />
+
+                    {/* <FontAwesomeIcon icon={faPlus} size='lg' />
+                    <FontAwesomeIcon icon={faQuestion} size='lg' style={{ marginLeft: '-5px' }} /> */}
                 </Button>
             }
         </div>
@@ -157,7 +159,7 @@ const CategoryRow = ({ category }: { category: ICategory }) => {
                     <AddCategory category={category} inLine={true} />
                 )
                     : ((inEditing && state.mode === Mode.EditingCategory) ||
-                       (inViewing && state.mode === Mode.ViewingCategory)) ? (
+                        (inViewing && state.mode === Mode.ViewingCategory)) ? (
                         <>
                             {/* <div class="d-lg-none">hide on lg and wider screens</div> */}
                             <div id='divInLine' className="ms-0 d-md-none w-100">

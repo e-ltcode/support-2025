@@ -14,7 +14,7 @@ import AddQuestion from "categories/components/questions/AddQuestion";
 import EditQuestion from "categories/components/questions/EditQuestion";
 import ViewQuestion from "categories/components/questions/ViewQuestion";
 import Q from 'assets/Q.png';
-import A from 'assets/A.png';
+import QPlus from 'assets/QPlus.png';
 
 //const QuestionRow = ({ question, categoryInAdding }: { ref: React.ForwardedRef<HTMLLIElement>, question: IQuestion, categoryInAdding: boolean | undefined }) => {
 const QuestionRow = ({ question, categoryInAdding }: { question: IQuestion, categoryInAdding: boolean | undefined }) => {
@@ -106,9 +106,9 @@ const QuestionRow = ({ question, categoryInAdding }: { question: IQuestion, cate
                         dispatch({ type: ActionTypes.ADD_QUESTION, payload: { categoryInfo } })
                     }}
                 >
-                    <FontAwesomeIcon icon={faPlus} size='lg' />
+                    {/* <FontAwesomeIcon icon={faPlus} size='lg' /> */}
                     {/* <FontAwesomeIcon icon={faQuestion} size='lg' style={{ marginLeft: '-5px' }} /> */}
-                    <img width="18" height="14" src={A} alt="Answer" style={{ marginLeft: '-2px' }} />
+                    <img width="22" height="18" src={QPlus} alt="Add Question" />
                 </Button>
             }
         </div>

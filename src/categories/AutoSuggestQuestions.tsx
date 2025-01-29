@@ -9,6 +9,7 @@ import './AutoSuggestQuestions.css'
 import { IDBPCursorWithValue, IDBPCursorWithValueIteratorValue, IDBPDatabase } from 'idb';
 import { IQuestion } from 'categories/types';
 import { ICat } from 'global/types';
+import { title } from 'process';
 
 // interface IQuestionShort {
 // 	id: number;
@@ -48,6 +49,10 @@ interface ICatSection {
 
 // autoFocus does the job
 //let inputAutosuggest = createRef<HTMLInputElement>();
+interface ICatIdTitle {
+	id: string;
+	title: string;
+}
 
 const QuestionAutosuggestMulti = Autosuggest as { new(): Autosuggest<IQuest, ICatMy> };
 
@@ -147,6 +152,24 @@ export class AutoSuggestQuestions extends React.Component<{
 		</div>
 	}
 
+
+	private satisfyingCategories = (searchWords: string[]): ICatIdTitle[] => {
+		const arr: ICatIdTitle[] = [];
+		searchWords.filter(w => w.length >= 3).forEach(w => {
+			this.allCategories.forEach(async cat => {
+				const parentCategory = cat.id;
+				let j = 0;
+				cat.words.forEach(catw => {
+					if (catw.includes(w)) {
+						console.log("Add all questions of category")
+						arr.push({ id: cat.id, title: cat.title})
+					}
+				})
+			})
+		})
+		return arr;
+	}
+
 	protected async getSuggestions(value: string): Promise<ICatSection[]> {
 		const escapedValue = escapeRegexCharacters(value.trim());
 		if (escapedValue === '') {
@@ -163,30 +186,30 @@ export class AutoSuggestQuestions extends React.Component<{
 		const index = tx.objectStore('Questions').index('words_idx');
 		const questionRows: number[] = [];
 		try {
-			//const search = encodeURIComponent(value.trim().replaceAll('?', ''));
-			// TODO  osim questions, pretrazuj i Categories title
 			let i = 0;
 			// 1) Find all questions that starts with one of the words
 			while (i < searchWords.length) {
 				const w = searchWords[i];
-				for await (const cursor of index.iterate(IDBKeyRange.bound(w, `${w}zzzzz`, false, true))) {
-					const q: IQuestion = { ...cursor!.value, id: parseInt(cursor!.primaryKey.toString()) }
-					const { id, parentCategory, title } = q;
-					if (!questionRows.includes(id!))
-						questionRows.push(id!);
+				if (w.length >= 2) {
+					for await (const cursor of index.iterate(IDBKeyRange.bound(w, `${w}zzzzz`, false, true))) {
+						const q: IQuestion = { ...cursor!.value, id: parseInt(cursor!.primaryKey.toString()) }
+						const { id, parentCategory, title } = q;
+						if (!questionRows.includes(id!))
+							questionRows.push(id!);
 
-					// 2) Group questions by parentCategory
-					const quest: IQuest = {
-						id: id!,
-						parentCategory,
-						title,
-						categoryTitle: ''
-					}
-					if (!catQuests.has(parentCategory)) {
-						catQuests.set(parentCategory, [quest]);
-					}
-					else {
-						catQuests.get(parentCategory)!.push(quest);
+						// 2) Group questions by parentCategory
+						const quest: IQuest = {
+							id: id!,
+							parentCategory,
+							title,
+							categoryTitle: ''
+						}
+						if (!catQuests.has(parentCategory)) {
+							catQuests.set(parentCategory, [quest]);
+						}
+						else {
+							catQuests.get(parentCategory)!.push(quest);
+						}
 					}
 				}
 				i++;
@@ -195,6 +218,45 @@ export class AutoSuggestQuestions extends React.Component<{
 		catch (error: any) {
 			console.debug(error)
 		};
+
+		////////////////////////////////////////////////////////////////////////////////
+		// Search for Categories title words, and add all the questions of the Category
+		if (questionRows.length === 0) {
+			try {
+				const tx = this.dbp!.transaction('Questions')
+				const index = tx.store.index('parentCategory_idx');
+				const catIdTitles = this.satisfyingCategories(searchWords)
+				let i = 0;
+				while (i < catIdTitles.length) {
+					const catIdTitle = catIdTitles[i];
+					const parentCategory = catIdTitle.id;
+					for await (const cursor of index.iterate(parentCategory)) {
+						const q: IQuestion = cursor.value;
+						const { id, title } = q;
+						if (!questionRows.includes(id!))
+							questionRows.push(id!);
+						console.log(q);
+						// 2) Group questions by parentCategory
+						const quest: IQuest = {
+							id: id!,
+							parentCategory,
+							title,
+							categoryTitle: catIdTitle.title
+						}
+						if (!catQuests.has(parentCategory)) {
+							catQuests.set(parentCategory, [quest]);
+						}
+						else {
+							catQuests.get(parentCategory)!.push(quest);
+						}
+					}
+				}
+				await tx.done;
+			}
+			catch (error: any) {
+				console.debug(error)
+			};
+		}
 
 		await tx.done;
 

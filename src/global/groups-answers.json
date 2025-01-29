@@ -13,7 +13,7 @@
   },
   {
     "id": "TECHNICAL",
-    "title": "Tehnička podrška",
+    "title": "Technical Support",
     "groups": [
       {
         "id": "INTERNET",
@@ -60,7 +60,7 @@
           },
           {
             "id": "USAGE",
-            "title": "Korišćenje",
+            "title": "Usage",
             "answers": [
               { "title": "Nateraj EON smart box-a da reaguje" },
               { "title": "Podesi poziciju ekrana na EON smart box-ukomande" },

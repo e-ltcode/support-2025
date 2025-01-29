@@ -291,6 +291,7 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
         parentCategory,
         hasSubCategories: categories ? categories.length > 0 : false,
         title,
+        // words: title.toLowerCase().replaceAll('?', '').split(' ').map((s: string) => s.trim()).filter(w => w.length > 1),
         level,
         tags: tags ?? [],
         questions: [],
@@ -440,6 +441,7 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
           id,
           parentCategory,
           title,
+          words: title.toLowerCase().replaceAll('?', '').split(' ').map((s: string) => s.trim()).filter(w => w.length > 1),
           titlesUpTheTree: '',
           tags,
           hasSubCategories,
@@ -596,6 +598,7 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
           const cat: ICat = {
             id,
             title: c.title,
+            words: [],
             parentCategory: "",
             titlesUpTheTree: "",
             tags: [],
