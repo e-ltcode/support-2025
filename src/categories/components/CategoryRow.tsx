@@ -96,54 +96,57 @@ const CategoryRow = ({ category }: { category: ICategory }) => {
             } */}
 
             {canEdit && !alreadyAdding && hoverProps.isHovered &&
-                <Button variant='link' size="sm" className="ms-1 py-0 mx-1"
-                    onClick={del}
-                >
-                    <FontAwesomeIcon icon={faRemove} size='lg' />
-                </Button>
-            }
+                <div className="position-absolute d-flex align-items-center top-0 end-0">
+                    <Button variant='link' size="sm" className="py-0 mx-1 float-end"
+                        onClick={del}
+                    >
+                        <FontAwesomeIcon icon={faRemove} size='lg' />
+                    </Button>
+                    {/* }
 
-            {canEdit && !alreadyAdding && hoverProps.isHovered &&
-                <Button
-                    variant='link'
-                    size="sm"
-                    className="ms-2 py-0 mx-1 text-primary"
-                    title="Add SubCategory"
-                    onClick={() => {
-                        dispatch({
-                            type: ActionTypes.ADD_SUB_CATEGORY,
-                            payload: {
-                                parentCategory: category.id,
-                                level: category.level
-                            }
-                        })
-                        if (!isExpanded)
-                            dispatch({ type: ActionTypes.SET_EXPANDED, payload: { id, expanding: true } });
-                    }}
-                >
-                    <FontAwesomeIcon icon={faPlus} size='lg' />
-                </Button>
-            }
+            {canEdit && !alreadyAdding && hoverProps.isHovered && */}
+                    <Button
+                        variant='link'
+                        size="sm"
+                        className="py-0 mx-1 text-primary float-end"
+                        title="Add SubCategory"
+                        onClick={() => {
+                            dispatch({
+                                type: ActionTypes.ADD_SUB_CATEGORY,
+                                payload: {
+                                    parentCategory: category.id,
+                                    level: category.level
+                                }
+                            })
+                            if (!isExpanded)
+                                dispatch({ type: ActionTypes.SET_EXPANDED, payload: { id, expanding: true } });
+                        }}
+                    >
+                        <FontAwesomeIcon icon={faPlus} size='lg' />
+                    </Button>
+            {/* }
 
-            {canEdit && !alreadyAdding && hoverProps.isHovered &&
-                <Button
-                    variant='link'
-                    size="sm"
-                    className="ms-2 py-0 mx-1 text-secondary"
-                    title="Add Question"
-                    onClick={() => {
-                        const categoryInfo: ICategoryInfo = { id: category.id, level: category.level }
-                        dispatch({ type: ActionTypes.ADD_QUESTION, payload: { categoryInfo } })
-                        console.log('CLICK row')
-                        if (!isExpanded)
-                            dispatch({ type: ActionTypes.SET_EXPANDED, payload: { id, expanding: true } });
-                    }}
-                >
-                    <img width="22" height="18" src={QPlus} alt="Add Question" />
+            {canEdit && !alreadyAdding && hoverProps.isHovered && */}
+                        <Button
+                            variant='link'
+                            size="sm"
+                            className="py-0 mx-1 text-secondary float-end"
+                            title="Add Question"
+                            onClick={() => {
+                                const categoryInfo: ICategoryInfo = { id: category.id, level: category.level }
+                                dispatch({ type: ActionTypes.ADD_QUESTION, payload: { categoryInfo } })
+                                console.log('CLICK row')
+                                if (!isExpanded)
+                                    dispatch({ type: ActionTypes.SET_EXPANDED, payload: { id, expanding: true } });
+                            }}
+                        >
+                            <img width="22" height="18" src={QPlus} alt="Add Question" />
 
-                    {/* <FontAwesomeIcon icon={faPlus} size='lg' />
+                            {/* <FontAwesomeIcon icon={faPlus} size='lg' />
                     <FontAwesomeIcon icon={faQuestion} size='lg' style={{ marginLeft: '-5px' }} /> */}
-                </Button>
+                        </Button>
+                                </div>
+
             }
         </div>
 

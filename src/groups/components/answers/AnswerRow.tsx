@@ -48,7 +48,7 @@ const AnswerRow = ({ answer, groupInAdding }: { answer: IAnswer, groupInAdding: 
     const [hoverRef, hoverProps] = useHover();
 
     const Row1 =
-        <div ref={hoverRef} className="d-flex justify-content-start align-items-center w-100 text-secondary">
+        <div ref={hoverRef} className="d-flex justify-content-start align-items-center w-100 text-secondary position-relative">
             <Button
                 variant='link'
                 size="sm"
@@ -86,30 +86,33 @@ const AnswerRow = ({ answer, groupInAdding }: { answer: IAnswer, groupInAdding: 
             } */}
 
             {canEdit && !alreadyAdding && hoverProps.isHovered &&
-                <Button variant='link' size="sm" className="ms-1 py-0 mx-1 text-secondary"
-                    onClick={del}
-                >
-                    <FontAwesomeIcon icon={faRemove} size='lg' />
-                </Button>
-            }
+                <div className="position-absolute d-flex align-items-center top-0 end-0">
+                    <Button variant='link' size="sm" className="ms-1 py-0 mx-0 text-secondary"
+                        onClick={del}
+                    >
+                        <FontAwesomeIcon icon={faRemove} size='lg' />
+                    </Button>
+                    {/* }
 
-            {canEdit && !alreadyAdding && hoverProps.isHovered &&
-                <Button
-                    variant='link'
-                    size="sm"
-                    className="ms-2 py-0 mx-1 text-secondary"
-                    title="Add Answer"
-                    onClick={() => {
-                        console.log('click q')
-                        const groupInfo: IGroupInfo = { id: parentGroup, level }
-                        dispatch({ type: ActionTypes.ADD_ANSWER, payload: { groupInfo } })
-                    }}
-                >
-                    {/* <FontAwesomeIcon icon={faPlus} size='lg' /> */}
-                    {/* <FontAwesomeIcon icon={faThumbsUp} size='lg' style={{ marginLeft: '-5px' }} /> */}
-                    {/* <img width="18" height="14" src={A} alt="Answer" style={{ marginLeft: '-2px' }} /> */}
-                    <img width="22" height="18" src={APlus} alt="Add Answer" />
-                </Button>
+            {canEdit && !alreadyAdding && hoverProps.isHovered && */}
+
+                    <Button
+                        variant='link'
+                        size="sm"
+                        className="ms-1 py-0 mx-0 text-secondary"
+                        title="Add Answer"
+                        onClick={() => {
+                            console.log('click q')
+                            const groupInfo: IGroupInfo = { id: parentGroup, level }
+                            dispatch({ type: ActionTypes.ADD_ANSWER, payload: { groupInfo } })
+                        }}
+                    >
+                        {/* <FontAwesomeIcon icon={faPlus} size='lg' /> */}
+                        {/* <FontAwesomeIcon icon={faThumbsUp} size='lg' style={{ marginLeft: '-5px' }} /> */}
+                        {/* <img width="18" height="14" src={A} alt="Answer" style={{ marginLeft: '-2px' }} /> */}
+                        <img width="22" height="18" src={APlus} alt="Add Answer" />
+                    </Button>
+                </div>
             }
         </div>
 

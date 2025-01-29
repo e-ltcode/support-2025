@@ -47,11 +47,12 @@ const QuestionRow = ({ question, categoryInAdding }: { question: IQuestion, cate
     const [hoverRef, hoverProps] = useHover();
 
     const Row1 =
-        <div ref={hoverRef} className="d-flex justify-content-start align-items-center w-100 text-secondary">
+        // <div ref={hoverRef} className="d-flex justify-content-start align-items-center w-100 text-secondary border border-3  position-relative">
+        <div ref={hoverRef} className="d-flex align-items-center w-100 text-secondary position-relative">
             <Button
                 variant='link'
                 size="sm"
-                className="py-0 px-1 text-secondary"
+                className="d-flex align-items-center p-0 px-0 text-secondary"
             >
                 <img width="22" height="18" src={Q} alt="Question" />
                 {/* <FontAwesomeIcon
@@ -63,7 +64,7 @@ const QuestionRow = ({ question, categoryInAdding }: { question: IQuestion, cate
             <Button
                 variant='link'
                 size="sm"
-                className={`py-0 mx-0 text-decoration-none text-secondary ${(inViewing || inEditing) ? 'fw-bold' : ''}`}
+                className={`p-0 mx-0 text-decoration-none text-secondary ${(inViewing || inEditing) ? 'fw-bold' : ''}`}
                 title={`id:${id!.toString()}`}
                 onClick={() => onSelectQuestion(id!)}
                 disabled={alreadyAdding}
@@ -87,30 +88,29 @@ const QuestionRow = ({ question, categoryInAdding }: { question: IQuestion, cate
             } */}
 
             {canEdit && !alreadyAdding && hoverProps.isHovered &&
-                <Button variant='link' size="sm" className="ms-1 py-0 mx-1 text-secondary"
-                    onClick={del}
-                >
-                    <FontAwesomeIcon icon={faRemove} size='lg' />
-                </Button>
+                <div className="position-absolute d-flex align-items-center top-0 end-0">
+                    <Button variant='link' size="sm" className="ms-0 p-0 text-secondary"
+                        onClick={del}
+                    >
+                        <FontAwesomeIcon icon={faRemove} size='lg' />
+                    </Button>
+                    <Button
+                        variant='link'
+                        size="sm"
+                        className="ms-1 p-0 text-secondary d-flex align-items-center"
+                        title="Add Question"
+                        onClick={() => {
+                            console.log('click q')
+                            const categoryInfo: ICategoryInfo = { id: parentCategory, level }
+                            dispatch({ type: ActionTypes.ADD_QUESTION, payload: { categoryInfo } })
+                        }}
+                    >
+                        <img width="22" height="18" src={QPlus} alt="Add Question" />
+                    </Button>
+                </div>
             }
 
-            {canEdit && !alreadyAdding && hoverProps.isHovered &&
-                <Button
-                    variant='link'
-                    size="sm"
-                    className="ms-2 py-0 mx-1 text-secondary"
-                    title="Add Question"
-                    onClick={() => {
-                        console.log('click q')
-                        const categoryInfo: ICategoryInfo = { id: parentCategory, level }
-                        dispatch({ type: ActionTypes.ADD_QUESTION, payload: { categoryInfo } })
-                    }}
-                >
-                    {/* <FontAwesomeIcon icon={faPlus} size='lg' /> */}
-                    {/* <FontAwesomeIcon icon={faQuestion} size='lg' style={{ marginLeft: '-5px' }} /> */}
-                    <img width="22" height="18" src={QPlus} alt="Add Question" />
-                </Button>
-            }
+            {/* {canEdit && !alreadyAdding && hoverProps.isHovered && } */}
         </div>
 
     return (
@@ -119,7 +119,7 @@ const QuestionRow = ({ question, categoryInAdding }: { question: IQuestion, cate
         //     className="py-0 px-1 w-100"
         //     as="li"
         // >
-        <div className="py-0 px-1 w-100 list-group-item">
+        <div className="py-0 px-1 w-100 list-group-item border-0">
             {inAdding && categoryInAdding && state.mode === Mode.AddingQuestion ? (
                 <AddQuestion question={question} inLine={true} showCloseButton={true} />
             )
