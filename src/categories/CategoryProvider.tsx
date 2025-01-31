@@ -451,7 +451,7 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
       const question = await dbp!.get('Questions', questionId);
       // const answer: IAnswer = await dbp!.get('Answers', answerId);
 
-      const assignedAnswers = question.questionAnswers.filter((qa: IAssignedAnswer) => qa.answer.id !== answerId);
+      const assignedAnswers = question.assignedAnswers.filter((aa: IAssignedAnswer) => aa.answer.id !== answerId);
       const obj: IQuestion = {
         ...question,
         assignedAnswers,

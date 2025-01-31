@@ -81,7 +81,7 @@ const QuestionForm = ({ mode, question, submitForm, children, showCloseButton, c
 
   return (
     <div className="form-wrapper px-3 py-1 my-0 my-1 w-100" data-bs-theme={`${isDarkMode ? 'dark' : 'light'}`}>
-      {showCloseButton && <CloseButton onClick={closeForm} className="float-end" />}
+      {showCloseButton && true && <CloseButton onClick={closeForm} className="float-end" />}
       <Row className='text-center'>
         <Form.Label>Question</Form.Label>
       </Row>

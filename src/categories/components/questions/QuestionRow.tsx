@@ -52,13 +52,9 @@ const QuestionRow = ({ question, categoryInAdding }: { question: IQuestion, cate
             <Button
                 variant='link'
                 size="sm"
-                className="d-flex align-items-center p-0 px-0 text-secondary"
+                className="p-0 px-0 text-secondary"
             >
                 <img width="22" height="18" src={Q} alt="Question" />
-                {/* <FontAwesomeIcon
-                    icon={faQuestion}
-                    size='sm'
-                /> */}
             </Button>
 
             <Button
