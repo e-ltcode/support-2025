@@ -199,6 +199,10 @@ export function Navigation(props: INavigation) {
                   </NavDropdown> */}
 
                   <NavDropdown.Divider />
+                  <NavDropdown.Item as={Link} to="/support-2025/export" >
+                    Export Database to JSON
+                  </NavDropdown.Item>
+                  <NavDropdown.Divider />
 
                   <NavDropdown.Item as={Link} to="/support-2025/health" >
                     Health

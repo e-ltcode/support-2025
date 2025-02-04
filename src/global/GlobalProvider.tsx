@@ -8,7 +8,8 @@ import {
   IRegisterUser,
   ICat,
   IParentInfo,
-  IDateAndBy
+  IDateAndBy,
+  ICatExport
 } from 'global/types'
 
 import { globalReducer, initialGlobalState } from "global/globalReducer";
@@ -17,7 +18,7 @@ import { IAssignedAnswer, ICategory, IQuestion } from "categories/types";
 import { IGroup, IAnswer } from "groups/types";
 import { IRole, IUser } from 'roles/types';
 
-import { IDBPDatabase, openDB } from 'idb' // IDBPTransaction
+import { IDBPDatabase, IDBPIndex, openDB } from 'idb' // IDBPTransaction
 import { escapeRegexCharacters } from 'common/utilities'
 
 //////////////////
@@ -623,26 +624,21 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
   const getSubCats = async ({ parentCategory, level }: IParentInfo): Promise<any> => {
     try {
       const { dbp } = globalState;
-      try {
-        const tx = dbp!.transaction('Categories')
-        const index = tx.store.index('parentCategory_idx');
-        const list: ICategory[] = [];
-        for await (const cursor of index.iterate(parentCategory)) {
-          console.log(cursor.value);
-          list.push(cursor.value)
-        }
-        await tx.done;
-        const subCats = list.map((c: ICategory) => ({
-          ...c,
-          questions: [],
-          isExpanded: false
-        }))
-        return subCats;
+      const tx = dbp!.transaction('Categories')
+      const index = tx.store.index('parentCategory_idx');
+      const list: ICategory[] = [];
+      for await (const cursor of index.iterate(parentCategory)) {
+        console.log(cursor.value);
+        list.push(cursor.value)
       }
-      catch (error: any) {
-        console.log(error)
-        dispatch({ type: GlobalActionTypes.SET_ERROR, payload: { error } });
-      }
+      await tx.done;
+      const subCats = list.map((c: ICategory) => ({
+        ...c,
+        questions: [],
+        isExpanded: false
+      }))
+      return subCats;
+
 
       // const url = `/api/categories/${wsId}-${parentCategory}`
       // const res = await axios.get(url)
@@ -665,6 +661,37 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
     }
     catch (err: any | Error) {
       console.log(err);
+      dispatch({ type: GlobalActionTypes.SET_ERROR, payload: { error:  err } });
+    }
+  }
+
+  const exportToObj = async (index: IDBPIndex<unknown, ["Categories"], "Categories", "parentCategory_idx", "readonly">, 
+                              category: ICategory) => {
+    try {
+      category.categories = [];
+      for await (const cursor of index.iterate(category.id)) {
+        const cat: ICategory = cursor.value;
+        await exportToObj(index, cat);
+        category.categories.push(cat);
+      }
+    }
+    catch (error: any | Error) {
+      console.log(error);
+      dispatch({ type: GlobalActionTypes.SET_ERROR, payload: { error } });
+    }
+  }
+
+  const exportToJSON = async (category: ICategory) => {
+    try {
+      const { dbp } = globalState;
+      const tx = dbp!.transaction('Categories')
+      const index = tx.store.index('parentCategory_idx');
+      await exportToObj(index, category);
+      await tx.done;
+    }
+    catch (error: any | Error) {
+      console.log(error);
+      dispatch({ type: GlobalActionTypes.SET_ERROR, payload: { error } });
     }
   }
 
@@ -688,7 +715,7 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
 
   return (
     <GlobalContext.Provider value={{
-      globalState, OpenDB, loadAllCategories, registerUser, signInUser, getUser, health,
+      globalState, OpenDB, loadAllCategories, registerUser, signInUser, getUser, exportToJSON, health,
       getSubCats, getCatsByKind, getQuestion, joinAssignedAnswers
     }}>
       <GlobalDispatchContext.Provider value={dispatch}>

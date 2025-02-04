@@ -60,6 +60,15 @@ export interface ICat {
 	kind: number
 }
 
+export interface ICatExport {
+	id: string;
+	parentCategory: string;
+	title: string;
+	tags: string[];
+	hasSubCategories: boolean;
+	kind: number
+}
+
 
 export interface IGlobalState {
 	isAuthenticated: boolean | null;
@@ -98,6 +107,7 @@ export interface IGlobalContext {
 	signInUser: (loginUser: ILoginUser) => Promise<any>;
 	OpenDB: () => Promise<any>;
 	loadAllCategories: (dbp: IDBPDatabase) => void;
+	exportToJSON: (category: ICategory, parentCategory: string) => void;
 	health: () => void;
 	getSubCats: ({ parentCategory, level }: IParentInfo) => Promise<any>;
 	getCatsByKind: (kind: number) => Promise<ICat[]>;

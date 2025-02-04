@@ -93,7 +93,8 @@ export interface ICategory extends IRecord {
 	numOfQuestions: number;
 	hasMore?: boolean;
 	isExpanded?: boolean;
-	hasSubCategories: boolean,
+	hasSubCategories: boolean;
+	categories?: ICategory[]; // used for export to json
 }
 
 

@@ -18,6 +18,7 @@ import RegisterForm from 'global/RegisterForm';
 import Roles from 'roles/Roles';
 import { IUser } from 'roles/types';
 import ChatBotPage from 'ChatBotPage';
+import Export from 'Export';
 
 function App() {
 
@@ -128,6 +129,7 @@ function App() {
               <Route path="/support-2025/categories" element={<Categories />} />
               <Route path="/support-2025/answers" element={<Answers />} />
               <Route path="/support-2025/users" element={<Roles />} />
+              <Route path="/support-2025/export" element={<Export />} />
               <Route path="/support-2025/about" element={<About />} />
               <Route path="/support-2025/health" element={<Health />} />
             </Routes>
