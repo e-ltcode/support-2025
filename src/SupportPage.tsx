@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom' // useRouteMatch
 
 import { AutoSuggestQuestions } from 'categories/AutoSuggestQuestions';
@@ -7,7 +7,8 @@ import { Button, Col, Container, Row } from 'react-bootstrap';
 import { useGlobalState } from 'global/GlobalProvider';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faQuestion } from '@fortawesome/free-solid-svg-icons'
+//import { faPlus } from '@fortawesome/free-solid-svg-icons'
+import QPlus from 'assets/QPlus.png';
 
 type SupportParams = {
 	source: string;
@@ -36,7 +37,20 @@ const SupportPage: React.FC = () => {
 		navigate(`/support-2025/categories/${categoryId}_${questionId.toString()}`)
 	}
 
+
 	const { dbp, canEdit, authUser, isDarkMode, variant, bg, allCategories } = useGlobalState();
+
+	useEffect(() => {
+		(async () => {
+		  //if (isAuthenticated) {
+		  //await OpenDB();
+		  //}
+		})()
+	 }, [dbp]) // , isAuthenticated
+  
+
+	if (!dbp)
+		return null;
 
 	return (
 		<Container fluid>
@@ -65,11 +79,12 @@ const SupportPage: React.FC = () => {
 									source,
 									title: tekst
 								}))
-								navigate('/2025/categories/add_question')
+								navigate('/support-2025/categories/add_question')
 							}}
 						>
-							<FontAwesomeIcon icon={faPlus} size="sm" />
-							<FontAwesomeIcon icon={faQuestion} size='sm' style={{ marginLeft: '-5px' }} />
+							{/* <FontAwesomeIcon icon={faPlus} size="sm" /> */}
+							{/* <FontAwesomeIcon icon={faQuestion} size='sm' style={{ marginLeft: '-5px' }} /> */}
+							<img width="24" height="20" src={QPlus} alt="Store Question To Database" />
 						</Button>
 					</div>
 				</Col>
