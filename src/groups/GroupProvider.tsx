@@ -320,9 +320,13 @@ export const GroupProvider: React.FC<Props> = ({ children }) => {
   const createAnswer = useCallback(async (answer: IAnswer, fromModal: boolean): Promise<any> => {
     dispatch({ type: ActionTypes.SET_LOADING }) // TODO treba li ovo 
     try {
-      const id = await dbp!.add('Answers', answer);
+      const tx = dbp!.transaction(['Categories', 'Questions'], 'readwrite');
+      const id = await tx.objectStore('Answers').add(answer);
       answer.id = parseInt(id.toString());
       console.log('Answer successfully created')
+      const group: IGroup = await tx.objectStore('Groups').get(answer.parentGroup);
+      group.numOfAnswers += 1;
+      await tx.objectStore('Groups').put(group);
       // TODO check setting inViewing, inEditing, inAdding to false
       dispatch({ type: ActionTypes.SET_ANSWER, payload: { answer } });
       return answer;

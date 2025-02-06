@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faRemove, faCaretRight, faCaretDown, faPlus, faThumbsUp } from '@fortawesome/free-solid-svg-icons'
+import { faUser, faEdit, faRemove, faCaretRight, faCaretDown, faPlus, faThumbsUp } from '@fortawesome/free-solid-svg-icons'
 
 import { ListGroup, Button, Badge } from "react-bootstrap";
 
@@ -26,7 +26,7 @@ const RoleRow = ({ role }: { role: IRole }) => {
     const dispatch = useRoleDispatch();
 
     const alreadyAdding = state.mode === Mode.AddingRole;
-    const showUsers = numOfUsers > 0 && !users.find(q => q.inAdding); // We don't have users loaded
+    const showUsers = numOfUsers > 0; // && !users.find(q => q.inAdding); // We don't have users loaded
 
     const del = () => {
         deleteRole(title);
@@ -79,7 +79,7 @@ const RoleRow = ({ role }: { role: IRole }) => {
             </Button>
 
             <Badge pill bg="secondary" className={numOfUsers === 0 ? 'd-none' : 'd-inline'}>
-                {numOfUsers}<FontAwesomeIcon icon={faThumbsUp} size='sm' />
+                {numOfUsers}<FontAwesomeIcon icon={faUser} size='sm' />
             </Badge>
 
             {/* {canEdit && !alreadyAdding && hoverProps.isHovered &&
@@ -100,7 +100,7 @@ const RoleRow = ({ role }: { role: IRole }) => {
             }
 
             {canEdit && !alreadyAdding && hoverProps.isHovered &&
-                <Button 
+                <Button
                     variant='link'
                     size="sm"
                     className="ms-2 py-0 mx-1 text-primary"
@@ -121,24 +121,24 @@ const RoleRow = ({ role }: { role: IRole }) => {
                 </Button>
             }
 
-            {/* {canEdit && !alreadyAdding && hoverProps.isHovered &&
+            {canEdit && !alreadyAdding && hoverProps.isHovered &&
                 <Button
                     variant='link'
                     size="sm"
                     className="ms-2 py-0 mx-1 text-secondary"
                     title="Add User"
                     onClick={() => {
-                        const roleInfo: IRoleInfo = { id: role.id, level: role.level }
+                        const roleInfo: IRoleInfo = { title: role.title, level: role.level }
                         dispatch({ type: ActionTypes.ADD_USER, payload: { roleInfo } })
-                        console.log('CLICK row')
                         if (!isExpanded)
-                            dispatch({ type: ActionTypes.SET_EXPANDED, payload: { id, expanding: true } });
+                            dispatch({ type: ActionTypes.SET_EXPANDED, payload: { title, expanding: true } });
                     }}
                 >
                     <FontAwesomeIcon icon={faPlus} size='lg' />
-                    <FontAwesomeIcon icon={faThumbsUp} size='lg' style={{ marginLeft: '-5px' }} />
+                    <FontAwesomeIcon icon={faUser} size='lg' style={{ marginLeft: '-5px' }} />
                 </Button>
-            } */}
+            }
+
         </div>
 
     // console.log({ title, isExpanded })
@@ -153,7 +153,7 @@ const RoleRow = ({ role }: { role: IRole }) => {
                     <AddRole role={role} inLine={true} />
                 )
                     : ((inEditing && state.mode === Mode.EditingRole) ||
-                       (inViewing && state.mode === Mode.ViewingRole)) ? (
+                        (inViewing && state.mode === Mode.ViewingRole)) ? (
                         <>
                             {/* <div class="d-lg-none">hide on lg and wider screens</div> */}
                             <div id='divInLine' className="ms-0 d-md-none w-100">

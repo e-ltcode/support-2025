@@ -277,17 +277,23 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
   const createQuestion = useCallback(async (question: IQuestion, fromModal: boolean): Promise<any> => {
     dispatch({ type: ActionTypes.SET_LOADING }) // TODO treba li ovo 
     try {
-      const id = await dbp!.add('Questions', question);
+      const tx = dbp!.transaction(['Categories', 'Questions'], 'readwrite');
+      const id = await tx.objectStore('Questions').add(question);
       question.id = parseInt(id.toString());
       console.log('Question successfully created')
+
+      const category: ICategory = await tx.objectStore('Categories').get(question.parentCategory);
+      category.numOfQuestions += 1;
+      await tx.objectStore('Categories').put(category);
       // TODO check setting inViewing, inEditing, inAdding to false
+
       dispatch({ type: ActionTypes.SET_QUESTION, payload: { question } });
       return question;
     }
     catch (error: any) {
       console.log('error', error);
       if (fromModal)
-        return { message: 'Something is wrong' };
+        return { message: error.message }; //'Something is wrong' };
       dispatch({ type: ActionTypes.SET_ERROR, payload: { error } });
       return {};
     }

@@ -18,7 +18,7 @@ import AssignedAnswers from './AssignedAnswers';
 import { useGlobalContext } from 'global/GlobalProvider';
 import TagList from 'categories/TagList';
 
-const QuestionForm = ({ mode, question, submitForm, children, showCloseButton, closeModal }: IQuestionFormProps) => {
+const QuestionForm = ({ mode, question, submitForm, children, showCloseButton, source=0, closeModal }: IQuestionFormProps) => {
 
   const { globalState } = useGlobalContext();
   const { isDarkMode, variant, bg } = globalState;
@@ -54,6 +54,9 @@ const QuestionForm = ({ mode, question, submitForm, children, showCloseButton, c
   const nameRef = useRef<HTMLTextAreaElement>(null);
   useEffect(() => {
     nameRef.current!.focus();
+    if (source !== 0) {
+      formik.setFieldValue('source', source)
+    }
   }, [nameRef])
 
   const formik = useFormik({
@@ -82,8 +85,7 @@ const QuestionForm = ({ mode, question, submitForm, children, showCloseButton, c
   return (
     <div className="form-wrapper px-3 py-1 my-0 my-1 w-100" >
       {/* data-bs-theme={`${isDarkMode ? 'dark' : 'light'}`} */}
-      {/* {showCloseButton && <CloseButton onClick={closeForm} className="float-end" />} */}
-      <CloseButton onClick={closeForm} className="float-end" />
+      {showCloseButton && <CloseButton onClick={closeForm} className="float-end" />}
       <Row className='text-center'>
         <Form.Label>Question</Form.Label>
       </Row>

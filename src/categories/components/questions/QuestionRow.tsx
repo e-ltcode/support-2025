@@ -117,7 +117,7 @@ const QuestionRow = ({ question, categoryInAdding }: { question: IQuestion, cate
         // >
         <div className="py-0 px-1 w-100 list-group-item border-0">
             {inAdding && categoryInAdding && state.mode === Mode.AddingQuestion ? (
-                <AddQuestion question={question} inLine={true} showCloseButton={true} />
+                <AddQuestion question={question} inLine={true} showCloseButton={true} source={0} />
             )
                 : ((inEditing && state.mode === Mode.EditingQuestion) ||
                     (inViewing && state.mode === Mode.ViewingQuestion)) ? (

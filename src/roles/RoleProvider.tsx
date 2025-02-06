@@ -318,8 +318,13 @@ export const RoleProvider: React.FC<Props> = ({ children }) => {
   const createUser = useCallback(async (user: IUser, fromModal: boolean): Promise<any> => {
     dispatch({ type: ActionTypes.SET_LOADING }) // TODO treba li ovo 
     try {
-      await dbp!.add('Users', user);
+      const tx = dbp!.transaction(['Roles', 'Users'], 'readwrite');
+      const id = await tx.objectStore('Users').add(user);
       console.log('User successfully created')
+      const role: IRole = await tx.objectStore('Roles').get(user.parentRole);
+      role.numOfUsers += 1;
+      await tx.objectStore('Roles').put(role);
+
       // TODO check setting inViewing, inEditing, inAdding to false
       dispatch({ type: ActionTypes.SET_USER, payload: { user } });
       return user;

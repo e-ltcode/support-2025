@@ -104,11 +104,11 @@ const Providered = ({ categoryId_questionId }: IProps) => {
                 animation={true}
                 centered
                 size="lg"
-                className={`${isDarkMode ? "" : ""}`}
-                contentClassName={`${isDarkMode ? "bg-dark bg-gradient" : "bg-light bg-gradient"}`}
+                className="modal show"
+                contentClassName={`${isDarkMode ? "bg-secondary bg-gradient" : "bg-info bg-gradient"}`}
             >
                 <Modal.Header closeButton>
-                    Put the new Question to Database
+                    Store new Question to the Database
                 </Modal.Header>
                 <Modal.Body className="py-0">
                     <AddQuestion
@@ -116,6 +116,7 @@ const Providered = ({ categoryId_questionId }: IProps) => {
                         closeModal={() => setShowAddQuestion(false)}
                         inLine={true}
                         showCloseButton={false}
+                        source={1} /*gmail*/ 
                         setError={(msg) => setCreateQuestionError(msg)}
                     />
                 </Modal.Body>

@@ -6,14 +6,15 @@ import QuestionForm from "categories/components/questions/QuestionForm";
 import { ActionTypes, FormMode, IQuestion } from "categories/types";
 
 interface IProps {
-    question: IQuestion,
-    closeModal?: () => void,
-    inLine: boolean,
-    showCloseButton: boolean,
-    setError?: (msg: string) => void
+    question: IQuestion;
+    closeModal?: () => void;
+    inLine: boolean;
+    showCloseButton: boolean;
+    source: number;
+    setError?: (msg: string) => void;
 }
 
-const AddQuestion = ({ question, inLine, closeModal, showCloseButton, setError }: IProps) => {
+const AddQuestion = ({ question, inLine, closeModal, showCloseButton, source, setError }: IProps) => {
     const globalState = useGlobalState();
     const { authUser } = globalState;
     const { nickName } = authUser;
@@ -58,6 +59,7 @@ const AddQuestion = ({ question, inLine, closeModal, showCloseButton, setError }
             <QuestionForm
                 question={formValues}
                 showCloseButton={showCloseButton}
+                source={source}
                 closeModal={closeModal}
                 mode={FormMode.adding}
                 submitForm={submitForm}

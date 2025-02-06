@@ -114,7 +114,7 @@ const Providered = ({ groupId_answerId }: IProps) => {
                     <AddAnswer
                         answer={newAnswer}
                         closeModal={() => setShowAddAnswer(false)}
-                        inLine={true}
+                        inLine={false}
                         showCloseButton={false}
                         setError={(msg) => setCreateAnswerError(msg)}
                     />

@@ -165,6 +165,7 @@ export interface IQuestionFormProps {
 	closeModal?: () => void;
 	submitForm: (question: IQuestion) => void,
 	showCloseButton: boolean;
+	source: number,
 	children: string
 }
 

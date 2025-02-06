@@ -100,7 +100,7 @@ const UserRow = ({ user, roleInAdding }: { user: IUser, roleInAdding: boolean | 
                     }}
                 >
                     <FontAwesomeIcon icon={faPlus} size='lg' />
-                    <FontAwesomeIcon icon={faThumbsUp} size='lg' style={{ marginLeft: '-5px' }} />
+                    <FontAwesomeIcon icon={faUser} size='lg' style={{ marginLeft: '-5px' }} />
                 </Button>
             }
         </div>
