@@ -14,17 +14,17 @@ In the project directory, you can run:
  Za sada koristite ovo sto šaljem zipovano, pa kad završimo SupportExt onda ćemo da je objavimo\ 
  https://chromewebstore.google.com/search/SupportExt
 
-1) Unzipujte ekstenziju u neki folder\
-2) Otvorite Google Chrome, kliknite na Extensions, pa odaberete 'Manage Extensions'\
-3) Uključite 'developer' mode ON\
-4) Kliknite na 'Load unpacked' i odaberite gore navedeni folder\
+1) Unzipujte ekstenziju u neki folder
+2) Otvorite Google Chrome, kliknite na Extensions, pa odaberete 'Manage Extensions'
+3) Uključite 'developer' mode ON
+4) Kliknite na 'Load unpacked' i odaberite gore navedeni folder
 
-Onda idete u https://mail.google.com/mail\
-Otvorite neki email, i ako se ne pojavi Support ikona uradite 'reload'\
-Kad kliknete na ikonu otvoriće se naša app, koja će 'mail subject' tretirati kao Question\
+5) Onda idete u https://mail.google.com/mail
+6) Otvorite neki email, i ako se ne pojavi Support ikona uradite 'reload'
+7) Kad kliknete na ikonu otvoriće se naša app, koja će 'mail subject' tretirati kao Question
 
 Kad pošaljem novu verziju extenzije, dovoljan je desni klik na SupportExt, pa odabrati 'Manage extension'\
-I onda samo kliknuti na 'reload'\
+I onda samo kliknuti na 'reload'
 
 
 ## Dokumentacija (bice bolja, ovo je samo za jutrasnji miting) 
