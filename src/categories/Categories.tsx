@@ -16,6 +16,7 @@ import EditQuestion from "categories/components/questions/EditQuestion";
 import AddQuestion from './components/questions/AddQuestion';
 
 import { initialQuestion } from "categories/CategoriesReducer";
+import ModalAddQuestion from './ModalAddQuestion';
 
 interface IProps {
     categoryId_questionId: string | undefined
@@ -27,8 +28,10 @@ const Providered = ({ categoryId_questionId }: IProps) => {
 
     const { isDarkMode, authUser } = useGlobalState();
 
-    const [showAddQuestion, setShowAddQuestion] = useState(false);
-    const handleClose = () => setShowAddQuestion(false);
+    const [modalShow, setModalShow] = useState(false);
+    const handleClose = () => {
+        setModalShow(false);
+    }
 
     const [newQuestion, setNewQuestion] = useState({ ...initialQuestion });
     const [createQuestionError, setCreateQuestionError] = useState("");
@@ -43,8 +46,9 @@ const Providered = ({ categoryId_questionId }: IProps) => {
                     if (sNewQuestion) {
                         const q = JSON.parse(sNewQuestion);
                         setNewQuestion({ ...initialQuestion, categoryTitle: 'Select', ...q })
-                        setShowAddQuestion(true);
-                        localStorage.removeItem('New_Question')
+                        setModalShow(true);
+                        localStorage.removeItem('New_Question');
+                        return null;
                     }
                 }
                 else if (categoryId_questionId !== categoryId_questionId_done) {
@@ -65,66 +69,50 @@ const Providered = ({ categoryId_questionId }: IProps) => {
             return <div>`loading...${lastCategoryExpanded} ${categoryId_questionId} ${categoryId_questionId_done}`</div>
     }
 
+    console.log('>>>>>render with showAddQuestion:', modalShow)
     return (
-        <Container>
-            <Button variant="secondary" size="sm" type="button"
-                onClick={() => dispatch({
-                    type: ActionTypes.ADD_SUB_CATEGORY,
-                    payload: {
-                        parentCategory: null,
-                        level: 0
+        <>
+            <Container>
+                <Button variant="secondary" size="sm" type="button"
+                    onClick={() => dispatch({
+                        type: ActionTypes.ADD_SUB_CATEGORY,
+                        payload: {
+                            parentCategory: null,
+                            level: 0
+                        }
+                    })
                     }
-                })
-                }
-            >
-                Add Category
-            </Button>
-            <Row className="my-1">
-                <Col xs={12} md={5}>
-                    <div>
-                        <CategoryList parentCategory={'null'} level={1} title="root" />
-                    </div>
-                </Col>
-                <Col xs={0} md={7}>
-                    {/* {store.mode === FORM_MODES.ADD && <Add category={category??initialCategory} />} */}
-                    {/* <div class="d-none d-lg-block">hide on screens smaller than lg</div> */}
-                    <div id='div-details' className="d-none d-md-block">
-                        {state.mode === Mode.ViewingCategory && <ViewCategory inLine={false} />}
-                        {state.mode === Mode.EditingCategory && <EditCategory inLine={false} />}
-                        {/* {state.mode === FORM_MODES.ADD_QUESTION && <AddQuestion category={null} />} */}
-                        {state.mode === Mode.ViewingQuestion && <ViewQuestion inLine={false} />}
-                        {state.mode === Mode.EditingQuestion && <EditQuestion inLine={false} />}
-                    </div>
-                </Col>
-            </Row>
+                >
+                    Add Category
+                </Button>
+                <Row className="my-1">
+                    <Col xs={12} md={5}>
+                        <div>
+                            <CategoryList parentCategory={'null'} level={1} title="root" />
+                        </div>
+                    </Col>
+                    <Col xs={0} md={7}>
+                        {/* {store.mode === FORM_MODES.ADD && <Add category={category??initialCategory} />} */}
+                        {/* <div class="d-none d-lg-block">hide on screens smaller than lg</div> */}
+                        <div id='div-details' className="d-none d-md-block">
+                            {state.mode === Mode.ViewingCategory && <ViewCategory inLine={false} />}
+                            {state.mode === Mode.EditingCategory && <EditCategory inLine={false} />}
+                            {/* {state.mode === FORM_MODES.ADD_QUESTION && <AddQuestion category={null} />} */}
+                            {state.mode === Mode.ViewingQuestion && <ViewQuestion inLine={false} />}
+                            {state.mode === Mode.EditingQuestion && <EditQuestion inLine={false} />}
+                        </div>
+                    </Col>
+                </Row>
 
-            <Modal
-                show={showAddQuestion}
-                onHide={handleClose}
-                animation={true}
-                centered
-                size="lg"
-                className="modal show"
-                contentClassName={`${isDarkMode ? "bg-secondary bg-gradient" : "bg-info bg-gradient"}`}
-            >
-                <Modal.Header closeButton>
-                    Store new Question to the Database
-                </Modal.Header>
-                <Modal.Body className="py-0">
-                    <AddQuestion
-                        question={newQuestion}
-                        closeModal={() => setShowAddQuestion(false)}
-                        inLine={true}
-                        showCloseButton={false}
-                        source={1} /*gmail*/ 
-                        setError={(msg) => setCreateQuestionError(msg)}
-                    />
-                </Modal.Body>
-                <Modal.Footer>
-                    {createQuestionError}
-                </Modal.Footer>
-            </Modal>
-        </Container>
+            </Container>
+            {modalShow &&
+                <ModalAddQuestion
+                    show={modalShow}
+                    onHide={() => { setModalShow(false) }}
+                    newQuestion={newQuestion}
+                />
+            }
+        </>
     );
 };
 

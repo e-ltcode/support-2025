@@ -292,8 +292,9 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
     }
     catch (error: any) {
       console.log('error', error);
-      if (fromModal)
+      if (fromModal) {
         return { message: error.message }; //'Something is wrong' };
+      }
       dispatch({ type: ActionTypes.SET_ERROR, payload: { error } });
       return {};
     }

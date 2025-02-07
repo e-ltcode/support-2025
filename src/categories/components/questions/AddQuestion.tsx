@@ -18,17 +18,17 @@ const AddQuestion = ({ question, inLine, closeModal, showCloseButton, source, se
     const globalState = useGlobalState();
     const { authUser } = globalState;
     const { nickName } = authUser;
-   
+
     const dispatch = useCategoryDispatch();
     const { state, createQuestion, reloadCategoryNode } = useCategoryContext();
     if (!closeModal) {
         const cat = state.categories.find(c => c.id === question.parentCategory)
-        question.categoryTitle = cat? cat.title: '';
+        question.categoryTitle = cat ? cat.title : '';
     }
     const [formValues] = useState(question)
 
     const submitForm = async (questionObject: IQuestion) => {
-        const obj: any = {...questionObject}
+        const obj: any = { ...questionObject }
         delete obj.inAdding;
         delete obj.id;
         const object: IQuestion = {
@@ -55,18 +55,16 @@ const AddQuestion = ({ question, inLine, closeModal, showCloseButton, source, se
     }
 
     return (
-        <>
-            <QuestionForm
-                question={formValues}
-                showCloseButton={showCloseButton}
-                source={source}
-                closeModal={closeModal}
-                mode={FormMode.adding}
-                submitForm={submitForm}
-            >
-                Create Question
-            </QuestionForm >
-        </>
+        <QuestionForm
+            question={formValues}
+            showCloseButton={showCloseButton}
+            source={source}
+            closeModal={closeModal}
+            mode={FormMode.adding}
+            submitForm={submitForm}
+        >
+            Create Question
+        </QuestionForm >
     )
 }
 
