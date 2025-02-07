@@ -122,7 +122,13 @@ function App() {
         const source = searchParams.get('source');
         const question = searchParams.get('subject');
         const email = searchParams.get('email');
-        navigate(`/support-2025/supporter/${source}/${question}/${email}`);
+        if (!email || email === 'xyz') {
+          localStorage.removeItem('emailFromClient')
+        }
+        else {
+          localStorage.setItem('emailFromClient', email ?? 'slavko.parezanin@gmail.com')
+        }
+        navigate(`/support-2025/supporter/${source}/${question}`);
       }
 
     })()
