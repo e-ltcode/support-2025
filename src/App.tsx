@@ -4,6 +4,7 @@ import { Routes, Route, redirect, useLocation, useNavigate } from "react-router-
 
 import { Navigation } from 'Navigation'
 import { useGlobalContext, useGlobalDispatch, useGlobalState } from 'global/GlobalProvider'
+import { ThemeProvider } from './theme/ThemeProvider';
 
 import './App.css';
 
@@ -111,32 +112,34 @@ function App() {
   }, [dbp, signInUser, isAuthenticated, nickName, password, everLoggedIn, locationPathname, navigate])
 
   return (
-    <Container fluid className="App" data-bs-theme="light">
-      <header className="App-header">
-        <Navigation />
-      </header>
-      <Row>
-        <Col md={12}>
-          <div className="wrapper">
-            <Routes>
-              <Route path="/support-2025/" element={(!isAuthenticated && !everLoggedIn) ? <About /> : <Categories />} />
-              <Route path="/support-2025/register/:returnUrl" element={<RegisterForm />} />
-              <Route path="/support-2025/sign-in" element={<LoginForm initialValues={formInitialValues} invitationId='' />} />
-              <Route path="/support-2025/supporter/:source/:tekst" element={<SupportPage />} />
-              <Route path="/support-2025/supporter/:source/:tekst/:email" element={<SupportPage />} />
-              <Route path="/support-2025/ChatBotPage/:source/:tekst/:email" element={<ChatBotPage />} />
-              <Route path="/support-2025/categories/:categoryId_questionId" element={<Categories />} />
-              <Route path="/support-2025/categories" element={<Categories />} />
-              <Route path="/support-2025/answers" element={<Answers />} />
-              <Route path="/support-2025/users" element={<Roles />} />
-              <Route path="/support-2025/export" element={<Export />} />
-              <Route path="/support-2025/about" element={<About />} />
-              <Route path="/support-2025/health" element={<Health />} />
-            </Routes>
-          </div>
-        </Col>
-      </Row>
-    </Container>
+    <ThemeProvider>
+      <Container fluid className="App" data-bs-theme="light">
+        <header className="App-header">
+          <Navigation />
+        </header>
+        <Row>
+          <Col md={12}>
+            <div className="wrapper">
+              <Routes>
+                <Route path="/support-2025/" element={(!isAuthenticated && !everLoggedIn) ? <About /> : <Categories />} />
+                <Route path="/support-2025/register/:returnUrl" element={<RegisterForm />} />
+                <Route path="/support-2025/sign-in" element={<LoginForm initialValues={formInitialValues} invitationId='' />} />
+                <Route path="/support-2025/supporter/:source/:tekst" element={<SupportPage />} />
+                <Route path="/support-2025/supporter/:source/:tekst/:email" element={<SupportPage />} />
+                <Route path="/support-2025/ChatBotPage/:source/:tekst/:email" element={<ChatBotPage />} />
+                <Route path="/support-2025/categories/:categoryId_questionId" element={<Categories />} />
+                <Route path="/support-2025/categories" element={<Categories />} />
+                <Route path="/support-2025/answers" element={<Answers />} />
+                <Route path="/support-2025/users" element={<Roles />} />
+                <Route path="/support-2025/export" element={<Export />} />
+                <Route path="/support-2025/about" element={<About />} />
+                <Route path="/support-2025/health" element={<Health />} />
+              </Routes>
+            </div>
+          </Col>
+        </Row>
+      </Container>
+    </ThemeProvider>
   );
 }
 
