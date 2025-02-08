@@ -52,7 +52,9 @@ a kategorija ima Tagove: ["MTS", "SBB", "A1", "YETTEL"], mi onda u drop-down uba
 + Daljinski ne radi A1
 + Daljinski ne radi YETTEL
 i tako pomažemo klijentu da brže nadje odgovor\
-Takođe, ako korisnik kuca reč koja se nalazi u nazivu kategorije, možemo onda da ubacimo sva pitanja iz te kategorije, u drop-down listu.
+
+Takođe, ako korisnik kuca neku reč, za koju ne nalazi nijedno pitanje, ali koja se nalazi u nazivu kategorije,\
+možemo onda da ubacimo u drop-don listu sva pitanja iz te kategorije.
 
 Bussines logic se preselila u **SupportPage** preko emaila, i **ChatBotPage** preko ChatBot-a, Question/Answers su samo **maintenance**\
 Nisam još počeo da ulazim u ChatBot logiku, ali ovo gore služi da pomogne klijentu da što lakše dođe do  odgovora.
@@ -87,7 +89,7 @@ or\
 [Tawk](https://www.tawk.to/software/knowledge-base)\
 
 
-## Comment developers should be aware
+## Comment: Developers should be aware
    We have, at two places:\
       &lt;EditCategory inLine={true} />\
       &lt;EditCategory inLine={false} />\
