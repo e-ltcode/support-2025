@@ -17,14 +17,14 @@ In the project directory, you can run:
  Za sada koristite ovo sto šaljem zipovano, pa kad završimo SupportExt onda ćemo da je objavimo\ 
  https://chromewebstore.google.com/search/SupportExt
 
-1 Unzipujte ekstenziju u neki folder
-2 Otvorite Google Chrome, kliknite na Extensions, pa odaberete 'Manage Extensions'
-3 Uključite 'developer' mode ON
-4 Kliknite na 'Load unpacked' i odaberite gore navedeni folder
+1. Unzipujte ekstenziju u neki folder
+2. Otvorite Google Chrome, kliknite na Extensions, pa odaberete 'Manage Extensions'
+3. Uključite 'developer' mode ON
+4. Kliknite na 'Load unpacked' i odaberite gore navedeni folder
 
-5 Onda idete u https://mail.google.com/mail
-6 Otvorite neki email, i ako se ne pojavi Support ikona uradite 'reload'
-7 Kad kliknete na ikonu otvoriće se naša app, koja će 'mail subject' tretirati kao Question
+5. Onda idete u https://mail.google.com/mail
+6. Otvorite neki email, i ako se ne pojavi Support ikona uradite 'reload'
+7. Kad kliknete na ikonu otvoriće se naša app, koja će 'mail subject' tretirati kao Question
 
 Kad pošaljem novu verziju extenzije, dovoljan je desni klik na SupportExt, pa odabrati 'Manage extension'\
 I onda samo kliknuti na 'reload'
@@ -47,10 +47,10 @@ E jebiga za ovaj način trebala bi nam baza na netu, a ne lokalna.
 ## Svaka kategorija ima Tagove
 Pa recimo ako klijent ukuca pitanje u AutoSuggest: 'Daljinski ne radi',\
 a kategorija ima Tagove: ["MTS", "SBB", "A1", "YETTEL"], mi onda u drop-down ubacimo\
-Daljinski ne radi MTS\
-Daljinski ne radi SBB\
-Daljinski ne radi A1\
-Daljinski ne radi YETTEL\
++ Daljinski ne radi MTS
++ Daljinski ne radi SBB
++ Daljinski ne radi A1
++ Daljinski ne radi YETTEL
 i tako pomažemo klijentu da brže nadje odgovor\
 Takođe, ako korisnik kuca reč koja se nalazi u nazivu kategorije, možemo onda da ubacimo sva pitanja iz te kategorije, u drop-down listu.
 
@@ -89,6 +89,6 @@ or\
 
 ## Comment developers should be aware
    We have, at two places:\
-   + &ltEditCategory inLine={true} />\
-   + &ltEditCategory inLine={false} />\
+      &lt;EditCategory inLine={true} />\
+      &lt;EditCategory inLine={false} />\
    so we execute loadCategoryQuestions() twice in QuestionList, but it is OK
