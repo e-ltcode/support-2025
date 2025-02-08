@@ -319,7 +319,7 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
       //   delete question.fromUserAssignedAnswer;
       // }
       if (category.numOfQuestions > 0) {
-        await loadCategoryQuestions({ parentCategory, startCursor: 0, level: 0 });
+        //await loadCategoryQuestions({ parentCategory, startCursor: 0, level: 0 });
       }
       dispatch({ type, payload: { question } });
     }

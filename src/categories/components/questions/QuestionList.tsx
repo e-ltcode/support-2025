@@ -30,7 +30,7 @@ const QuestionList = ({ title, parentCategory, level }: IParentInfo) => {
   }
 
   useEffect(() => {
-    if (numOfQuestions > 0) // && questions.length === 0)
+    if (numOfQuestions > 0 && questions.length === 0)
       loadMore();
   }, [])
 
