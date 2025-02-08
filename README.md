@@ -26,8 +26,10 @@ In the project directory, you can run:
 6. Otvorite neki email, i ako se ne pojavi Support ikona uradite 'reload'
 7. Kad kliknete na ikonu otvoriće se naša app, koja će 'mail subject' tretirati kao Question
 
-Kad pošaljem novu verziju extenzije, dovoljan je desni klik na SupportExt, pa odabrati 'Manage extension'\
-I onda samo kliknuti na 'reload'
+Kad pošaljem novu verziju extenzije, dovoljan je:
+1. desni klik na SupportExt, pa odabrati 'Manage extension'
+2. onda samo kliknuti na 'reload' ekstenzije
+3. Otvorite neki email, pa ako se ne pojavi Support ikona uradite 'reload'
 
 
 ## Dokumentacija (bice bolja, ovo je samo za jutrasnji miting) 
@@ -56,9 +58,7 @@ i tako pomažemo klijentu da brže nadje odgovor\
 Takođe, ako korisnik kuca neku reč, za koju ne nalazi nijedno pitanje, ali koja se nalazi u nazivu kategorije,\
 možemo onda da ubacimo u drop-don listu sva pitanja iz te kategorije.
 
-Bussines logic se preselila u **SupportPage** preko emaila, i **ChatBotPage** preko ChatBot-a, Question/Answers su samo **maintenance**\
-Nisam još počeo da ulazim u ChatBot logiku, ali ovo gore služi da pomogne klijentu da što lakše dođe do  odgovora.
-
+Bussines logic se preselila u **SupportPage** preko emaila, i **ChatBotPage** preko ChatBot-a, Question/Answers su samo **maintenance** Nisam još počeo da ulazim u ChatBot logiku, ali ovo gore služi da pomogne klijentu da što lakše dođe do  odgovora.
 
 ## Ideja
 
