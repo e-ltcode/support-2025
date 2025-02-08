@@ -10,6 +10,9 @@ In the project directory, you can run:
 ### `yarn start`
 ### `yarn run deploy`
 
+## Export Database to JSON
+   It is  possibile to export database to JSON format, for integration to the other AI systems
+
 ## SupportExt Extension
  Za sada koristite ovo sto šaljem zipovano, pa kad završimo SupportExt onda ćemo da je objavimo\ 
  https://chromewebstore.google.com/search/SupportExt
@@ -83,3 +86,9 @@ The idea is exporting of the **Support Knowledge Database** to the formats, expe
 or\
 [Tawk](https://www.tawk.to/software/knowledge-base)\
 
+
+## Comment developers should be aware
+   We have, at two places:\
+   <EditCategory inLine={true} />\
+   <EditCategory inLine={false} />\
+   so we execute loadCategoryQuestions() twice in QuestionList, but it is OK

@@ -96,7 +96,6 @@ const QuestionRow = ({ question, categoryInAdding }: { question: IQuestion, cate
                         className="ms-1 p-0 text-secondary d-flex align-items-center"
                         title="Add Question"
                         onClick={() => {
-                            console.log('click q')
                             const categoryInfo: ICategoryInfo = { id: parentCategory, level }
                             dispatch({ type: ActionTypes.ADD_QUESTION, payload: { categoryInfo } })
                         }}
@@ -105,17 +104,11 @@ const QuestionRow = ({ question, categoryInAdding }: { question: IQuestion, cate
                     </Button>
                 </div>
             }
-
-            {/* {canEdit && !alreadyAdding && hoverProps.isHovered && } */}
         </div>
 
     return (
-        // <ListGroup.Item
-        //     variant={"secondary"}
-        //     className="py-0 px-1 w-100"
-        //     as="li"
-        // >
-        <div className="py-0 px-1 w-100 list-group-item border-0">
+        // border border-3 border-danger"
+        <div className="py-0 px-1 w-100 list-group-item">
             {inAdding && categoryInAdding && state.mode === Mode.AddingQuestion ? (
                 <AddQuestion question={question} inLine={true} showCloseButton={true} source={0} />
             )
@@ -137,7 +130,6 @@ const QuestionRow = ({ question, categoryInAdding }: { question: IQuestion, cate
                     )
             }
         </div>
-        // </ListGroup.Item>
     );
 };
 

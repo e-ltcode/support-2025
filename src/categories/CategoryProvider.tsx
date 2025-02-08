@@ -238,7 +238,6 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
       let included = false;
       let hasMore = false;
       let advanced = false;
-      console.log('loadCategoryQuestions>>>>>>>>>>>>>')
       console.time();
       const tx = dbp!.transaction('Questions', 'readonly');
       const index = tx.store.index('parentCategory_title_idx');
@@ -262,7 +261,7 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
       await tx.done;
       console.log('>>>loadCategoryQuestions of:', parentCategory, questions)
       console.timeEnd();
-      dispatch({ type: ActionTypes.LOAD_CATEGORY_QUESTIONS, payload: { parentCategory, questions, hasMore } });
+      await dispatch({ type: ActionTypes.LOAD_CATEGORY_QUESTIONS, payload: { parentCategory, questions, hasMore } });
     }
     catch (error: any) {
       console.log(error);

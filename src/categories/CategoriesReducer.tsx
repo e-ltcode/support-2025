@@ -84,6 +84,7 @@ export const initialCategoriesState: ICategoriesState = initialStateFromLocalSto
   : initialState
 
 export const CategoriesReducer: Reducer<ICategoriesState, CategoriesActions> = (state, action) => {
+  console.log('----->', action.type)
   const newState = reducer(state, action);
   const aTypesToStore = [
     ActionTypes.SET_EXPANDED
@@ -262,15 +263,17 @@ const reducer = (state: ICategoriesState, action: CategoriesActions) => {
         //   <EditCategory inLine={true} />
         //   <EditCategory inLine={false} />
         //   so we execute loadCategoryQuestions() twice in QuestionList, but OK
+        /*   TODOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
         return state;
+        */
       }
 
       const questionInAdding = category!.questions.find(q => q.inAdding);
       if (questionInAdding) {
-        questions.unshift(questionInAdding);
+        //questions.unshift(questionInAdding);
         console.assert(state.mode === Mode.AddingQuestion, "expected Mode.AddingQuestion")
       }
-      console.log('num of questions', category!.questions.length + questions.length)
+      console.log('num of questions', category!.id, category!.questions.length + questions.length)
       console.timeEnd();
 
       return {
@@ -348,7 +351,7 @@ const reducer = (state: ICategoriesState, action: CategoriesActions) => {
       return {
         ...state,
         categories: state.categories.map(c => c.id === id
-          ? { ...c, questions: [question, ...c.questions], numOfQuestions: c.numOfQuestions + 1, inAdding: true }
+          ? { ...c, questions: [question, ...c.questions], inAdding: true } // , numOfQuestions: c.numOfQuestions + 1
           : { ...c, inAdding: false }),
         mode: Mode.AddingQuestion
       };
@@ -520,7 +523,7 @@ const reducer = (state: ICategoriesState, action: CategoriesActions) => {
   }
 };
 
-function markForClean(categories: ICategory[], parentCategory: IDBValidKey) {
+function markForClean(categories: ICategory[], parentCategory: string) {
   let deca = categories
     .filter(c => c.parentCategory === parentCategory)
     .map(c => ({ id: c.id, parentCategory: c.parentCategory }))
