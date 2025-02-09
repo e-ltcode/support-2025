@@ -23,7 +23,7 @@ const QuestionList = ({ title, parentCategory, level }: IParentInfo) => {
       const includeQuestionId = parentNodes.questionId ? parseInt(parentNodes.questionId) : undefined;
       await loadCategoryQuestions({ parentCategory, startCursor: questions.length, level: 0, includeQuestionId });
     }
-    catch (error_) {
+    catch (error) {
     }
     finally {
     }

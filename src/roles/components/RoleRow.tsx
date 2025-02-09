@@ -26,7 +26,7 @@ const RoleRow = ({ role }: { role: IRole }) => {
     const dispatch = useRoleDispatch();
 
     const alreadyAdding = state.mode === Mode.AddingRole;
-    const showUsers = numOfUsers > 0; // && !users.find(q => q.inAdding); // We don't have users loaded
+    const showUsers = numOfUsers > 0 || users.find(q => q.inAdding) ; // && !users.find(q => q.inAdding); // We don't have users loaded
 
     const del = () => {
         deleteRole(title);
@@ -127,11 +127,12 @@ const RoleRow = ({ role }: { role: IRole }) => {
                     size="sm"
                     className="ms-2 py-0 mx-1 text-secondary"
                     title="Add User"
-                    onClick={() => {
+                    onClick={async () => {
                         const roleInfo: IRoleInfo = { title: role.title, level: role.level }
-                        dispatch({ type: ActionTypes.ADD_USER, payload: { roleInfo } })
-                        if (!isExpanded)
-                            dispatch({ type: ActionTypes.SET_EXPANDED, payload: { title, expanding: true } });
+                        if (!isExpanded) {
+                            await dispatch({ type: ActionTypes.SET_EXPANDED, payload: { title, expanding: true } });
+                        }
+                        await dispatch({ type: ActionTypes.ADD_USER, payload: { roleInfo } });
                     }}
                 >
                     <FontAwesomeIcon icon={faPlus} size='lg' />
@@ -172,7 +173,7 @@ const RoleRow = ({ role }: { role: IRole }) => {
             </ListGroup.Item>
 
             {/* !inAdding && */}
-            {(isExpanded || inViewing || inEditing) && // Row2
+            {(isExpanded || inViewing || inEditing || inAdding) && // Row2
                 <ListGroup.Item
                     className="py-0 px-0"
                     variant={"primary"}
@@ -180,9 +181,9 @@ const RoleRow = ({ role }: { role: IRole }) => {
                 >
                     {isExpanded &&
                         <>
-                            <RoleList level={level + 1} parentRole={title.toString()} title={title} />
+                            <RoleList level={level + 1} parentRole={title} title={title} />
                             {showUsers &&
-                                <UserList level={level + 1} parentRole={title.toString()} title={title} />
+                                <UserList level={level + 1} parentRole={title} title={title} />
                             }
                         </>
                     }

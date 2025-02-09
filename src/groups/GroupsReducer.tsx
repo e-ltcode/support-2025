@@ -261,15 +261,14 @@ const reducer = (state: IGroupsState, action: GroupsActions) => {
         //   <EditCategory inLine={true} />
         //   <EditCategory inLine={false} />
         //   so we execute loadCategoryQuestions() twice in QuestionList, but OK
-        return state;
+        //return state;
       }
 
       const answerInAdding = group!.answers.find(q => q.inAdding);
       if (answerInAdding) {
-        answers.unshift(answerInAdding);
+        //answers.unshift(answerInAdding);
         console.assert(state.mode === Mode.AddingAnswer, "expected Mode.AddingAnswer")
       }
-      console.log('num of answers', group!.answers.length + answers.length)
       return {
         ...state,
         groups: state.groups.map(c => c.id === parentGroup
@@ -345,7 +344,7 @@ const reducer = (state: IGroupsState, action: GroupsActions) => {
       return {
         ...state,
         groups: state.groups.map(c => c.id === id
-          ? { ...c, answers: [answer, ...c.answers], numOfAnswers: c.numOfAnswers+1, inAdding: true }
+          ? { ...c, answers: [answer, ...c.answers], inAdding: true } // numOfAnswers: c.numOfAnswers+1,
           : { ...c, inAdding: false }),
         mode: Mode.AddingAnswer
       };

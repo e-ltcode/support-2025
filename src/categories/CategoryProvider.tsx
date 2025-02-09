@@ -247,11 +247,12 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
           advanced = true;
         }
         else {
-          console.log(cursor.value.title);
-          questions.push({ ...cursor.value, id: cursor.primaryKey })
-          n++;
-          if (includeQuestionId && cursor.primaryKey === includeQuestionId)
+          const id = cursor.primaryKey;
+          if (includeQuestionId && id === includeQuestionId) {
             included = true;
+          }
+          questions.push({ ...cursor.value, id, included });
+          n++;         
           if (n >= pageSize && (includeQuestionId ? included : true)) {
             hasMore = true;
             break;

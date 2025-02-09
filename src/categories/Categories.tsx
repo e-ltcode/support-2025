@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Container, Row, Col, Button, Modal } from "react-bootstrap";
+import { Container, Row, Col, Button } from "react-bootstrap";
 
 import { useParams } from 'react-router-dom';
 
@@ -13,7 +13,6 @@ import ViewCategory from "categories/components/ViewCategory";
 import EditCategory from "categories/components/EditCategory";
 import ViewQuestion from "categories/components/questions/ViewQuestion";
 import EditQuestion from "categories/components/questions/EditQuestion";
-import AddQuestion from './components/questions/AddQuestion';
 
 import { initialQuestion } from "categories/CategoriesReducer";
 import ModalAddQuestion from './ModalAddQuestion';
@@ -69,7 +68,6 @@ const Providered = ({ categoryId_questionId }: IProps) => {
             return <div>`loading...${lastCategoryExpanded} ${categoryId_questionId} ${categoryId_questionId_done}`</div>
     }
 
-    console.log('>>>>>render with showAddQuestion:', modalShow)
     return (
         <>
             <Container>

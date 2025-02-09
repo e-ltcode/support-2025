@@ -72,7 +72,8 @@ export interface IQuestion extends IRecord {
 	source: number;
 	status: number;
 	fromUserAssignedAnswer?: IFromUserAssignedAnswer[];
-	tags: string[]
+	tags: string[];
+	included?: boolean;
 }
 
 export interface ITag {

@@ -113,7 +113,7 @@ const QuestionRow = ({ question, categoryInAdding }: { question: IQuestion, cate
                 <AddQuestion question={question} inLine={true} showCloseButton={true} source={0} />
             )
                 : ((inEditing && state.mode === Mode.EditingQuestion) ||
-                    (inViewing && state.mode === Mode.ViewingQuestion)) ? (
+                   (inViewing && state.mode === Mode.ViewingQuestion)) ? (
                     <>
                         {/* <div class="d-lg-none">hide on lg and wider screens</div> */}
                         <div id='div-question' className="ms-0 d-md-none w-100">
