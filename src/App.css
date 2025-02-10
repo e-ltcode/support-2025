@@ -536,7 +536,7 @@ a:not(.navbar-brand):not(.btn):not(.dropdown-item):hover::after,
 
 /* Add Category button spacing */
 .btn.btn-primary[value="Add Category"] {
-  margin-bottom: 1.5rem;
+  margin-bottom: 2.5rem;
   background-color: var(--primaryButtonBackground) !important;
   color: var(--primaryButtonText) !important;
   border: none;
@@ -562,4 +562,9 @@ a:not(.navbar-brand):not(.btn):not(.dropdown-item):hover::after,
   background-color: var(--primaryButtonHover) !important;
   transform: translateY(-1px);
   box-shadow: var(--shadowMedium);
+}
+
+.btn.btn-secondary[type="button"] {
+  margin-bottom: 2rem;
+  font-weight: 500;
 }
