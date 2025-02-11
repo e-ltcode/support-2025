@@ -1,0 +1,22 @@
+.footer {
+  background-color: var(--headerBackground);
+  border-top: 1px solid var(--headerBorder);
+  color: var(--textPrimary);
+  padding: 1rem 0;
+  margin-top: auto;
+  width: 100%;
+  transition: all var(--transition-speed);
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  text-align: center;
+}
+
+.footer p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--textSecondary);
+} 

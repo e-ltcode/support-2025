@@ -5,6 +5,7 @@ import { Routes, Route, redirect, useLocation, useNavigate } from "react-router-
 import { Navigation } from 'Navigation'
 import { useGlobalContext, useGlobalDispatch, useGlobalState } from 'global/GlobalProvider'
 import { ThemeProvider } from './theme/ThemeProvider';
+import Footer from './components/Footer';
 
 import './App.css';
 
@@ -138,6 +139,7 @@ function App() {
             </div>
           </Col>
         </Row>
+        <Footer />
       </Container>
     </ThemeProvider>
   );
