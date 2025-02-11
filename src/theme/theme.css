@@ -1,0 +1,161 @@
+/* Theme Variables - Light Mode */
+:root {
+  --transition-speed: 0.3s;
+  --pageBackground: #ffffff;
+  --contentBackground: #ffffff;
+  --textPrimary: #2c3e50;
+  --textSecondary: #576574;
+  --headerBackground: #ffffff;
+  --headerBorder: #e9ecef;
+  --navLinkColor: #576574;
+  --navLinkHover: #1abc9c;
+  --navLinkHoverBg: rgba(26, 188, 156, 0.1);
+  --navLinkActiveBg: #1abc9c;
+  --navLinkActiveText: #ffffff;
+  --currentItemBg: #1abc9c;
+  --currentItemText: #ffffff;
+  --searchBarBackground: #f8f9fa;
+  --searchBarText: #2c3e50;
+  --searchBarBorder: #e9ecef;
+  --primaryButtonBackground: #1abc9c;
+  --primaryButtonText: #ffffff;
+  --primaryButtonHover: #16a085;
+  --dropdownBackground: #ffffff;
+  --dropdownBorder: #e9ecef;
+  --dropdownHoverBg: rgba(26, 188, 156, 0.1);
+  --dropdownActiveText: #1abc9c;
+  --shadowLight: 0 2px 4px rgba(0,0,0,0.05);
+  --shadowMedium: 0 4px 6px rgba(0,0,0,0.1);
+  --dropdownShadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+/* Theme Variables - Dark Mode */
+[data-theme='dark'] {
+  --pageBackground: #1a1a1a;
+  --contentBackground: #2d2d2d;
+  --textPrimary: #ecf0f1;
+  --textSecondary: #bdc3c7;
+  --headerBackground: #2d2d2d;
+  --headerBorder: #404040;
+  --navLinkColor: #bdc3c7;
+  --navLinkHover: #1abc9c;
+  --navLinkHoverBg: rgba(26, 188, 156, 0.2);
+  --navLinkActiveBg: #1abc9c;
+  --navLinkActiveText: #ffffff;
+  --currentItemBg: #1abc9c;
+  --currentItemText: #ffffff;
+  --searchBarBackground: #404040;
+  --searchBarText: #ecf0f1;
+  --searchBarBorder: #404040;
+  --primaryButtonBackground: #1abc9c;
+  --primaryButtonText: #ffffff;
+  --primaryButtonHover: #16a085;
+  --dropdownBackground: #2d2d2d;
+  --dropdownBorder: #404040;
+  --dropdownHoverBg: rgba(26, 188, 156, 0.2);
+  --dropdownActiveText: #1abc9c;
+  --shadowLight: 0 2px 4px rgba(0,0,0,0.2);
+  --shadowMedium: 0 4px 6px rgba(0,0,0,0.3);
+  --dropdownShadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+
+/* Theme-aware Component Styles */
+.navbar {
+  background-color: var(--headerBackground) !important;
+  border-bottom: 1px solid var(--headerBorder);
+  transition: background-color var(--transition-speed), border-color var(--transition-speed);
+}
+
+.navbar-brand {
+  color: var(--textPrimary) !important;
+}
+
+.nav-link {
+  color: var(--navLinkColor) !important;
+  transition: color var(--transition-speed);
+}
+
+.nav-link:hover {
+  color: var(--navLinkHover) !important;
+}
+
+.form-control {
+  background-color: var(--searchBarBackground) !important;
+  color: var(--searchBarText) !important;
+  border-color: var(--searchBarBorder) !important;
+  transition: all var(--transition-speed);
+}
+
+.form-control:focus {
+  border-color: var(--navLinkHover) !important;
+  box-shadow: 0 0 0 0.2rem rgba(26, 188, 156, 0.25);
+}
+
+.btn-primary {
+  background-color: var(--primaryButtonBackground) !important;
+  border-color: var(--primaryButtonBackground) !important;
+  color: var(--primaryButtonText) !important;
+  transition: all var(--transition-speed);
+}
+
+.btn-primary:hover {
+  background-color: var(--primaryButtonHover) !important;
+  border-color: var(--primaryButtonHover) !important;
+}
+
+/* Add Group and Category button styles */
+.btn.btn-primary[value="Add Group"],
+.btn.btn-primary[value="Add Category"] {
+  margin-bottom: 2.5rem;
+  background-color: var(--primaryButtonBackground) !important;
+  color: var(--primaryButtonText) !important;
+  border: none;
+  font-weight: 500;
+}
+
+.btn.btn-primary[value="Add Group"]:hover,
+.btn.btn-primary[value="Add Category"]:hover {
+  background-color: var(--primaryButtonHover) !important;
+  transform: translateY(-1px);
+  box-shadow: var(--shadowMedium);
+}
+
+.btn.btn-secondary[type="button"] {
+  margin-bottom: 2rem;
+  font-weight: 500;
+}
+
+/* List Group Theme Styles */
+.list-group {
+  background: var(--contentBackground);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: all var(--transition-speed);
+}
+
+.list-group-item {
+  background: var(--contentBackground);
+  border-color: var(--headerBorder);
+  color: var(--textPrimary);
+  transition: all var(--transition-speed);
+}
+
+.list-group-item:hover {
+  background: var(--navLinkHoverBg);
+}
+
+/* Dropdown Theme Styles */
+.dropdown-menu {
+  background-color: var(--dropdownBackground) !important;
+  border-color: var(--dropdownBorder) !important;
+  box-shadow: var(--dropdownShadow);
+}
+
+.dropdown-item {
+  color: var(--textPrimary) !important;
+}
+
+.dropdown-item:hover {
+  background-color: var(--dropdownHoverBg) !important;
+  color: var(--dropdownActiveText) !important;
+} 
