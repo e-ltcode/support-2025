@@ -1,6 +1,7 @@
 // Define the Global State
 import { IAssignedAnswer, ICategory, IQuestion } from 'categories/types';
 import { IOption } from 'common/types';
+import { IAnswer } from 'groups/types';
 import { IDBPDatabase } from 'idb';
 import { IUser } from 'roles/types';
 
@@ -113,6 +114,7 @@ export interface IGlobalContext {
 	getCatsByKind: (kind: number) => Promise<ICat[]>;
 	getQuestion: (id: number) => Promise<IQuestion | undefined>;
 	joinAssignedAnswers: (assignedAnswers: IAssignedAnswer[]) => Promise<IAssignedAnswer[]>;
+	getAnswer: (id: number) => Promise<IAnswer | undefined>;
 }
 
 export enum GlobalActionTypes {

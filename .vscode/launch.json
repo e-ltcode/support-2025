@@ -8,7 +8,7 @@
          "type": "chrome",
          "request": "launch",
          "name": "Launch Chrome against localhost",
-         "url": "http://localhost:3000/support-2025?supporter=1&source=1&subject=daljinski&email=a.com",
+         "url": "http://localhost:3000/support-2025/ChatBotPage/2/radi/a@b.com",
          "webRoot": "${workspaceFolder}"
       }
    ]

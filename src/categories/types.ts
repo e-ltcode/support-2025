@@ -149,7 +149,7 @@ export interface ICategoriesContext {
 	assignQuestionAnswer: (questionId: number, answerId: number, assigned: IDateAndBy) => Promise<any>;
 	unAssignQuestionAnswer: (questionId: number, answerId: number) => Promise<any>;
 	createAnswer: (answer: IAnswer) => Promise<any>;
-	deleteQuestion: (id: number, parentCategory: string) => void
+	deleteQuestion: (id: number, parentCategory: string) => void;
 }
 
 export interface ICategoryFormProps {

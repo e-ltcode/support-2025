@@ -8,7 +8,7 @@ import {
 
 import { initialCategoriesState, CategoriesReducer } from 'categories/CategoriesReducer';
 import { IDateAndBy, ICat } from 'global/types';
-import { IAnswer } from 'groups/types';
+import { IAnswer, IGroup } from 'groups/types';
 
 const CategoriesContext = createContext<ICategoriesContext>({} as any);
 const CategoryDispatchContext = createContext<Dispatch<any>>(() => null);

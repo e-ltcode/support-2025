@@ -20,10 +20,6 @@ const SupportPage: React.FC = () => {
 
 	let { source, tekst/*, email*/ } = useParams<SupportParams>();
 	let navigate = useNavigate();
-	// if (!email)
-	// 	localStorage.removeItem('emailFromClient')
-	// else if (email !== 'xyz')
-	// 	localStorage.setItem('emailFromClient', email ?? 'slavko.parezanin@gmail.com')
 
 
 	// TODO do we need this?
