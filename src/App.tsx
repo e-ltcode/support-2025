@@ -22,6 +22,28 @@ import { IUser } from 'roles/types';
 import ChatBotPage from 'ChatBotPage';
 import Export from 'Export';
 
+// Placeholder components for footer pages
+const PrivacyPolicy = () => (
+  <div className="content-page">
+    <h1>Privacy Policy</h1>
+    <p>Our privacy policy will be updated soon.</p>
+  </div>
+);
+
+const TermsOfService = () => (
+  <div className="content-page">
+    <h1>Terms of Service</h1>
+    <p>Our terms of service will be updated soon.</p>
+  </div>
+);
+
+const Contact = () => (
+  <div className="content-page">
+    <h1>Contact Us</h1>
+    <p>Please reach out to us at support@support2025.com</p>
+  </div>
+);
+
 function App() {
 
   const { getUser, registerUser, signInUser, OpenDB } = useGlobalContext();
@@ -135,6 +157,9 @@ function App() {
                 <Route path="/support-2025/export" element={<Export />} />
                 <Route path="/support-2025/about" element={<About />} />
                 <Route path="/support-2025/health" element={<Health />} />
+                <Route path="/support-2025/privacy" element={<PrivacyPolicy />} />
+                <Route path="/support-2025/terms" element={<TermsOfService />} />
+                <Route path="/support-2025/contact" element={<Contact />} />
               </Routes>
             </div>
           </Col>
