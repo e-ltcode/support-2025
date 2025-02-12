@@ -7,6 +7,12 @@ import GroupForm from "groups/components/GroupForm";
 import InLineGroupForm from "groups/components/InLineGroupForm";
 import { FormMode, IGroup } from "groups/types";
 
+const generateUniqueId = (title: string): string => {
+    const timestamp = new Date().getTime();
+    const cleanTitle = title.split(' ')[0].toUpperCase();
+    return `${cleanTitle}_${timestamp}`;
+};
+
 const AddGroup = ({ group, inLine } : { group: IGroup, inLine: boolean}) => {
     const globalState = useGlobalState();
     const { nickName } = globalState.authUser;
@@ -17,7 +23,7 @@ const AddGroup = ({ group, inLine } : { group: IGroup, inLine: boolean}) => {
         delete groupObject.inAdding;
         const object: IGroup = {
             ...groupObject,
-            id: groupObject.title.split(' ')[0].toUpperCase(),
+            id: generateUniqueId(groupObject.title),
             created: {
                 date: new Date(),
                 by: {
