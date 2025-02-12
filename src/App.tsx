@@ -46,14 +46,16 @@ function App() {
   }, [OpenDB]) // , isAuthenticated
 
   const locationPathname = location.pathname;
+  const searchParams = new URLSearchParams(location.search);
+
 
   useEffect(() => {
     (async () => {
       const isAuthRoute =
-        locationPathname.startsWith('/invitation') ||
-        locationPathname.startsWith('/register') ||
-        locationPathname.startsWith('/sign-in') ||
-        locationPathname.startsWith('/about');  // allow about without registration
+        locationPathname.startsWith('/support-2025/invitation') ||
+        locationPathname.startsWith('/support-2025/register') ||
+        locationPathname.startsWith('/support-2025/sign-in') ||
+        locationPathname.startsWith('/support-2025/about');  // allow about without registration
       if (!isAuthenticated && !isAuthRoute && dbp) {
         if (everLoggedIn) {
           let signedIn = false;
@@ -107,6 +109,29 @@ function App() {
           */
         }
       }
+      else {
+        // const returnUrl = encodeURIComponent(locationPathname);
+        // console.log('PATH prije navigate(register)', locationPathname)
+        // if (locationPathname.includes('/support-2025/supporter')) {
+        //   // save params
+        //   // navigate('/' + returnUrl, { replace: true });
+        //   navigate('/support-2025/', { replace: true });
+        // }
+      }
+      const supporter = searchParams.get('supporter');
+      if (isAuthenticated && supporter === '1') {
+        const source = searchParams.get('source');
+        const question = searchParams.get('subject');
+        const email = searchParams.get('email');
+        if (!email || email === 'xyz') {
+          localStorage.removeItem('emailFromClient')
+        }
+        else {
+          localStorage.setItem('emailFromClient', email ?? 'slavko.parezanin@gmail.com')
+        }
+        navigate(`/support-2025/supporter/${source}/${question}`);
+      }
+
     })()
 
   }, [dbp, signInUser, isAuthenticated, nickName, password, everLoggedIn, locationPathname, navigate])

@@ -114,7 +114,7 @@ const Providered = ({ roleId_userId }: IProps) => {
                     <AddUser
                         user={newUser}
                         closeModal={() => setShowAddUser(false)}
-                        inLine={true}
+                        inLine={false}
                         showCloseButton={false}
                         setError={(msg) => setCreateUserError(msg)}
                     />

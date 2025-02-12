@@ -84,6 +84,7 @@ export const initialCategoriesState: ICategoriesState = initialStateFromLocalSto
   : initialState
 
 export const CategoriesReducer: Reducer<ICategoriesState, CategoriesActions> = (state, action) => {
+  console.log('----->', action.type)
   const newState = reducer(state, action);
   const aTypesToStore = [
     ActionTypes.SET_EXPANDED
@@ -126,11 +127,12 @@ const reducer = (state: ICategoriesState, action: CategoriesActions) => {
 
     case ActionTypes.SET_PARENT_CATEGORIES: {
       const { parentNodes } = action.payload;
+      const {categoryId, questionId } = parentNodes;
       return {
         ...state,
         parentNodes,
         lastCategoryExpanded: null,
-        categoryId_questionId_done: `${parentNodes.categoryId}_${parentNodes.questionId}`,
+        categoryId_questionId_done: `${categoryId}_${questionId}`,
       };
     }
 
@@ -209,7 +211,7 @@ const reducer = (state: ICategoriesState, action: CategoriesActions) => {
       const cat = state.categories.find(c => c.id === category.id);
       const questionInAdding = cat!.questions.find(q => q.inAdding);
       if (questionInAdding) {
-        questions.unshift(questionInAdding);
+        questions.unshift(questionInAdding); // TODO mislim da ovo treba comment
         console.assert(state.mode === Mode.AddingQuestion, "expected Mode.AddingQuestion")
       }
       return {
@@ -253,32 +255,34 @@ const reducer = (state: ICategoriesState, action: CategoriesActions) => {
     }
 
     case ActionTypes.LOAD_CATEGORY_QUESTIONS: {
-      console.time();
       const { parentCategory, questions, hasMore } = action.payload; // category doesn't contain inViewing, inEditing, inAdding 
       const category = state.categories.find(c => c.id === parentCategory);
-      if (questions.length > 0 && category!.questions.map(q => q.id).includes(questions[0].id)) {
+      //if (questions.length > 0 && category!.questions.map(q => q.id).includes(questions[0].id)) {
         // privremeno  TODO  uradi isto i u group/answers
         // We have, at two places:
         //   <EditCategory inLine={true} />
         //   <EditCategory inLine={false} />
         //   so we execute loadCategoryQuestions() twice in QuestionList, but OK
-        return state;
-      }
-
+        // TODOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+        // return state;
+      //}
       const questionInAdding = category!.questions.find(q => q.inAdding);
       if (questionInAdding) {
-        questions.unshift(questionInAdding);
+        //questions.unshift(questionInAdding);
         console.assert(state.mode === Mode.AddingQuestion, "expected Mode.AddingQuestion")
       }
-      console.log('num of questions', category!.questions.length + questions.length)
-      console.timeEnd();
-
       return {
         ...state,
         categories: state.categories.map(c => c.id === parentCategory
           ? {
             ...c,
-            questions: c.questions.concat(questions),
+            questions: c.questions.concat(questions.map(q => (q.included
+              ? {
+                ...q,
+                inViewing: state.mode === Mode.ViewingQuestion,
+                inEditing: state.mode === Mode.EditingQuestion 
+              } 
+              : q))),
             hasMore,
             inViewing: c.inViewing,
             inEditing: c.inEditing,
@@ -348,7 +352,7 @@ const reducer = (state: ICategoriesState, action: CategoriesActions) => {
       return {
         ...state,
         categories: state.categories.map(c => c.id === id
-          ? { ...c, questions: [question, ...c.questions], numOfQuestions: c.numOfQuestions + 1, inAdding: true }
+          ? { ...c, questions: [question, ...c.questions], inAdding: true } // , numOfQuestions: c.numOfQuestions + 1
           : { ...c, inAdding: false }),
         mode: Mode.AddingQuestion
       };
@@ -520,7 +524,7 @@ const reducer = (state: ICategoriesState, action: CategoriesActions) => {
   }
 };
 
-function markForClean(categories: ICategory[], parentCategory: IDBValidKey) {
+function markForClean(categories: ICategory[], parentCategory: string) {
   let deca = categories
     .filter(c => c.parentCategory === parentCategory)
     .map(c => ({ id: c.id, parentCategory: c.parentCategory }))

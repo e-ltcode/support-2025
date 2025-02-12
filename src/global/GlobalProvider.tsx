@@ -661,12 +661,12 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
     }
     catch (err: any | Error) {
       console.log(err);
-      dispatch({ type: GlobalActionTypes.SET_ERROR, payload: { error:  err } });
+      dispatch({ type: GlobalActionTypes.SET_ERROR, payload: { error: err } });
     }
   }
 
-  const exportToObj = async (index: IDBPIndex<unknown, ["Categories"], "Categories", "parentCategory_idx", "readonly">, 
-                              category: ICategory) => {
+  const exportToObj = async (index: IDBPIndex<unknown, ["Categories"], "Categories", "parentCategory_idx", "readonly">,
+    category: ICategory) => {
     try {
       category.categories = [];
       for await (const cursor of index.iterate(category.id)) {
@@ -712,11 +712,28 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
     //   });
   };
 
+  const getAnswer = async (id: number): Promise<IAnswer | undefined> => {
+    try {
+      const { dbp } = globalState;
+      const answer: IAnswer = await dbp!.get("Answers", id);
+      const { parentGroup } = answer;
+      const group: IGroup = await dbp!.get("Groups", parentGroup)
+      answer.id = id;
+      answer.groupTitle = group.title;
+      return answer;
+    }
+    catch (error: any) {
+      console.log(error);
+    }
+    return undefined;
+  };
+
+
 
   return (
     <GlobalContext.Provider value={{
       globalState, OpenDB, loadAllCategories, registerUser, signInUser, getUser, exportToJSON, health,
-      getSubCats, getCatsByKind, getQuestion, joinAssignedAnswers
+      getSubCats, getCatsByKind, getQuestion, joinAssignedAnswers, getAnswer
     }}>
       <GlobalDispatchContext.Provider value={dispatch}>
         {children}

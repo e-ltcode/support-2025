@@ -37,6 +37,7 @@ const EditQuestion = ({ inLine }: { inLine: boolean }) => {
         <QuestionForm
             question={question!}
             showCloseButton={true}
+            source={0}
             mode={FormMode.editing}
             submitForm={submitForm}
         >

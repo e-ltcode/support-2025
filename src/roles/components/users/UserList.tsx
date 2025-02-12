@@ -30,7 +30,7 @@ const UserList = ({ title, parentRole, level }: IParentInfo) => {
   }
 
   useEffect(() => {
-    if (numOfUsers > 0 && users.length === 0)
+    if (numOfUsers > 0 && users.length === 0) //(users.length === 0 || users.length===1 && users[0].inAdding)) 
       loadMore();
   }, [])
 

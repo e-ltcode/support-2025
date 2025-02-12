@@ -8,7 +8,7 @@ import {
 
 import { initialCategoriesState, CategoriesReducer } from 'categories/CategoriesReducer';
 import { IDateAndBy, ICat } from 'global/types';
-import { IAnswer } from 'groups/types';
+import { IAnswer, IGroup } from 'groups/types';
 
 const CategoriesContext = createContext<ICategoriesContext>({} as any);
 const CategoryDispatchContext = createContext<Dispatch<any>>(() => null);
@@ -238,7 +238,6 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
       let included = false;
       let hasMore = false;
       let advanced = false;
-      console.log('loadCategoryQuestions>>>>>>>>>>>>>')
       console.time();
       const tx = dbp!.transaction('Questions', 'readonly');
       const index = tx.store.index('parentCategory_title_idx');
@@ -248,11 +247,12 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
           advanced = true;
         }
         else {
-          console.log(cursor.value.title);
-          questions.push({ ...cursor.value, id: cursor.primaryKey })
-          n++;
-          if (includeQuestionId && cursor.primaryKey === includeQuestionId)
+          const id = cursor.primaryKey;
+          if (includeQuestionId && id === includeQuestionId) {
             included = true;
+          }
+          questions.push({ ...cursor.value, id, included });
+          n++;         
           if (n >= pageSize && (includeQuestionId ? included : true)) {
             hasMore = true;
             break;
@@ -262,7 +262,7 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
       await tx.done;
       console.log('>>>loadCategoryQuestions of:', parentCategory, questions)
       console.timeEnd();
-      dispatch({ type: ActionTypes.LOAD_CATEGORY_QUESTIONS, payload: { parentCategory, questions, hasMore } });
+      await dispatch({ type: ActionTypes.LOAD_CATEGORY_QUESTIONS, payload: { parentCategory, questions, hasMore } });
     }
     catch (error: any) {
       console.log(error);
@@ -277,17 +277,24 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
   const createQuestion = useCallback(async (question: IQuestion, fromModal: boolean): Promise<any> => {
     dispatch({ type: ActionTypes.SET_LOADING }) // TODO treba li ovo 
     try {
-      const id = await dbp!.add('Questions', question);
+      const tx = dbp!.transaction(['Categories', 'Questions'], 'readwrite');
+      const id = await tx.objectStore('Questions').add(question);
       question.id = parseInt(id.toString());
       console.log('Question successfully created')
+
+      const category: ICategory = await tx.objectStore('Categories').get(question.parentCategory);
+      category.numOfQuestions += 1;
+      await tx.objectStore('Categories').put(category);
       // TODO check setting inViewing, inEditing, inAdding to false
+
       dispatch({ type: ActionTypes.SET_QUESTION, payload: { question } });
       return question;
     }
     catch (error: any) {
       console.log('error', error);
-      if (fromModal)
-        return { message: 'Something is wrong' };
+      if (fromModal) {
+        return { message: error.message }; //'Something is wrong' };
+      }
       dispatch({ type: ActionTypes.SET_ERROR, payload: { error } });
       return {};
     }
@@ -313,7 +320,7 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
       //   delete question.fromUserAssignedAnswer;
       // }
       if (category.numOfQuestions > 0) {
-        await loadCategoryQuestions({ parentCategory, startCursor: 0, level: 0 });
+        //await loadCategoryQuestions({ parentCategory, startCursor: 0, level: 0 });
       }
       dispatch({ type, payload: { question } });
     }

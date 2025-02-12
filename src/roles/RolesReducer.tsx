@@ -261,7 +261,7 @@ const reducer = (state: IRolesState, action: RolesActions) => {
       const role = state.roles.find(c => c.title === parentRole);
       const userInAdding = role!.users.find(q => q.inAdding);
       if (userInAdding) {
-        users.unshift(userInAdding);
+        //users.unshift(userInAdding);
         console.assert(state.mode === Mode.AddingUser, "expected Mode.AddingUser")
       }
       console.log('num of users', role!.users.length + users.length)
@@ -305,7 +305,7 @@ const reducer = (state: IRolesState, action: RolesActions) => {
     }
 
     case ActionTypes.SET_EXPANDED: {
-      const { title: title, expanding } = action.payload;
+      const { title, expanding } = action.payload;
       let { roles } = state;
       if (!expanding) {
         const arr = markForClean(roles, title!)
@@ -333,14 +333,16 @@ const reducer = (state: IRolesState, action: RolesActions) => {
       const { title, level } = roleInfo;
       const user: IUser = {
         ...initialUser,
-        parentRole: ROLES.VIEWER,
+        parentRole: title, //ROLES.VIEWER,
+        role: title as ROLES,
+        roleTitle: title,
         level,
         inAdding: true
       }
       return {
         ...state,
         roles: state.roles.map(c => c.title === title
-          ? { ...c, users: [user, ...c.users], inAdding: true }
+          ? { ...c, users: [user, ...c.users], inAdding: true }  // numOfUsers: c.numOfUsers+1, 
           : { ...c, inAdding: false }),
         mode: Mode.AddingUser
       };

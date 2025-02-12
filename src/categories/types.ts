@@ -72,7 +72,8 @@ export interface IQuestion extends IRecord {
 	source: number;
 	status: number;
 	fromUserAssignedAnswer?: IFromUserAssignedAnswer[];
-	tags: string[]
+	tags: string[];
+	included?: boolean;
 }
 
 export interface ITag {
@@ -148,7 +149,7 @@ export interface ICategoriesContext {
 	assignQuestionAnswer: (questionId: number, answerId: number, assigned: IDateAndBy) => Promise<any>;
 	unAssignQuestionAnswer: (questionId: number, answerId: number) => Promise<any>;
 	createAnswer: (answer: IAnswer) => Promise<any>;
-	deleteQuestion: (id: number, parentCategory: string) => void
+	deleteQuestion: (id: number, parentCategory: string) => void;
 }
 
 export interface ICategoryFormProps {
@@ -165,6 +166,7 @@ export interface IQuestionFormProps {
 	closeModal?: () => void;
 	submitForm: (question: IQuestion) => void,
 	showCloseButton: boolean;
+	source: number,
 	children: string
 }
 

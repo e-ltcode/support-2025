@@ -27,8 +27,8 @@ const CategoryRow = ({ category }: { category: ICategory }) => {
     const dispatch = useCategoryDispatch();
 
     const alreadyAdding = state.mode === Mode.AddingCategory;
-    // TOD proveri ovo
-    const showQuestions = numOfQuestions > 0 // && !questions.find(q => q.inAdding); // We don't have questions loaded
+    // TODO proveri ovo
+    const showQuestions = numOfQuestions > 0 || questions.find(q => q.inAdding) // && !questions.find(q => q.inAdding); // We don't have questions loaded
 
     const del = () => {
         deleteCategory(id);
@@ -102,9 +102,6 @@ const CategoryRow = ({ category }: { category: ICategory }) => {
                     >
                         <FontAwesomeIcon icon={faRemove} size='lg' />
                     </Button>
-                    {/* }
-
-            {canEdit && !alreadyAdding && hoverProps.isHovered && */}
                     <Button
                         variant='link'
                         size="sm"
@@ -124,28 +121,22 @@ const CategoryRow = ({ category }: { category: ICategory }) => {
                     >
                         <FontAwesomeIcon icon={faPlus} size='lg' />
                     </Button>
-            {/* }
-
-            {canEdit && !alreadyAdding && hoverProps.isHovered && */}
-                        <Button
-                            variant='link'
-                            size="sm"
-                            className="py-0 mx-1 text-secondary float-end"
-                            title="Add Question"
-                            onClick={() => {
-                                const categoryInfo: ICategoryInfo = { id: category.id, level: category.level }
-                                dispatch({ type: ActionTypes.ADD_QUESTION, payload: { categoryInfo } })
-                                console.log('CLICK row')
-                                if (!isExpanded)
-                                    dispatch({ type: ActionTypes.SET_EXPANDED, payload: { id, expanding: true } });
-                            }}
-                        >
-                            <img width="22" height="18" src={QPlus} alt="Add Question" />
-
-                            {/* <FontAwesomeIcon icon={faPlus} size='lg' />
-                    <FontAwesomeIcon icon={faQuestion} size='lg' style={{ marginLeft: '-5px' }} /> */}
-                        </Button>
-                                </div>
+                    <Button
+                        variant='link'
+                        size="sm"
+                        className="py-0 mx-1 text-secondary float-end"
+                        title="Add Question"
+                        onClick={async () => {
+                            const categoryInfo: ICategoryInfo = { id: category.id, level: category.level }
+                            if (!isExpanded) {
+                                await dispatch({ type: ActionTypes.SET_EXPANDED, payload: { id, expanding: true } });
+                            }
+                            await dispatch({ type: ActionTypes.ADD_QUESTION, payload: { categoryInfo } });
+                        }}
+                    >
+                        <img width="22" height="18" src={QPlus} alt="Add Question" />
+                    </Button>
+                </div>
 
             }
         </div>
@@ -181,17 +172,17 @@ const CategoryRow = ({ category }: { category: ICategory }) => {
             </ListGroup.Item>
 
             {/* !inAdding && */}
-            {(isExpanded || inViewing || inEditing) && // Row2
+            {(isExpanded || inViewing || inEditing || inAdding) && // Row2
                 <ListGroup.Item
-                    className="py-0 px-0"
+                    className="py-0 px-0" // border border-3 border-warning"
                     variant={"primary"}
                     as="li"
                 >
                     {isExpanded &&
                         <>
-                            <CategoryList level={level + 1} parentCategory={id!.toString()} title={title} />
+                            <CategoryList level={level + 1} parentCategory={id} title={title} />
                             {showQuestions &&
-                                <QuestionList level={level + 1} parentCategory={id!.toString()} title={title} />
+                                <QuestionList level={level + 1} parentCategory={id} title={title} />
                             }
                         </>
                     }

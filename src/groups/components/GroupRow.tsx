@@ -28,7 +28,7 @@ const GroupRow = ({ group }: { group: IGroup }) => {
 
     const alreadyAdding = state.mode === Mode.AddingGroup;
     // TODO proveri ovo
-    const showAnswers = numOfAnswers > 0 // && !answers.find(q => q.inAdding); // We don't have answers loaded
+    const showAnswers = numOfAnswers > 0 || answers.find(q => q.inAdding) // && !answers.find(q => q.inAdding); // We don't have answers loaded
 
     const del = () => {
         deleteGroup(id);
@@ -104,7 +104,7 @@ const GroupRow = ({ group }: { group: IGroup }) => {
             }
 
             {canEdit && !alreadyAdding && hoverProps.isHovered &&
-                <Button 
+                <Button
                     variant='link'
                     size="sm"
                     className="ms-2 py-0 mx-1 text-primary"
@@ -131,17 +131,14 @@ const GroupRow = ({ group }: { group: IGroup }) => {
                     size="sm"
                     className="ms-2 py-0 mx-1 text-secondary"
                     title="Add Answer"
-                    onClick={() => {
+                    onClick={async () => {
                         const groupInfo: IGroupInfo = { id: group.id, level: group.level }
-                        dispatch({ type: ActionTypes.ADD_ANSWER, payload: { groupInfo } })
-                        console.log('CLICK row')
-                        if (!isExpanded)
-                            dispatch({ type: ActionTypes.SET_EXPANDED, payload: { id, expanding: true } });
+                        if (!isExpanded) {
+                            await dispatch({ type: ActionTypes.SET_EXPANDED, payload: { id, expanding: true } });
+                        }
+                        await dispatch({ type: ActionTypes.ADD_ANSWER, payload: { groupInfo } });
                     }}
                 >
-                    {/* <FontAwesomeIcon icon={faPlus} size='lg' /> */}
-                    {/* <FontAwesomeIcon icon={faThumbsUp} size='lg' style={{ marginLeft: '-5px' }} /> */}
-                    {/* <img width="18" height="14" src={A} alt="Answer" style={{ marginLeft: '-2px' }} /> */}
                     <img width="22" height="18" src={APlus} alt="Add Answer" />
                 </Button>
             }
@@ -159,7 +156,7 @@ const GroupRow = ({ group }: { group: IGroup }) => {
                     <AddGroup group={group} inLine={true} />
                 )
                     : ((inEditing && state.mode === Mode.EditingGroup) ||
-                       (inViewing && state.mode === Mode.ViewingGroup)) ? (
+                        (inViewing && state.mode === Mode.ViewingGroup)) ? (
                         <>
                             {/* <div class="d-lg-none">hide on lg and wider screens</div> */}
                             <div id='divInLine' className="ms-0 d-md-none w-100">
@@ -178,7 +175,7 @@ const GroupRow = ({ group }: { group: IGroup }) => {
             </ListGroup.Item>
 
             {/* !inAdding && */}
-            {(isExpanded || inViewing || inEditing) && // Row2
+            {(isExpanded || inViewing || inEditing || inAdding) && // Row2
                 <ListGroup.Item
                     className="py-0 px-0"
                     variant={"primary"}
@@ -186,9 +183,9 @@ const GroupRow = ({ group }: { group: IGroup }) => {
                 >
                     {isExpanded &&
                         <>
-                            <GroupList level={level + 1} parentGroup={id!.toString()} title={title} />
+                            <GroupList level={level + 1} parentGroup={id} title={title} />
                             {showAnswers &&
-                                <AnswerList level={level + 1} parentGroup={id!.toString()} title={title} />
+                                <AnswerList level={level + 1} parentGroup={id} title={title} />
                             }
                         </>
                     }

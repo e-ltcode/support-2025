@@ -23,7 +23,7 @@ const QuestionList = ({ title, parentCategory, level }: IParentInfo) => {
       const includeQuestionId = parentNodes.questionId ? parseInt(parentNodes.questionId) : undefined;
       await loadCategoryQuestions({ parentCategory, startCursor: questions.length, level: 0, includeQuestionId });
     }
-    catch (error_) {
+    catch (error) {
     }
     finally {
     }
@@ -53,12 +53,12 @@ const QuestionList = ({ title, parentCategory, level }: IParentInfo) => {
     }
   }, [viewQuestion, parentCategory, categoryId, questionId, canEdit]);
 
-  // console.log('QuestionList render', questions, level)
+  // console.log('QuestionList render', questions, questions.length)
 
   return (
     <div
       ref={rootRef}
-      className="ms-2"
+      className="ms-2" // border border-3 border-info"
       // className="max-h-[500px] max-w-[500px] overflow-auto bg-slate-100"
       style={{ maxHeight: '300px', overflowY: 'auto' }}
     >

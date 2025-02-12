@@ -10,6 +10,28 @@ In the project directory, you can run:
 ### `yarn start`
 ### `yarn run deploy`
 
+## Export Database to JSON
+   It is  possibile to export database to JSON format, for integration to the other AI systems
+
+## SupportExt Extension
+ Za sada koristite ovo sto šaljem zipovano, pa kad završimo SupportExt onda ćemo da je objavimo\ 
+ https://chromewebstore.google.com/search/SupportExt
+
+1. Unzipujte ekstenziju u neki folder
+2. Otvorite Google Chrome, kliknite na Extensions, pa odaberete 'Manage Extensions'
+3. Uključite 'developer' mode ON
+4. Kliknite na 'Load unpacked' i odaberite gore navedeni folder
+
+5. Onda idete u https://mail.google.com/mail
+6. Otvorite neki email, i ako se ne pojavi Support ikona uradite 'reload'
+7. Kad kliknete na ikonu otvoriće se naša app, koja će 'mail subject' tretirati kao Question
+
+Kad pošaljem novu verziju extenzije, dovoljan je:
+1. desni klik na SupportExt, pa odabrati 'Manage extension'
+2. onda samo kliknuti na 'reload' ekstenzije
+3. Otvorite neki email, pa ako se ne pojavi Support ikona uradite 'reload'
+
+
 ## Dokumentacija (bice bolja, ovo je samo za jutrasnji miting) 
 
 Prvremeno, kad se menja struktura baze, treba prvo obrisati našu staru IndexDB 'SupportKnowledge' bazu, da bi se kreirala nova.\
@@ -27,16 +49,16 @@ E jebiga za ovaj način trebala bi nam baza na netu, a ne lokalna.
 ## Svaka kategorija ima Tagove
 Pa recimo ako klijent ukuca pitanje u AutoSuggest: 'Daljinski ne radi',\
 a kategorija ima Tagove: ["MTS", "SBB", "A1", "YETTEL"], mi onda u drop-down ubacimo\
-Daljinski ne radi MTS\
-Daljinski ne radi SBB\
-Daljinski ne radi A1\
-Daljinski ne radi YETTEL\
++ Daljinski ne radi MTS
++ Daljinski ne radi SBB
++ Daljinski ne radi A1
++ Daljinski ne radi YETTEL
 i tako pomažemo klijentu da brže nadje odgovor\
-Takođe, ako korisnik kuca reč koja se nalazi u nazivu kategorije, možemo onda da ubacimo sva pitanja iz te kategorije, u drop-down listu.
 
-Bussines logic se preselila u **SupportPage** preko emaila, i **ChatBotPage** preko ChatBot-a, Question/Answers su samo **maintenance**\
-Nisam još počeo da ulazim u ChatBot logiku, ali ovo gore služi da pomogne klijentu da što lakše dođe do  odgovora.
+Takođe, ako korisnik kuca neku reč, za koju ne nalazi nijedno pitanje, ali koja se nalazi u nazivu kategorije,\
+možemo onda da ubacimo u drop-don listu sva pitanja iz te kategorije.
 
+Bussines logic se preselila u **SupportPage** preko emaila, i **ChatBotPage** preko ChatBot-a, Question/Answers su samo **maintenance** Nisam još počeo da ulazim u ChatBot logiku, ali ovo gore služi da pomogne klijentu da što lakše dođe do  odgovora.
 
 ## Ideja
 
@@ -66,3 +88,9 @@ The idea is exporting of the **Support Knowledge Database** to the formats, expe
 or\
 [Tawk](https://www.tawk.to/software/knowledge-base)\
 
+
+## Comment: Developers should be aware
+   We have, at two places:\
+      &lt;EditCategory inLine={true} />\
+      &lt;EditCategory inLine={false} />\
+   so we execute loadCategoryQuestions() twice in QuestionList, but it is OK
