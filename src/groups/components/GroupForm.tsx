@@ -1,134 +1,105 @@
-import React, { useEffect, useRef } from "react";
-import * as Yup from "yup";
-import { useFormik } from "formik";
-import { Form, CloseButton } from "react-bootstrap";
-import { CreatedModifiedForm } from "common/CreateModifiedForm"
-import { FormButtons } from "common/FormButtons"
-import { FormMode, ActionTypes, IGroupFormProps, IGroup } from "groups/types";
+import React from 'react';
+import { Form, CloseButton, Button } from 'react-bootstrap';
+import { IGroupFormProps, FormMode } from 'groups/types';
+import AnswerList from 'groups/components/answers/AnswerList';
+import { useGroupDispatch } from '../GroupProvider';
+import { ActionTypes } from '../types';
 
-import { useGroupDispatch } from "groups/GroupProvider";
-import AnswerList from "groups/components/answers/AnswerList";
-
-const GroupForm = ({ inLine, mode, group, submitForm, children }: IGroupFormProps) => {
-
-  const viewing = mode === FormMode.viewing;
-  const editing = mode === FormMode.editing;
-  const adding = mode === FormMode.adding;
-
-  const { id, title, answers } = group;
-
-  if (!document.getElementById('div-details')) {
-
-  }
-  const showAnswers = !answers.find(q => q.inAdding);
-  /* 
-  We have, at two places:
-    <EditGroup inLine={true} />
-    <EditGroup inLine={false} />
-    so we execute loadGroupAnswers() twice in AnswerList, but OK
-  */
-
-  
+const GroupForm: React.FC<IGroupFormProps> = ({ mode, group, submitForm, children }) => {
   const dispatch = useGroupDispatch();
+  const { id, title, answers } = group;
+  const showAnswers = !answers.find(q => q.inAdding);
 
-  const closeForm = () => {
-    dispatch({ type: ActionTypes.CLOSE_GROUP_FORM })
-  }
+  const handleClose = () => {
+    dispatch({ type: ActionTypes.CLOSE_GROUP_FORM });
+  };
 
-  const cancelForm = () => {
-    dispatch({ type: ActionTypes.CANCEL_GROUP_FORM })
-  }
+  const handleCancel = () => {
+    dispatch({ type: ActionTypes.CANCEL_GROUP_FORM });
+  };
 
-  const formik = useFormik({
-    enableReinitialize: true,
-    initialValues: group,
-    validationSchema: Yup.object().shape({
-      title: Yup.string().required("Required"),
-      // email: Yup.string()
-      //   .email("You have enter an invalid email address")
-      //   .required("Required"),
-      // rollno: Yup.number()
-      //   .positive("Invalid roll number")
-      //   .integer("Invalid roll number")
-      //   .required("Required"),
-    }),
-    onSubmit: (values: IGroup) => {
-      //alert(JSON.stringify(values, null, 2));
-      console.log('GroupForm.onSubmit', JSON.stringify(values, null, 2))
-      submitForm(values)
-      //props.handleClose(false);
-    }
-  });
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    submitForm(group);
+  };
 
-  // eslint-disable-next-line no-self-compare
-  // const nameRef = useRef<HTMLAreaElement | null>(null);
-  const nameRef = useRef<HTMLInputElement>(null);
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    dispatch({
+      type: ActionTypes.SET_GROUP,
+      payload: {
+        group: {
+          ...group,
+          title: e.target.value
+        }
+      }
+    });
+  };
 
-  useEffect(() => {
-    nameRef.current!.focus()
-  }, [nameRef])
-
-  
   return (
-    <div className="form-wrapper p-2">
-      <CloseButton onClick={closeForm} className="float-end" />
-      <Form onSubmit={formik.handleSubmit}>
-        <Form.Group controlId="title">
-          <Form.Label>Title</Form.Label>
-          <Form.Control
-            as="input"
-            placeholder="New Group"
-            name="title"
-            ref={nameRef}
-            onChange={formik.handleChange}
-            //onBlur={formik.handleBlur}
-            // onBlur={(e: React.FocusEvent<HTMLTextAreaElement>): void => {
-            //   if (isEdit && formik.initialValues.title !== formik.values.title)
-            //     formik.submitForm();
-            // }}
-            value={formik.values.title}
-            style={{ width: '100%' }}
-            disabled={viewing}
-          />
-          <Form.Text className="text-danger">
-            {formik.touched.title && formik.errors.title ? (
-              <div className="text-danger">{formik.errors.title}</div>
-            ) : null}
-          </Form.Text>
-        </Form.Group>
+    <div className="form-wrapper">
+      <CloseButton onClick={handleClose} className="float-end m-3" />
+      <Form onSubmit={handleSubmit} className="p-4">
+        <div className="form-section">
+          <div className="form-section-title">Group Information</div>
+          <Form.Group className="form-group mb-0">
+            <Form.Label>Title</Form.Label>
+            <Form.Control
+              type="text"
+              name="title"
+              value={title}
+              onChange={handleTitleChange}
+              disabled={mode === FormMode.viewing}
+            />
+          </Form.Group>
+        </div>
 
-        {/* <Form.Group>
-          <Form.Label>Number of Answers </Form.Label>
-          <div className="text-secondary">{formik.values.numOfAnswers}</div>
-          // <div className="p-1 bg-dark text-white">{createdBy}, {formatDate(created.date)}</div> 
-        </Form.Group> */}
+        <div className="form-metadata">
+          <div className="form-metadata-field">
+            <div className="form-metadata-label">Created By:</div>
+            <div className="form-metadata-value">
+              {group.created?.by?.nickName}, {group.created?.date?.toLocaleString()}
+            </div>
+          </div>
+          {group.modified && (
+            <div className="form-metadata-field">
+              <div className="form-metadata-label">Modified By:</div>
+              <div className="form-metadata-value">
+                {group.modified?.by?.nickName}, {group.modified?.date?.toLocaleString()}
+              </div>
+            </div>
+          )}
+        </div>
 
-        <Form.Group>
-          <Form.Label className="m-1 mb-0">Answers ({`${formik.values.numOfAnswers}`}) </Form.Label>
-          {showAnswers &&
-            <AnswerList level={1} parentGroup={id} title={title} />
-          }
-        </Form.Group>
+        <div className="answers-section">
+          <div className="answers-header">
+            Answers ({answers?.length || 0})
+          </div>
+          <div className="answers-content">
+            {showAnswers && (
+              <AnswerList level={1} parentGroup={id} title={title} />
+            )}
+          </div>
+        </div>
 
-        {(viewing || editing) &&
-          <CreatedModifiedForm
-            created={group.created}
-            createdBy={group.createdBy}
-            modified={group.modified}
-            modifiedBy={group.modifiedBy}
-            classes="text-secondary"
-          />
-        }
-
-        {(editing || adding) &&
-          <FormButtons
-            cancelForm={cancelForm}
-            handleSubmit={formik.handleSubmit}
-            title={children}
-          />
-        }
+        {(mode === FormMode.editing || mode === FormMode.adding) && (
+          <div className="row-buttons">
+            <Button 
+              variant="secondary" 
+              onClick={handleCancel}
+              className="text-decoration-none"
+            >
+              Cancel
+            </Button>
+            <Button 
+              variant="primary" 
+              type="submit"
+            >
+              {children}
+            </Button>
+          </div>
+        )}
       </Form>
-    </div >
+    </div>
   );
 };
 

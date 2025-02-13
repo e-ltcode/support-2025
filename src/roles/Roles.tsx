@@ -5,7 +5,7 @@ import { useParams } from 'react-router-dom';
 
 import { Mode, ActionTypes } from "./types";
 
-import { useGlobalState } from "global/GlobalProvider";
+import { useGlobalState, useGlobalContext } from "global/GlobalProvider";
 import { RoleProvider, useRoleContext, useRoleDispatch } from "./RoleProvider";
 
 import RoleList from "roles/components/RoleList";
@@ -23,17 +23,19 @@ interface IProps {
 
 const Providered = ({ roleId_userId }: IProps) => {
     const { state, reloadRoleNode } = useRoleContext();
+    const { globalState } = useGlobalContext();
+    const { isDarkMode, variant, bg } = globalState;
+    const dispatch = useRoleDispatch();
+
     const { lastRoleExpanded, roleId_userId_done } = state;
 
-    const { isDarkMode, authUser } = useGlobalState();
+    const { isDarkMode: globalIsDarkMode, authUser } = useGlobalState();
 
     const [showAddUser, setShowAddUser] = useState(false);
     const handleClose = () => setShowAddUser(false);
 
     const [newUser, setNewUser] = useState({ ...initialUser });
     const [createUserError, setCreateUserError] = useState("");
-
-    const dispatch = useRoleDispatch();
 
     useEffect(() => {
         (async () => {
@@ -66,32 +68,35 @@ const Providered = ({ roleId_userId }: IProps) => {
     }
 
     return (
-        <Container>
-            <Button variant="secondary" size="sm" type="button"
-                onClick={() => dispatch({
-                    type: ActionTypes.ADD_SUB_ROLE,
-                    payload: {
-                        parentRole: null,
-                        level: 0
-                    }
-                })
-                }
-            >
-                Add Role
-            </Button>
-            <Row className="my-1">
+        <Container className="roles-container">
+            <div className="roles-header">
+                <Button 
+                    variant="primary" 
+                    size="sm" 
+                    type="button"
+                    className="add-role-btn"
+                    onClick={() => dispatch({
+                        type: ActionTypes.ADD_SUB_ROLE,
+                        payload: {
+                            parentRole: null,
+                            level: 0
+                        }
+                    })}
+                >
+                    Add Role
+                </Button>
+            </div>
+            
+            <Row>
                 <Col xs={12} md={5}>
-                    <div>
+                    <div className="roles-list">
                         <RoleList parentRole={'null'} level={1} title="root" />
                     </div>
                 </Col>
-                <Col xs={0} md={7}>
-                    {/* {store.mode === FORM_MODES.ADD && <Add role={role??initialRole} />} */}
-                    {/* <div class="d-none d-lg-block">hide on screens smaller than lg</div> */}
-                    <div id='div-details' className="d-none d-md-block">
+                <Col xs={12} md={7}>
+                    <div id='div-details' className="d-none d-md-block role-form">
                         {state.mode === Mode.ViewingRole && <ViewRole inLine={false} />}
                         {state.mode === Mode.EditingRole && <EditRole inLine={false} />}
-                        {/* {state.mode === FORM_MODES.ADD_USER && <AddUser role={null} />} */}
                         {state.mode === Mode.ViewingUser && <ViewUser inLine={false} />}
                         {state.mode === Mode.EditingUser && <EditUser inLine={false} />}
                     </div>
@@ -104,13 +109,12 @@ const Providered = ({ roleId_userId }: IProps) => {
                 animation={true}
                 centered
                 size="lg"
-                className={`${isDarkMode ? "" : ""}`}
-                contentClassName={`${isDarkMode ? "bg-light bg-gradient" : ""}`}
+                className={isDarkMode ? "dark-theme" : ""}
             >
                 <Modal.Header closeButton>
-                    Put the new User to Database
+                    <Modal.Title>Add New User</Modal.Title>
                 </Modal.Header>
-                <Modal.Body className="py-0">
+                <Modal.Body className="py-3">
                     <AddUser
                         user={newUser}
                         closeModal={() => setShowAddUser(false)}
@@ -119,9 +123,11 @@ const Providered = ({ roleId_userId }: IProps) => {
                         setError={(msg) => setCreateUserError(msg)}
                     />
                 </Modal.Body>
-                <Modal.Footer>
-                    {createUserError}
-                </Modal.Footer>
+                {createUserError && (
+                    <Modal.Footer className="text-danger">
+                        {createUserError}
+                    </Modal.Footer>
+                )}
             </Modal>
         </Container>
     );
