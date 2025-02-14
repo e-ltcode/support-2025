@@ -94,12 +94,14 @@ const Providered = ({ roleId_userId }: IProps) => {
                     </div>
                 </Col>
                 <Col xs={12} md={7}>
-                    <div id='div-details' className="d-none d-md-block role-form">
-                        {state.mode === Mode.ViewingRole && <ViewRole inLine={false} />}
-                        {state.mode === Mode.EditingRole && <EditRole inLine={false} />}
-                        {state.mode === Mode.ViewingUser && <ViewUser inLine={false} />}
-                        {state.mode === Mode.EditingUser && <EditUser inLine={false} />}
-                    </div>
+                    {(state.mode !== Mode.NULL && state.mode !== Mode.UNDEFINED) && (
+                        <div id='div-details' className="d-none d-md-block role-form active">
+                            {state.mode === Mode.ViewingRole && <ViewRole inLine={false} />}
+                            {state.mode === Mode.EditingRole && <EditRole inLine={false} />}
+                            {state.mode === Mode.ViewingUser && <ViewUser inLine={false} />}
+                            {state.mode === Mode.EditingUser && <EditUser inLine={false} />}
+                        </div>
+                    )}
                 </Col>
             </Row>
 

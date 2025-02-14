@@ -7,19 +7,19 @@
 
 .chatbot-welcome {
   text-align: center;
-  background: #ffffff;
+  background: var(--bs-light);
   padding: 2.5rem;
   border-radius: 12px;
   margin-bottom: 2rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
 }
 
 .dark .chatbot-welcome {
-  background: #1e1e1e;
-  border-color: rgba(255, 255, 255, 0.08);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  background: rgba(33, 37, 41, 0.95);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
 }
 
 .chatbot-welcome h4 {
@@ -685,10 +685,44 @@ html {
   margin-top: 2rem;
   padding-top: 1.5rem;
   border-top: 1px solid rgba(0, 0, 0, 0.1);
+  padding: 1rem;
 }
 
 .dark .modal-actions {
   border-top-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Update button alignment */
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  padding: 1rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.dark .modal-footer {
+  border-top-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Update text visibility in dark backgrounds */
+.dark .modal-body {
+  background: rgba(33, 37, 41, 0.95);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.dark .form-control {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.dark .form-control:disabled {
+  background-color: rgba(33, 37, 41, 0.95);
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.dark .text-muted,
+.dark .text-secondary {
+  color: rgba(255, 255, 255, 0.9) !important;
 }
 
 /* Questions Section */
@@ -716,4 +750,191 @@ html {
 
 .question-item:last-child {
   border-bottom: none;
+}
+
+.role-form {
+  display: none;
+  background: transparent;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  border: none;
+  box-shadow: none;
+}
+
+.role-form.active {
+  display: block;
+  animation: fadeIn 0.3s ease-in-out;
+  background: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  padding: 1.5rem;
+}
+
+.dark .role-form.active {
+  background: #1e1e1e;
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.modified-by-section {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.dark .modified-by-section {
+  background: rgba(255, 255, 255, 0.02);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.modified-by-section h6 {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--bs-body-color);
+  margin-bottom: 0.5rem;
+}
+
+.modified-by-section p {
+  margin-bottom: 0;
+  font-size: 0.9rem;
+  color: var(--bs-secondary);
+}
+
+.dark .modified-by-section p {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.question-form {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.dark .question-form {
+  background: #1e1e1e;
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.question-form .form-group {
+  margin-bottom: 1.5rem;
+}
+
+.question-form .form-actions {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.dark .question-form .form-actions {
+  border-top-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Metadata Container Styles */
+.metadata-container {
+  background: var(--bs-light);
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.dark .metadata-container {
+  background: rgba(33, 37, 41, 0.95);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.metadata-field {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.metadata-label {
+  font-weight: 500;
+  min-width: 100px;
+  color: var(--bs-body-color);
+}
+
+.dark .metadata-label {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.metadata-value {
+  color: var(--bs-secondary);
+}
+
+.dark .metadata-value {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Navbar Improvements */
+.navbar {
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.dark .navbar {
+  border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+.navbar-nav {
+  gap: 0.75rem;
+}
+
+.nav-link {
+  font-size: 0.9375rem; /* 15px - better balanced size */
+  padding: 0.5rem 0.625rem !important;
+  transition: all 0.2s ease;
+  border-radius: 4px;
+  color: rgba(0, 0, 0, 0.75);
+}
+
+.nav-link:hover {
+  color: #40E0D0 !important;
+  background-color: transparent;
+}
+
+.dark .nav-link {
+  color: rgba(255, 255, 255, 0.75) !important;
+}
+
+.dark .nav-link:hover {
+  color: #40E0D0 !important;
+  background-color: transparent;
+}
+
+.navbar-brand {
+  font-size: 1.125rem;
+  font-weight: 500;
+}
+
+.dark .navbar-brand {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* Ensure proper spacing in mobile view */
+@media (max-width: 768px) {
+  .navbar-nav {
+    gap: 0.375rem;
+    padding: 0.375rem 0;
+  }
+  
+  .nav-link {
+    padding: 0.5rem 0.75rem !important;
+  }
 } 
