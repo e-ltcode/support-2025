@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, RefObject } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { AutoSuggestQuestions } from 'categories/AutoSuggestQuestions';
 import { Button, Col, Container, Form, Row } from 'react-bootstrap';
@@ -35,6 +35,18 @@ const ChatBotPage: React.FC = () => {
 	const { getCatsByKind, getQuestion } = useGlobalContext();
 	const { dbp, isDarkMode, allCategories } = useGlobalState();
 
+	const usageRef = useRef<HTMLDivElement>(null);
+	const autoSuggestRef = useRef<HTMLDivElement>(null);
+	const resultsRef = useRef<HTMLDivElement>(null);
+
+	const scrollToSection = (ref: RefObject<HTMLDivElement | null>) => {
+		setTimeout(() => {
+			if (ref.current) {
+				ref.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+			}
+		}, 100);
+	};
+
 	useEffect(() => {
 		(async () => {
 			setCatOptions(await getCatsByKind(2));
@@ -45,14 +57,17 @@ const ChatBotPage: React.FC = () => {
 	const onSelectQuestion = async (categoryId: string, questionId: number) => {
 		const question = await getQuestion(questionId);
 		setSelectedQuestion(question);
+		scrollToSection(resultsRef);
 	};
 
 	const handleOptionChange = () => {
 		setShowUsage(true);
+		scrollToSection(usageRef);
 	};
 
 	const handleUsageChange = () => {
 		setShowAutoSuggest(true);
+		scrollToSection(autoSuggestRef);
 	};
 
 	return (
@@ -83,7 +98,7 @@ const ChatBotPage: React.FC = () => {
 			</div>
 
 			{showUsage && (
-				<div className="chatbot-section">
+				<div className="chatbot-section" ref={usageRef}>
 					<div className="chatbot-section-title">
 						Izaberite uslugu za koju Vam je potrebna podrška
 					</div>
@@ -104,7 +119,7 @@ const ChatBotPage: React.FC = () => {
 			)}
 
 			{showAutoSuggest && (
-				<div className="chatbot-section chatbot-search">
+				<div className="chatbot-section chatbot-search" ref={autoSuggestRef}>
 					<div className="chatbot-section-title">
 						Kako Vam mogu pomoći?
 					</div>
@@ -122,7 +137,7 @@ const ChatBotPage: React.FC = () => {
 			)}
 
 			{selectedQuestion && (
-				<div className="chatbot-results">
+				<div className="chatbot-results" ref={resultsRef}>
 					<AssignedAnswersChatBot
 						questionId={selectedQuestion.id!}
 						questionTitle={selectedQuestion.title}
