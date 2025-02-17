@@ -82,13 +82,8 @@ export function Navigation(props: INavigation) {
                 switch (eventKey) {
                   case "LIGHT_MODE":
                   case "DARK_MODE":
-                    if (document.body.classList.contains('dark')) {
-                      document.body.classList.remove('dark')
-                      document.body.classList.add('light')
-                    }
-                    else {
-                      document.body.classList.add('dark')
-                    }
+                    document.body.classList.remove('dark', 'light');
+                    document.body.classList.add(eventKey === "DARK_MODE" ? 'dark' : 'light');
                     dispatch({ type: eventKey })
                     break;
                 }
